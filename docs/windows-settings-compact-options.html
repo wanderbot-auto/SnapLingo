@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SnapLingo Windows 设置页紧凑方案</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #f3f3f3;
+            --panel: rgba(255, 255, 255, 0.88);
+            --window: #fcfcfc;
+            --window-strong: #ffffff;
+            --border: rgba(0, 0, 0, 0.10);
+            --border-strong: rgba(0, 0, 0, 0.16);
+            --text: #151515;
+            --muted: #5f5f5f;
+            --accent: #005fb8;
+            --accent-soft: rgba(0, 95, 184, 0.12);
+            --shadow: 0 18px 42px rgba(0, 0, 0, 0.10);
+            --titlebar: rgba(255, 255, 255, 0.80);
+            --field: #fbfbfb;
+            --field-border: rgba(0, 0, 0, 0.16);
+            --badge: rgba(0, 0, 0, 0.06);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #202020;
+                --panel: rgba(38, 38, 38, 0.88);
+                --window: #2b2b2b;
+                --window-strong: #303030;
+                --border: rgba(255, 255, 255, 0.08);
+                --border-strong: rgba(255, 255, 255, 0.12);
+                --text: #f5f5f5;
+                --muted: #b9b9b9;
+                --accent: #76b9ff;
+                --accent-soft: rgba(118, 185, 255, 0.14);
+                --shadow: 0 20px 48px rgba(0, 0, 0, 0.34);
+                --titlebar: rgba(42, 42, 42, 0.84);
+                --field: #242424;
+                --field-border: rgba(255, 255, 255, 0.12);
+                --badge: rgba(255, 255, 255, 0.06);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI Variable Text", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(0, 95, 184, 0.10), transparent 28%),
+                linear-gradient(180deg, rgba(127, 127, 127, 0.06), transparent 25%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 28px 24px 36px;
+        }
+
+        .hero {
+            margin-bottom: 18px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            box-shadow: var(--shadow);
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+            font-weight: 620;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 920px;
+            line-height: 1.55;
+            color: var(--muted);
+        }
+
+        .hero .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: var(--badge);
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 18px;
+            align-items: start;
+        }
+
+        .option {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            box-shadow: var(--shadow);
+        }
+
+        .option-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .option-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 620;
+        }
+
+        .option-header span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .window {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--window);
+        }
+
+        .titlebar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 36px;
+            padding: 0 12px 0 14px;
+            border-bottom: 1px solid var(--border);
+            background: var(--titlebar);
+            font-size: 13px;
+        }
+
+        .window-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            font-weight: 580;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            background: linear-gradient(180deg, #4fc3ff, #0078d4);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .win-actions {
+            display: flex;
+            gap: 10px;
+            color: var(--muted);
+        }
+
+        .window-body {
+            padding: 14px;
+        }
+
+        .intro {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .intro h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 620;
+        }
+
+        .intro .status {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .compact-stack {
+            display: grid;
+            gap: 8px;
+        }
+
+        .section {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--window-strong);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .section-body {
+            padding: 10px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 90px minmax(0, 1fr) auto;
+            gap: 8px;
+            align-items: center;
+            min-height: 32px;
+        }
+
+        .row.two-col {
+            grid-template-columns: 96px minmax(0, 1fr);
+        }
+
+        .label {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .field,
+        .field-inline {
+            min-height: 32px;
+            padding: 7px 10px;
+            border: 1px solid var(--field-border);
+            border-radius: 8px;
+            background: var(--field);
+            font-size: 13px;
+        }
+
+        .field-inline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn,
+        .btn-ghost {
+            height: 30px;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            font-size: 12px;
+            font-weight: 580;
+            line-height: 28px;
+            white-space: nowrap;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border-color: var(--field-border);
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .footer-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: 112px minmax(0, 1fr);
+            gap: 8px 10px;
+            align-items: center;
+        }
+
+        .property-grid .property-label {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 112px minmax(0, 1fr);
+            min-height: 422px;
+        }
+
+        .nav {
+            padding: 10px 8px;
+            border-right: 1px solid var(--border);
+            background: rgba(127, 127, 127, 0.04);
+        }
+
+        .nav-item {
+            padding: 8px 10px;
+            border-radius: 8px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .nav-item.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 12px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .subgroup-title {
+            margin: 0 0 6px;
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .dense-list {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--window-strong);
+        }
+
+        .dense-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .dense-item:first-child {
+            border-top: 0;
+        }
+
+        .dense-item strong {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .dense-item small {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .mini-value {
+            min-width: 108px;
+            padding: 6px 10px;
+            border: 1px solid var(--field-border);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            background: var(--field);
+        }
+
+        .option-note {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 760px) {
+            .page {
+                padding: 18px 14px 24px;
+            }
+
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .row,
+            .row.two-col,
+            .property-grid,
+            .shell {
+                grid-template-columns: 1fr;
+            }
+
+            .nav {
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="hero">
+            <h1>SnapLingo Windows 设置页紧凑方案</h1>
+            <p>目标是把当前偏“网页卡片式”的设置页，收敛成更像 Windows 桌面工具的表单布局。下面 3 套方案都保留现有核心功能，但减少说明文案、压缩间距、让操作更靠近对应字段。</p>
+            <div class="meta">
+                <span class="tag">更紧凑的间隔</span>
+                <span class="tag">更少描述文本</span>
+                <span class="tag">更像原生桌面设置</span>
+                <span class="tag">保留 Provider / API Key / Hotkey / Workflow</span>
+            </div>
+        </section>
+
+        <section class="gallery">
+            <article class="option">
+                <div class="option-header">
+                    <h2>方案 A: 单页紧凑分组</h2>
+                    <span>推荐，最容易替换现有页</span>
+                </div>
+                <div class="window">
+                    <div class="titlebar">
+                        <div class="window-title">
+                            <span class="dot"></span>
+                            <span>SnapLingo 设置</span>
+                        </div>
+                        <div class="win-actions">
+                            <span>−</span>
+                            <span>□</span>
+                            <span>×</span>
+                        </div>
+                    </div>
+                    <div class="window-body">
+                        <div class="intro">
+                            <h3>设置</h3>
+                            <span class="status">已保存</span>
+                        </div>
+                        <div class="compact-stack">
+                            <section class="section">
+                                <div class="section-header">
+                                    <span>工作流</span>
+                                    <span>全局触发</span>
+                                </div>
+                                <div class="section-body">
+                                    <div class="row two-col">
+                                        <div class="label">当前方式</div>
+                                        <div class="field-inline">
+                                            <span>选中文本后按快捷键</span>
+                                            <span class="hint">Ctrl + Shift + 1</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn-row">
+                                        <button class="btn-ghost">显示翻译面板</button>
+                                        <button class="btn-ghost">使用当前剪贴板</button>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="section">
+                                <div class="section-header">
+                                    <span>服务</span>
+                                    <span>本机凭据</span>
+                                </div>
+                                <div class="section-body">
+                                    <div class="row">
+                                        <div class="label">提供商</div>
+                                        <div class="field-inline">
+                                            <span>OpenAI</span>
+                                            <span class="hint">▼</span>
+                                        </div>
+                                        <div></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="label">API Key</div>
+                                        <div class="field">sk-••••••••••••••••••</div>
+                                        <div class="btn-row">
+                                            <button class="btn">保存</button>
+                                            <button class="btn-ghost">清除</button>
+                                        </div>
+                                    </div>
+                                    <div class="hint">已保存到系统安全存储</div>
+                                </div>
+                            </section>
+
+                            <section class="section">
+                                <div class="section-header">
+                                    <span>快捷键</span>
+                                    <span>1 项</span>
+                                </div>
+                                <div class="section-body">
+                                    <div class="row two-col">
+                                        <div class="label">触发组合</div>
+                                        <div class="field-inline">
+                                            <span>Ctrl + Shift + 1</span>
+                                            <span class="hint">▼</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="option-note">特点是保留现有单页结构，但把大段说明和大卡片压扁成“标题 + 行项目”，适合直接映射回 WinUI 的 `Grid + Border + ComboBox + PasswordBox + Button`。</div>
+            </article>
+
+            <article class="option">
+                <div class="option-header">
+                    <h2>方案 B: 属性表单对齐</h2>
+                    <span>最像传统桌面设置对话框</span>
+                </div>
+                <div class="window">
+                    <div class="titlebar">
+                        <div class="window-title">
+                            <span class="dot"></span>
+                            <span>SnapLingo 设置</span>
+                        </div>
+                        <div class="win-actions">
+                            <span>−</span>
+                            <span>□</span>
+                            <span>×</span>
+                        </div>
+                    </div>
+                    <div class="window-body">
+                        <div class="intro">
+                            <h3>常规</h3>
+                            <span class="status">本地配置</span>
+                        </div>
+
+                        <section class="section">
+                            <div class="section-body">
+                                <div class="subgroup-title">服务设置</div>
+                                <div class="property-grid">
+                                    <div class="property-label">提供商</div>
+                                    <div class="field-inline">
+                                        <span>Gemini</span>
+                                        <span class="hint">▼</span>
+                                    </div>
+
+                                    <div class="property-label">API Key</div>
+                                    <div class="field">AIzaSy•••••••••••••••</div>
+
+                                    <div class="property-label">存储状态</div>
+                                    <div class="hint">已保存到系统凭据管理</div>
+                                </div>
+                                <div class="btn-row">
+                                    <button class="btn">保存</button>
+                                    <button class="btn-ghost">清除</button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="section">
+                            <div class="section-body">
+                                <div class="subgroup-title">快捷键与工作流</div>
+                                <div class="property-grid">
+                                    <div class="property-label">快捷键</div>
+                                    <div class="field-inline">
+                                        <span>Alt + Q</span>
+                                        <span class="hint">▼</span>
+                                    </div>
+
+                                    <div class="property-label">面板</div>
+                                    <div class="btn-row">
+                                        <button class="btn-ghost">显示翻译面板</button>
+                                        <button class="btn-ghost">读取剪贴板</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <div class="footer-strip">
+                            <span>更适合固定宽度窗口</span>
+                            <div class="btn-row">
+                                <button class="btn-ghost">取消</button>
+                                <button class="btn">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="option-note">如果你想更强的“Windows 工具软件感”，这个方向最稳。标签列固定、字段列对齐，视觉重心集中在输入和选择控件上。</div>
+            </article>
+
+            <article class="option">
+                <div class="option-header">
+                    <h2>方案 C: 侧栏分组导航</h2>
+                    <span>适合后续设置项继续增加</span>
+                </div>
+                <div class="window">
+                    <div class="titlebar">
+                        <div class="window-title">
+                            <span class="dot"></span>
+                            <span>SnapLingo 设置</span>
+                        </div>
+                        <div class="win-actions">
+                            <span>−</span>
+                            <span>□</span>
+                            <span>×</span>
+                        </div>
+                    </div>
+                    <div class="shell">
+                        <aside class="nav">
+                            <div class="nav-item active">常规</div>
+                            <div class="nav-item">Provider</div>
+                            <div class="nav-item">快捷键</div>
+                            <div class="nav-item">高级</div>
+                        </aside>
+                        <div class="content">
+                            <div class="intro">
+                                <h3>常规</h3>
+                                <span class="status">3 项</span>
+                            </div>
+
+                            <div class="dense-list">
+                                <div class="dense-item">
+                                    <div>
+                                        <strong>翻译 Provider</strong>
+                                        <small>OpenAI</small>
+                                    </div>
+                                    <div class="mini-value">更改</div>
+                                </div>
+                                <div class="dense-item">
+                                    <div>
+                                        <strong>API Key</strong>
+                                        <small>已保存</small>
+                                    </div>
+                                    <div class="mini-value">管理</div>
+                                </div>
+                                <div class="dense-item">
+                                    <div>
+                                        <strong>全局快捷键</strong>
+                                        <small>Ctrl + Shift + 1</small>
+                                    </div>
+                                    <div class="mini-value">修改</div>
+                                </div>
+                            </div>
+
+                            <section class="section">
+                                <div class="section-body">
+                                    <div class="subgroup-title">快速操作</div>
+                                    <div class="btn-row">
+                                        <button class="btn-ghost">显示翻译面板</button>
+                                        <button class="btn-ghost">使用当前剪贴板</button>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <div class="footer-strip">
+                                <span>当设置项超过 6 个时更清晰</span>
+                                <button class="btn">保存更改</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="option-note">当前功能量不算大，用这个方案会稍微“重”一点，但如果之后要加模型参数、面板行为、开机启动、语言等项，扩展性最好。</div>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
