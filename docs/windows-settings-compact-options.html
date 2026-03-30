@@ -621,7 +621,7 @@
             <article class="option">
                 <div class="option-header">
                     <h2>方案 C: 侧栏分组导航</h2>
-                    <span>适合后续设置项继续增加</span>
+                    <span>已按可扩展设置中心方向补全</span>
                 </div>
                 <div class="window">
                     <div class="titlebar">
@@ -638,30 +638,39 @@
                     <div class="shell">
                         <aside class="nav">
                             <div class="nav-item active">常规</div>
+                            <div class="nav-item">界面</div>
                             <div class="nav-item">Provider</div>
                             <div class="nav-item">快捷键</div>
+                            <div class="nav-item">功能</div>
                             <div class="nav-item">高级</div>
                         </aside>
                         <div class="content">
                             <div class="intro">
                                 <h3>常规</h3>
-                                <span class="status">3 项</span>
+                                <span class="status">8 项</span>
                             </div>
 
                             <div class="dense-list">
+                                <div class="dense-item">
+                                    <div>
+                                        <strong>界面语言</strong>
+                                        <small>简体中文</small>
+                                    </div>
+                                    <div class="mini-value">切换</div>
+                                </div>
+                                <div class="dense-item">
+                                    <div>
+                                        <strong>界面主题</strong>
+                                        <small>跟随系统</small>
+                                    </div>
+                                    <div class="mini-value">更改</div>
+                                </div>
                                 <div class="dense-item">
                                     <div>
                                         <strong>翻译 Provider</strong>
                                         <small>OpenAI</small>
                                     </div>
                                     <div class="mini-value">更改</div>
-                                </div>
-                                <div class="dense-item">
-                                    <div>
-                                        <strong>API Key</strong>
-                                        <small>已保存</small>
-                                    </div>
-                                    <div class="mini-value">管理</div>
                                 </div>
                                 <div class="dense-item">
                                     <div>
@@ -674,22 +683,88 @@
 
                             <section class="section">
                                 <div class="section-body">
+                                    <div class="subgroup-title">功能行为</div>
+                                    <div class="dense-list">
+                                        <div class="dense-item">
+                                            <div>
+                                                <strong>启动时最小化到托盘</strong>
+                                                <small>开启</small>
+                                            </div>
+                                            <div class="mini-value">开关</div>
+                                        </div>
+                                        <div class="dense-item">
+                                            <div>
+                                                <strong>关闭窗口时保留后台运行</strong>
+                                                <small>开启</small>
+                                            </div>
+                                            <div class="mini-value">开关</div>
+                                        </div>
+                                        <div class="dense-item">
+                                            <div>
+                                                <strong>使用剪贴板作为回退</strong>
+                                                <small>无法直接取词时自动继续</small>
+                                            </div>
+                                            <div class="mini-value">开关</div>
+                                        </div>
+                                        <div class="dense-item">
+                                            <div>
+                                                <strong>翻译后自动复制结果</strong>
+                                                <small>关闭</small>
+                                            </div>
+                                            <div class="mini-value">开关</div>
+                                        </div>
+                                        <div class="dense-item">
+                                            <div>
+                                                <strong>翻译面板保持置顶</strong>
+                                                <small>开启</small>
+                                            </div>
+                                            <div class="mini-value">开关</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="section">
+                                <div class="section-body">
+                                    <div class="subgroup-title">服务与凭据</div>
+                                    <div class="dense-list">
+                                        <div class="dense-item">
+                                            <div>
+                                                <strong>API Key</strong>
+                                                <small>已保存到本机安全存储</small>
+                                            </div>
+                                            <div class="mini-value">管理</div>
+                                        </div>
+                                        <div class="dense-item">
+                                            <div>
+                                                <strong>启动时检查 Provider 状态</strong>
+                                                <small>关闭</small>
+                                            </div>
+                                            <div class="mini-value">开关</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="section">
+                                <div class="section-body">
                                     <div class="subgroup-title">快速操作</div>
                                     <div class="btn-row">
                                         <button class="btn-ghost">显示翻译面板</button>
                                         <button class="btn-ghost">使用当前剪贴板</button>
+                                        <button class="btn-ghost">重置窗口位置</button>
                                     </div>
                                 </div>
                             </section>
 
                             <div class="footer-strip">
-                                <span>当设置项超过 6 个时更清晰</span>
+                                <span>适合继续扩展语言、主题、托盘与自动化选项</span>
                                 <button class="btn">保存更改</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="option-note">当前功能量不算大，用这个方案会稍微“重”一点，但如果之后要加模型参数、面板行为、开机启动、语言等项，扩展性最好。</div>
+                <div class="option-note">这个版本把方案 C 扩成真正可落地的设置中心。导航可以继续拆成“界面 / Provider / 快捷键 / 功能 / 高级”，而默认页只放最常用的 6 到 10 项，保持桌面应用常见的紧凑列表感。</div>
             </article>
         </section>
     </main>
