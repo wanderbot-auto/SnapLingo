@@ -158,7 +158,7 @@
         .shell {
             display: grid;
             grid-template-columns: 156px minmax(0, 1fr);
-            height: 720px;
+            height: 700px;
         }
 
         .sidebar {
@@ -222,7 +222,8 @@
             display: grid;
             align-content: start;
             align-items: start;
-            overflow: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .panel {
@@ -528,12 +529,12 @@
     <main class="page">
         <section class="hero">
             <h1>SnapLingo Windows 设置方案 C</h1>
-            <p>继续收敛为更窄的小型设置中心，目标窗口约为 680 x 720。保留完整功能，但进一步压缩右侧内容宽度，强化左侧分组导航的存在感，同时让右侧内容明确从上到下开始排布。</p>
+            <p>基于当前各页的设置项密度，主窗口高度收敛到约 680 x 700。常用页尽量在首屏展示核心内容，超出的设置继续在右侧内容区滚动，不强行把窗口做得过高。</p>
             <div class="meta">
-                <span>目标尺寸 680 x 720</span>
+                <span>目标尺寸 680 x 700</span>
                 <span>可切换导航</span>
                 <span>窄而高</span>
-                <span>强化侧栏</span>
+                <span>超出部分滚动</span>
             </div>
         </section>
 
