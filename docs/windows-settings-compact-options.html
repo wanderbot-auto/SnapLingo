@@ -1,46 +1,46 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SnapLingo Windows 设置页紧凑方案</title>
+    <title>SnapLingo Windows 设置方案 C</title>
     <style>
         :root {
             color-scheme: light dark;
-            --bg: #f3f3f3;
-            --panel: rgba(255, 255, 255, 0.88);
-            --window: #fcfcfc;
-            --window-strong: #ffffff;
+            --bg: #f2f2f2;
+            --panel: rgba(255, 255, 255, 0.84);
+            --surface: #fbfbfb;
+            --surface-strong: #ffffff;
+            --surface-soft: rgba(127, 127, 127, 0.06);
             --border: rgba(0, 0, 0, 0.10);
             --border-strong: rgba(0, 0, 0, 0.16);
-            --text: #151515;
-            --muted: #5f5f5f;
+            --text: #181818;
+            --muted: #626262;
             --accent: #005fb8;
             --accent-soft: rgba(0, 95, 184, 0.12);
-            --shadow: 0 18px 42px rgba(0, 0, 0, 0.10);
-            --titlebar: rgba(255, 255, 255, 0.80);
-            --field: #fbfbfb;
-            --field-border: rgba(0, 0, 0, 0.16);
-            --badge: rgba(0, 0, 0, 0.06);
+            --accent-strong: #00478a;
+            --shadow: 0 18px 48px rgba(0, 0, 0, 0.10);
+            --field: #f9f9f9;
+            --field-border: rgba(0, 0, 0, 0.14);
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg: #202020;
-                --panel: rgba(38, 38, 38, 0.88);
-                --window: #2b2b2b;
-                --window-strong: #303030;
+                --bg: #1f1f1f;
+                --panel: rgba(39, 39, 39, 0.84);
+                --surface: #2a2a2a;
+                --surface-strong: #303030;
+                --surface-soft: rgba(255, 255, 255, 0.04);
                 --border: rgba(255, 255, 255, 0.08);
-                --border-strong: rgba(255, 255, 255, 0.12);
-                --text: #f5f5f5;
-                --muted: #b9b9b9;
-                --accent: #76b9ff;
-                --accent-soft: rgba(118, 185, 255, 0.14);
-                --shadow: 0 20px 48px rgba(0, 0, 0, 0.34);
-                --titlebar: rgba(42, 42, 42, 0.84);
+                --border-strong: rgba(255, 255, 255, 0.14);
+                --text: #f3f3f3;
+                --muted: #bbbbbb;
+                --accent: #78baff;
+                --accent-soft: rgba(120, 186, 255, 0.14);
+                --accent-strong: #9cccff;
+                --shadow: 0 24px 56px rgba(0, 0, 0, 0.34);
                 --field: #242424;
                 --field-border: rgba(255, 255, 255, 0.12);
-                --badge: rgba(255, 255, 255, 0.06);
             }
         }
 
@@ -48,20 +48,28 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
+            min-height: 100%;
             font-family: "Segoe UI Variable Text", "Segoe UI", sans-serif;
-            background:
-                radial-gradient(circle at top left, rgba(0, 95, 184, 0.10), transparent 28%),
-                linear-gradient(180deg, rgba(127, 127, 127, 0.06), transparent 25%),
-                var(--bg);
             color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(0, 95, 184, 0.10), transparent 24%),
+                linear-gradient(180deg, rgba(127, 127, 127, 0.04), transparent 30%),
+                var(--bg);
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
         }
 
         .page {
-            max-width: 1500px;
+            max-width: 1220px;
             margin: 0 auto;
-            padding: 28px 24px 36px;
+            padding: 24px 20px 32px;
         }
 
         .hero {
@@ -70,70 +78,35 @@
             border: 1px solid var(--border);
             border-radius: 18px;
             background: var(--panel);
-            backdrop-filter: blur(18px);
+            backdrop-filter: blur(20px);
             box-shadow: var(--shadow);
         }
 
         .hero h1 {
             margin: 0 0 8px;
             font-size: 26px;
-            font-weight: 620;
+            font-weight: 630;
             letter-spacing: -0.02em;
         }
 
         .hero p {
             margin: 0;
-            max-width: 920px;
+            max-width: 880px;
             line-height: 1.55;
             color: var(--muted);
         }
 
-        .hero .meta {
+        .meta {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-top: 12px;
         }
 
-        .tag {
+        .meta span {
             padding: 5px 10px;
             border-radius: 999px;
-            background: var(--badge);
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-            gap: 18px;
-            align-items: start;
-        }
-
-        .option {
-            padding: 14px;
-            border: 1px solid var(--border);
-            border-radius: 22px;
-            background: var(--panel);
-            backdrop-filter: blur(18px);
-            box-shadow: var(--shadow);
-        }
-
-        .option-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .option-header h2 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 620;
-        }
-
-        .option-header span {
+            background: var(--surface-soft);
             color: var(--muted);
             font-size: 12px;
         }
@@ -141,18 +114,20 @@
         .window {
             overflow: hidden;
             border: 1px solid var(--border);
-            border-radius: 14px;
-            background: var(--window);
+            border-radius: 20px;
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
         }
 
         .titlebar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 36px;
+            height: 38px;
             padding: 0 12px 0 14px;
             border-bottom: 1px solid var(--border);
-            background: var(--titlebar);
+            background: rgba(255, 255, 255, 0.06);
             font-size: 13px;
         }
 
@@ -160,279 +135,383 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            min-width: 0;
-            font-weight: 580;
+            font-weight: 590;
         }
 
-        .dot {
+        .app-mark {
             width: 10px;
             height: 10px;
             border-radius: 3px;
-            background: linear-gradient(180deg, #4fc3ff, #0078d4);
+            background: linear-gradient(180deg, #43b7ff, #0078d4);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
         }
 
-        .win-actions {
+        .window-buttons {
             display: flex;
-            gap: 10px;
-            color: var(--muted);
-        }
-
-        .window-body {
-            padding: 14px;
-        }
-
-        .intro {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .intro h3 {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 620;
-        }
-
-        .intro .status {
-            padding: 4px 8px;
-            border-radius: 999px;
-            background: var(--accent-soft);
-            color: var(--accent);
-            font-size: 12px;
-        }
-
-        .compact-stack {
-            display: grid;
             gap: 8px;
-        }
-
-        .section {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: var(--window-strong);
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 9px 10px;
-            border-bottom: 1px solid var(--border);
-            font-size: 12px;
-            color: var(--muted);
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
-        }
-
-        .section-body {
-            padding: 10px;
-            display: grid;
-            gap: 8px;
-        }
-
-        .row {
-            display: grid;
-            grid-template-columns: 90px minmax(0, 1fr) auto;
-            gap: 8px;
-            align-items: center;
-            min-height: 32px;
-        }
-
-        .row.two-col {
-            grid-template-columns: 96px minmax(0, 1fr);
-        }
-
-        .label {
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        .field,
-        .field-inline {
-            min-height: 32px;
-            padding: 7px 10px;
-            border: 1px solid var(--field-border);
-            border-radius: 8px;
-            background: var(--field);
-            font-size: 13px;
-        }
-
-        .field-inline {
-            display: inline-flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .btn,
-        .btn-ghost {
-            height: 30px;
-            padding: 0 12px;
-            border-radius: 8px;
-            border: 1px solid transparent;
-            font-size: 12px;
-            font-weight: 580;
-            line-height: 28px;
-            white-space: nowrap;
-        }
-
-        .btn {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--text);
-            border-color: var(--field-border);
-        }
-
-        .hint {
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        .footer-strip {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-top: 8px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border);
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        .property-grid {
-            display: grid;
-            grid-template-columns: 112px minmax(0, 1fr);
-            gap: 8px 10px;
-            align-items: center;
-        }
-
-        .property-grid .property-label {
-            font-size: 12px;
             color: var(--muted);
         }
 
         .shell {
             display: grid;
-            grid-template-columns: 112px minmax(0, 1fr);
-            min-height: 422px;
+            grid-template-columns: 220px minmax(0, 1fr);
+            min-height: 720px;
         }
 
-        .nav {
-            padding: 10px 8px;
+        .sidebar {
+            padding: 14px 10px 12px;
             border-right: 1px solid var(--border);
             background: rgba(127, 127, 127, 0.04);
         }
 
-        .nav-item {
-            padding: 8px 10px;
-            border-radius: 8px;
+        .sidebar-title {
+            margin: 0 0 10px;
+            padding: 0 8px;
+            font-size: 12px;
             color: var(--muted);
-            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .nav-list {
+            display: grid;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            align-items: center;
+            width: 100%;
+            min-height: 38px;
+            padding: 8px 10px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--muted);
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-soft);
+            color: var(--text);
         }
 
         .nav-item.active {
             background: var(--accent-soft);
-            color: var(--accent);
-            font-weight: 600;
+            color: var(--accent-strong);
         }
 
-        .content {
-            padding: 12px;
-            display: grid;
-            gap: 10px;
-        }
-
-        .subgroup-title {
-            margin: 0 0 6px;
-            font-size: 12px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-        }
-
-        .dense-list {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            background: var(--window-strong);
-        }
-
-        .dense-item {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-            align-items: center;
-            padding: 10px 12px;
-            border-top: 1px solid var(--border);
-        }
-
-        .dense-item:first-child {
-            border-top: 0;
-        }
-
-        .dense-item strong {
-            display: block;
-            margin-bottom: 2px;
+        .nav-item b {
             font-size: 13px;
             font-weight: 600;
         }
 
-        .dense-item small {
-            color: var(--muted);
-            font-size: 12px;
+        .nav-item span {
+            font-size: 11px;
+            opacity: 0.9;
         }
 
-        .mini-value {
-            min-width: 108px;
+        .content {
+            padding: 16px;
+            display: grid;
+        }
+
+        .panel {
+            display: none;
+            gap: 12px;
+        }
+
+        .panel.active {
+            display: grid;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0 0 4px;
+            font-size: 22px;
+            font-weight: 630;
+            letter-spacing: -0.02em;
+        }
+
+        .panel-header p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .status-badge {
+            align-self: flex-start;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .stat {
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+        }
+
+        .stat strong {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 14px;
+            font-weight: 620;
+        }
+
+        .stat span {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 42px;
+            padding: 0 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .list {
+            display: grid;
+        }
+
+        .item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+            min-height: 54px;
+            padding: 10px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .item:first-child {
+            border-top: 0;
+        }
+
+        .item-info strong {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 13px;
+            font-weight: 610;
+        }
+
+        .item-info small {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .value,
+        .value-wide {
+            min-height: 32px;
             padding: 6px 10px;
             border: 1px solid var(--field-border);
-            border-radius: 8px;
-            text-align: center;
-            font-size: 12px;
+            border-radius: 9px;
             background: var(--field);
-        }
-
-        .option-note {
-            margin-top: 10px;
-            color: var(--muted);
             font-size: 12px;
-            line-height: 1.55;
+            color: var(--text);
         }
 
-        @media (max-width: 760px) {
-            .page {
-                padding: 18px 14px 24px;
-            }
+        .value {
+            min-width: 114px;
+            text-align: center;
+        }
 
-            .gallery {
-                grid-template-columns: 1fr;
-            }
+        .value-wide {
+            min-width: 180px;
+            text-align: left;
+        }
 
-            .row,
-            .row.two-col,
-            .property-grid,
+        .switch {
+            position: relative;
+            width: 42px;
+            height: 24px;
+            border-radius: 999px;
+            background: rgba(127, 127, 127, 0.26);
+            box-shadow: inset 0 0 0 1px var(--border);
+        }
+
+        .switch::after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
+        }
+
+        .switch.on {
+            background: var(--accent);
+        }
+
+        .switch.on::after {
+            left: 21px;
+        }
+
+        .chip-row,
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip,
+        .ghost-btn,
+        .primary-btn {
+            min-height: 30px;
+            padding: 0 12px;
+            border-radius: 9px;
+            border: 1px solid var(--field-border);
+            background: transparent;
+            color: var(--text);
+            font-size: 12px;
+            line-height: 28px;
+            cursor: pointer;
+        }
+
+        .chip.active {
+            border-color: transparent;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+        }
+
+        .primary-btn {
+            border-color: transparent;
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 12px;
+        }
+
+        .preview-box {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent), var(--surface-strong);
+        }
+
+        .preview-window {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+        }
+
+        .preview-titlebar {
+            display: flex;
+            align-items: center;
+            height: 30px;
+            padding: 0 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .preview-content {
+            padding: 12px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .preview-line {
+            height: 10px;
+            border-radius: 999px;
+            background: var(--surface-soft);
+        }
+
+        .preview-line.short {
+            width: 58%;
+        }
+
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-top: 4px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 980px) {
             .shell {
                 grid-template-columns: 1fr;
             }
 
-            .nav {
+            .sidebar {
                 border-right: 0;
                 border-bottom: 1px solid var(--border);
+            }
+
+            .nav-list {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .split,
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .page {
+                padding: 14px 12px 20px;
+            }
+
+            .nav-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .panel-header,
+            .footer {
+                display: grid;
+            }
+
+            .item {
+                grid-template-columns: 1fr;
+                justify-items: start;
             }
         }
     </style>
@@ -440,333 +519,268 @@
 <body>
     <main class="page">
         <section class="hero">
-            <h1>SnapLingo Windows 设置页紧凑方案</h1>
-            <p>目标是把当前偏“网页卡片式”的设置页，收敛成更像 Windows 桌面工具的表单布局。下面 3 套方案都保留现有核心功能，但减少说明文案、压缩间距、让操作更靠近对应字段。</p>
+            <h1>SnapLingo Windows 设置方案 C</h1>
+            <p>只保留侧栏分组导航这一套方向，并把它做成可点击切换的设置中心原型。整体保持紧凑、少描述、弱卡片感，更贴近 Windows 桌面工具的设置界面。</p>
             <div class="meta">
-                <span class="tag">更紧凑的间隔</span>
-                <span class="tag">更少描述文本</span>
-                <span class="tag">更像原生桌面设置</span>
-                <span class="tag">保留 Provider / API Key / Hotkey / Workflow</span>
+                <span>单一方案</span>
+                <span>可切换导航</span>
+                <span>紧凑桌面布局</span>
+                <span>覆盖语言 / 主题 / Provider / 快捷键 / 功能 / 高级</span>
             </div>
         </section>
 
-        <section class="gallery">
-            <article class="option">
-                <div class="option-header">
-                    <h2>方案 A: 单页紧凑分组</h2>
-                    <span>推荐，最容易替换现有页</span>
+        <section class="window">
+            <div class="titlebar">
+                <div class="window-title">
+                    <span class="app-mark"></span>
+                    <span>SnapLingo 设置</span>
                 </div>
-                <div class="window">
-                    <div class="titlebar">
-                        <div class="window-title">
-                            <span class="dot"></span>
-                            <span>SnapLingo 设置</span>
-                        </div>
-                        <div class="win-actions">
-                            <span>−</span>
-                            <span>□</span>
-                            <span>×</span>
-                        </div>
-                    </div>
-                    <div class="window-body">
-                        <div class="intro">
-                            <h3>设置</h3>
-                            <span class="status">已保存</span>
-                        </div>
-                        <div class="compact-stack">
-                            <section class="section">
-                                <div class="section-header">
-                                    <span>工作流</span>
-                                    <span>全局触发</span>
-                                </div>
-                                <div class="section-body">
-                                    <div class="row two-col">
-                                        <div class="label">当前方式</div>
-                                        <div class="field-inline">
-                                            <span>选中文本后按快捷键</span>
-                                            <span class="hint">Ctrl + Shift + 1</span>
-                                        </div>
-                                    </div>
-                                    <div class="btn-row">
-                                        <button class="btn-ghost">显示翻译面板</button>
-                                        <button class="btn-ghost">使用当前剪贴板</button>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <section class="section">
-                                <div class="section-header">
-                                    <span>服务</span>
-                                    <span>本机凭据</span>
-                                </div>
-                                <div class="section-body">
-                                    <div class="row">
-                                        <div class="label">提供商</div>
-                                        <div class="field-inline">
-                                            <span>OpenAI</span>
-                                            <span class="hint">▼</span>
-                                        </div>
-                                        <div></div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="label">API Key</div>
-                                        <div class="field">sk-••••••••••••••••••</div>
-                                        <div class="btn-row">
-                                            <button class="btn">保存</button>
-                                            <button class="btn-ghost">清除</button>
-                                        </div>
-                                    </div>
-                                    <div class="hint">已保存到系统安全存储</div>
-                                </div>
-                            </section>
-
-                            <section class="section">
-                                <div class="section-header">
-                                    <span>快捷键</span>
-                                    <span>1 项</span>
-                                </div>
-                                <div class="section-body">
-                                    <div class="row two-col">
-                                        <div class="label">触发组合</div>
-                                        <div class="field-inline">
-                                            <span>Ctrl + Shift + 1</span>
-                                            <span class="hint">▼</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
+                <div class="window-buttons">
+                    <span>−</span>
+                    <span>□</span>
+                    <span>×</span>
                 </div>
-                <div class="option-note">特点是保留现有单页结构，但把大段说明和大卡片压扁成“标题 + 行项目”，适合直接映射回 WinUI 的 `Grid + Border + ComboBox + PasswordBox + Button`。</div>
-            </article>
+            </div>
 
-            <article class="option">
-                <div class="option-header">
-                    <h2>方案 B: 属性表单对齐</h2>
-                    <span>最像传统桌面设置对话框</span>
-                </div>
-                <div class="window">
-                    <div class="titlebar">
-                        <div class="window-title">
-                            <span class="dot"></span>
-                            <span>SnapLingo 设置</span>
-                        </div>
-                        <div class="win-actions">
-                            <span>−</span>
-                            <span>□</span>
-                            <span>×</span>
-                        </div>
+            <div class="shell">
+                <aside class="sidebar">
+                    <div class="sidebar-title">设置</div>
+                    <div class="nav-list" role="tablist" aria-label="设置导航">
+                        <button class="nav-item active" role="tab" aria-selected="true" data-panel="general">
+                            <b>常规</b>
+                            <span>概览</span>
+                        </button>
+                        <button class="nav-item" role="tab" aria-selected="false" data-panel="appearance">
+                            <b>界面</b>
+                            <span>语言与主题</span>
+                        </button>
+                        <button class="nav-item" role="tab" aria-selected="false" data-panel="provider">
+                            <b>Provider</b>
+                            <span>服务与凭据</span>
+                        </button>
+                        <button class="nav-item" role="tab" aria-selected="false" data-panel="hotkey">
+                            <b>快捷键</b>
+                            <span>触发方式</span>
+                        </button>
+                        <button class="nav-item" role="tab" aria-selected="false" data-panel="features">
+                            <b>功能</b>
+                            <span>行为选项</span>
+                        </button>
+                        <button class="nav-item" role="tab" aria-selected="false" data-panel="advanced">
+                            <b>高级</b>
+                            <span>诊断与重置</span>
+                        </button>
                     </div>
-                    <div class="window-body">
-                        <div class="intro">
-                            <h3>常规</h3>
-                            <span class="status">本地配置</span>
-                        </div>
+                </aside>
 
-                        <section class="section">
-                            <div class="section-body">
-                                <div class="subgroup-title">服务设置</div>
-                                <div class="property-grid">
-                                    <div class="property-label">提供商</div>
-                                    <div class="field-inline">
-                                        <span>Gemini</span>
-                                        <span class="hint">▼</span>
-                                    </div>
-
-                                    <div class="property-label">API Key</div>
-                                    <div class="field">AIzaSy•••••••••••••••</div>
-
-                                    <div class="property-label">存储状态</div>
-                                    <div class="hint">已保存到系统凭据管理</div>
-                                </div>
-                                <div class="btn-row">
-                                    <button class="btn">保存</button>
-                                    <button class="btn-ghost">清除</button>
-                                </div>
+                <div class="content">
+                    <section class="panel active" id="panel-general" role="tabpanel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>常规</h2>
+                                <p>把最常用的设置集中在一页，减少来回切换。</p>
                             </div>
-                        </section>
+                            <div class="status-badge">6 项常用设置</div>
+                        </div>
 
-                        <section class="section">
-                            <div class="section-body">
-                                <div class="subgroup-title">快捷键与工作流</div>
-                                <div class="property-grid">
-                                    <div class="property-label">快捷键</div>
-                                    <div class="field-inline">
-                                        <span>Alt + Q</span>
-                                        <span class="hint">▼</span>
-                                    </div>
+                        <div class="stats">
+                            <div class="stat"><strong>界面语言</strong><span>简体中文</span></div>
+                            <div class="stat"><strong>主题</strong><span>跟随系统</span></div>
+                            <div class="stat"><strong>Provider</strong><span>OpenAI</span></div>
+                            <div class="stat"><strong>快捷键</strong><span>Ctrl + Shift + 1</span></div>
+                        </div>
 
-                                    <div class="property-label">面板</div>
-                                    <div class="btn-row">
-                                        <button class="btn-ghost">显示翻译面板</button>
-                                        <button class="btn-ghost">读取剪贴板</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <div class="footer-strip">
-                            <span>更适合固定宽度窗口</span>
-                            <div class="btn-row">
-                                <button class="btn-ghost">取消</button>
-                                <button class="btn">确定</button>
+                        <div class="card">
+                            <div class="card-header"><span>常用项</span><span>默认首页</span></div>
+                            <div class="list">
+                                <div class="item"><div class="item-info"><strong>界面语言</strong><small>切换设置页和面板的显示语言。</small></div><div class="value">简体中文</div></div>
+                                <div class="item"><div class="item-info"><strong>界面主题</strong><small>支持浅色、深色和跟随系统。</small></div><div class="value">跟随系统</div></div>
+                                <div class="item"><div class="item-info"><strong>翻译 Provider</strong><small>当前翻译服务提供方。</small></div><div class="value">OpenAI</div></div>
+                                <div class="item"><div class="item-info"><strong>全局快捷键</strong><small>选中文本后触发翻译。</small></div><div class="value-wide">Ctrl + Shift + 1</div></div>
+                                <div class="item"><div class="item-info"><strong>翻译后自动复制结果</strong><small>便于快速粘贴到其他窗口。</small></div><div class="switch"></div></div>
+                                <div class="item"><div class="item-info"><strong>翻译面板保持置顶</strong><small>适合边看边替换文本。</small></div><div class="switch on"></div></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="option-note">如果你想更强的“Windows 工具软件感”，这个方向最稳。标签列固定、字段列对齐，视觉重心集中在输入和选择控件上。</div>
-            </article>
 
-            <article class="option">
-                <div class="option-header">
-                    <h2>方案 C: 侧栏分组导航</h2>
-                    <span>已按可扩展设置中心方向补全</span>
-                </div>
-                <div class="window">
-                    <div class="titlebar">
-                        <div class="window-title">
-                            <span class="dot"></span>
-                            <span>SnapLingo 设置</span>
-                        </div>
-                        <div class="win-actions">
-                            <span>−</span>
-                            <span>□</span>
-                            <span>×</span>
-                        </div>
-                    </div>
-                    <div class="shell">
-                        <aside class="nav">
-                            <div class="nav-item active">常规</div>
-                            <div class="nav-item">界面</div>
-                            <div class="nav-item">Provider</div>
-                            <div class="nav-item">快捷键</div>
-                            <div class="nav-item">功能</div>
-                            <div class="nav-item">高级</div>
-                        </aside>
-                        <div class="content">
-                            <div class="intro">
-                                <h3>常规</h3>
-                                <span class="status">8 项</span>
+                        <div class="card">
+                            <div class="card-header"><span>快速操作</span><span>即时动作</span></div>
+                            <div class="list">
+                                <div class="item"><div class="item-info"><strong>显示翻译面板</strong><small>直接打开浮动面板。</small></div><button class="ghost-btn">打开</button></div>
+                                <div class="item"><div class="item-info"><strong>使用当前剪贴板</strong><small>跳过重新取词，直接开始翻译。</small></div><button class="ghost-btn">使用</button></div>
                             </div>
+                        </div>
 
-                            <div class="dense-list">
-                                <div class="dense-item">
-                                    <div>
-                                        <strong>界面语言</strong>
-                                        <small>简体中文</small>
-                                    </div>
-                                    <div class="mini-value">切换</div>
-                                </div>
-                                <div class="dense-item">
-                                    <div>
-                                        <strong>界面主题</strong>
-                                        <small>跟随系统</small>
-                                    </div>
-                                    <div class="mini-value">更改</div>
-                                </div>
-                                <div class="dense-item">
-                                    <div>
-                                        <strong>翻译 Provider</strong>
-                                        <small>OpenAI</small>
-                                    </div>
-                                    <div class="mini-value">更改</div>
-                                </div>
-                                <div class="dense-item">
-                                    <div>
-                                        <strong>全局快捷键</strong>
-                                        <small>Ctrl + Shift + 1</small>
-                                    </div>
-                                    <div class="mini-value">修改</div>
+                        <div class="footer">
+                            <span>建议作为最终 WinUI 版本的默认入口页。</span>
+                            <div class="toolbar"><button class="ghost-btn">取消</button><button class="primary-btn">保存更改</button></div>
+                        </div>
+                    </section>
+
+                    <section class="panel" id="panel-appearance" role="tabpanel" hidden>
+                        <div class="panel-header">
+                            <div>
+                                <h2>界面</h2>
+                                <p>集中处理语言、主题和窗口观感。</p>
+                            </div>
+                            <div class="status-badge">语言与视觉</div>
+                        </div>
+
+                        <div class="split">
+                            <div class="card">
+                                <div class="card-header"><span>界面选项</span><span>3 组</span></div>
+                                <div class="list">
+                                    <div class="item"><div class="item-info"><strong>界面语言</strong><small>影响设置窗口、浮动面板和状态文本。</small></div><div class="chip-row"><button class="chip active">简体中文</button><button class="chip">English</button><button class="chip">日本語</button></div></div>
+                                    <div class="item"><div class="item-info"><strong>界面主题</strong><small>使用系统主题时更像原生桌面应用。</small></div><div class="chip-row"><button class="chip active">跟随系统</button><button class="chip">浅色</button><button class="chip">深色</button></div></div>
+                                    <div class="item"><div class="item-info"><strong>窗口密度</strong><small>控制间距和列表高度。</small></div><div class="chip-row"><button class="chip active">紧凑</button><button class="chip">标准</button></div></div>
                                 </div>
                             </div>
 
-                            <section class="section">
-                                <div class="section-body">
-                                    <div class="subgroup-title">功能行为</div>
-                                    <div class="dense-list">
-                                        <div class="dense-item">
-                                            <div>
-                                                <strong>启动时最小化到托盘</strong>
-                                                <small>开启</small>
+                            <div class="preview-box">
+                                <div class="preview-window">
+                                    <div class="preview-titlebar">界面预览</div>
+                                    <div class="preview-content">
+                                        <div class="preview-line"></div>
+                                        <div class="preview-line short"></div>
+                                        <div class="card">
+                                            <div class="card-header"><span>预览列表</span><span>紧凑</span></div>
+                                            <div class="list">
+                                                <div class="item"><div class="item-info"><strong>Provider</strong><small>OpenAI</small></div><div class="value">已连接</div></div>
+                                                <div class="item"><div class="item-info"><strong>快捷键</strong><small>Ctrl + Shift + 1</small></div><div class="value">启用</div></div>
                                             </div>
-                                            <div class="mini-value">开关</div>
-                                        </div>
-                                        <div class="dense-item">
-                                            <div>
-                                                <strong>关闭窗口时保留后台运行</strong>
-                                                <small>开启</small>
-                                            </div>
-                                            <div class="mini-value">开关</div>
-                                        </div>
-                                        <div class="dense-item">
-                                            <div>
-                                                <strong>使用剪贴板作为回退</strong>
-                                                <small>无法直接取词时自动继续</small>
-                                            </div>
-                                            <div class="mini-value">开关</div>
-                                        </div>
-                                        <div class="dense-item">
-                                            <div>
-                                                <strong>翻译后自动复制结果</strong>
-                                                <small>关闭</small>
-                                            </div>
-                                            <div class="mini-value">开关</div>
-                                        </div>
-                                        <div class="dense-item">
-                                            <div>
-                                                <strong>翻译面板保持置顶</strong>
-                                                <small>开启</small>
-                                            </div>
-                                            <div class="mini-value">开关</div>
                                         </div>
                                     </div>
                                 </div>
-                            </section>
-
-                            <section class="section">
-                                <div class="section-body">
-                                    <div class="subgroup-title">服务与凭据</div>
-                                    <div class="dense-list">
-                                        <div class="dense-item">
-                                            <div>
-                                                <strong>API Key</strong>
-                                                <small>已保存到本机安全存储</small>
-                                            </div>
-                                            <div class="mini-value">管理</div>
-                                        </div>
-                                        <div class="dense-item">
-                                            <div>
-                                                <strong>启动时检查 Provider 状态</strong>
-                                                <small>关闭</small>
-                                            </div>
-                                            <div class="mini-value">开关</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <section class="section">
-                                <div class="section-body">
-                                    <div class="subgroup-title">快速操作</div>
-                                    <div class="btn-row">
-                                        <button class="btn-ghost">显示翻译面板</button>
-                                        <button class="btn-ghost">使用当前剪贴板</button>
-                                        <button class="btn-ghost">重置窗口位置</button>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <div class="footer-strip">
-                                <span>适合继续扩展语言、主题、托盘与自动化选项</span>
-                                <button class="btn">保存更改</button>
                             </div>
                         </div>
-                    </div>
+
+                        <div class="footer"><span>建议默认使用“跟随系统 + 紧凑”。</span><button class="primary-btn">应用界面设置</button></div>
+                    </section>
+
+                    <section class="panel" id="panel-provider" role="tabpanel" hidden>
+                        <div class="panel-header">
+                            <div>
+                                <h2>Provider</h2>
+                                <p>聚合服务选择、凭据和连接状态。</p>
+                            </div>
+                            <div class="status-badge">凭据安全存储</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><span>服务配置</span><span>Provider</span></div>
+                            <div class="list">
+                                <div class="item"><div class="item-info"><strong>当前 Provider</strong><small>切换后可使用对应的 API Key。</small></div><div class="chip-row"><button class="chip active">OpenAI</button><button class="chip">Gemini</button><button class="chip">Anthropic</button></div></div>
+                                <div class="item"><div class="item-info"><strong>API Key</strong><small>保存到系统安全存储，不落盘到明文配置。</small></div><div class="value-wide">sk-••••••••••••••••••••</div></div>
+                                <div class="item"><div class="item-info"><strong>连接状态</strong><small>可选显示项，用于快速判断配置是否完整。</small></div><div class="value">已配置</div></div>
+                                <div class="item"><div class="item-info"><strong>启动时检查 Provider 状态</strong><small>减少首次翻译时才发现未配置的问题。</small></div><div class="switch"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="footer"><span>Provider 页面适合保留较少解释文字。</span><div class="toolbar"><button class="ghost-btn">清除 Key</button><button class="primary-btn">保存 Key</button></div></div>
+                    </section>
+
+                    <section class="panel" id="panel-hotkey" role="tabpanel" hidden>
+                        <div class="panel-header">
+                            <div>
+                                <h2>快捷键</h2>
+                                <p>保持少量稳定预设，避免复杂自定义带来的冲突。</p>
+                            </div>
+                            <div class="status-badge">全局触发</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><span>快捷键预设</span><span>建议提供 3 到 5 项</span></div>
+                            <div class="list">
+                                <div class="item"><div class="item-info"><strong>当前组合</strong><small>用于全局取词和调用翻译面板。</small></div><div class="value-wide">Ctrl + Shift + 1</div></div>
+                                <div class="item"><div class="item-info"><strong>可选预设</strong><small>用固定集合代替自由录制，更可靠。</small></div><div class="chip-row"><button class="chip active">Ctrl + Shift + 1</button><button class="chip">Alt + Q</button><button class="chip">Ctrl + Alt + T</button></div></div>
+                                <div class="item"><div class="item-info"><strong>注册失败时显示提示</strong><small>快捷键冲突时给出直接反馈。</small></div><div class="switch on"></div></div>
+                                <div class="item"><div class="item-info"><strong>启动时自动注册全局快捷键</strong><small>通常应保持开启。</small></div><div class="switch on"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="footer"><span>建议继续走“预设组合”而不是任意录制。</span><button class="primary-btn">应用快捷键</button></div>
+                    </section>
+
+                    <section class="panel" id="panel-features" role="tabpanel" hidden>
+                        <div class="panel-header">
+                            <div>
+                                <h2>功能</h2>
+                                <p>放与翻译流程、托盘行为、面板行为相关的可开关项。</p>
+                            </div>
+                            <div class="status-badge">行为设置</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><span>工作流</span><span>6 项</span></div>
+                            <div class="list">
+                                <div class="item"><div class="item-info"><strong>使用剪贴板作为回退</strong><small>无法直接取词时自动等待剪贴板文本。</small></div><div class="switch on"></div></div>
+                                <div class="item"><div class="item-info"><strong>翻译后自动复制结果</strong><small>适合快速替换当前文本。</small></div><div class="switch"></div></div>
+                                <div class="item"><div class="item-info"><strong>翻译面板保持置顶</strong><small>适合多窗口对照操作。</small></div><div class="switch on"></div></div>
+                                <div class="item"><div class="item-info"><strong>启动时最小化到托盘</strong><small>符合常驻型桌面工具的行为。</small></div><div class="switch on"></div></div>
+                                <div class="item"><div class="item-info"><strong>关闭窗口时保留后台运行</strong><small>避免误退出导致快捷键失效。</small></div><div class="switch on"></div></div>
+                                <div class="item"><div class="item-info"><strong>面板关闭后清空状态</strong><small>降低旧结果残留带来的误解。</small></div><div class="switch on"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="footer"><span>这部分最适合列表式开关，不需要太多文案。</span><button class="primary-btn">保存功能设置</button></div>
+                    </section>
+
+                    <section class="panel" id="panel-advanced" role="tabpanel" hidden>
+                        <div class="panel-header">
+                            <div>
+                                <h2>高级</h2>
+                                <p>用于诊断、恢复默认值和窗口级操作。</p>
+                            </div>
+                            <div class="status-badge">维护项</div>
+                        </div>
+
+                        <div class="split">
+                            <div class="card">
+                                <div class="card-header"><span>诊断与恢复</span><span>维护</span></div>
+                                <div class="list">
+                                    <div class="item"><div class="item-info"><strong>显示运行状态提示</strong><small>开发期可开，正式版可以更克制。</small></div><div class="switch"></div></div>
+                                    <div class="item"><div class="item-info"><strong>重置窗口位置</strong><small>恢复设置窗口和翻译面板的位置。</small></div><button class="ghost-btn">重置</button></div>
+                                    <div class="item"><div class="item-info"><strong>恢复默认设置</strong><small>保留安全存储中的 Key 或一起清除。</small></div><button class="ghost-btn">恢复默认</button></div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header"><span>本地信息</span><span>只读</span></div>
+                                <div class="list">
+                                    <div class="item"><div class="item-info"><strong>版本</strong><small>当前桌面应用版本号。</small></div><div class="value">0.1.0</div></div>
+                                    <div class="item"><div class="item-info"><strong>配置存储</strong><small>普通设置与安全凭据分离。</small></div><div class="value">本机</div></div>
+                                    <div class="item"><div class="item-info"><strong>安全凭据</strong><small>Windows 安全存储。</small></div><div class="value">启用</div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="footer"><span>高级页应尽量克制，只放维护项，不要塞常规设置。</span><button class="primary-btn">完成</button></div>
+                    </section>
                 </div>
-                <div class="option-note">这个版本把方案 C 扩成真正可落地的设置中心。导航可以继续拆成“界面 / Provider / 快捷键 / 功能 / 高级”，而默认页只放最常用的 6 到 10 项，保持桌面应用常见的紧凑列表感。</div>
-            </article>
+            </div>
         </section>
     </main>
+
+    <script>
+        const tabs = document.querySelectorAll('.nav-item');
+        const panels = document.querySelectorAll('.panel');
+
+        function activatePanel(name) {
+            tabs.forEach((tab) => {
+                const active = tab.dataset.panel === name;
+                tab.classList.toggle('active', active);
+                tab.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+
+            panels.forEach((panel) => {
+                const active = panel.id === `panel-${name}`;
+                panel.classList.toggle('active', active);
+                panel.hidden = !active;
+            });
+        }
+
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => activatePanel(tab.dataset.panel));
+        });
+    </script>
 </body>
 </html>
