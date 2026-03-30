@@ -524,30 +524,29 @@
             }
         }
 
-        /* Signal Deck Refresh */
+        /* WinUI-leaning Refresh */
         :root {
-            --bg: #071018;
-            --panel: #0b131b;
-            --surface: #f4f8fc;
+            --bg: #111315;
+            --panel: #1b1b1d;
+            --surface: #f5f5f7;
             --surface-strong: #ffffff;
-            --surface-soft: rgba(15, 32, 45, 0.06);
-            --border: rgba(14, 24, 35, 0.10);
-            --border-strong: rgba(14, 24, 35, 0.18);
-            --text: #10202d;
-            --muted: #667587;
-            --accent: #27c1ff;
-            --accent-soft: rgba(39, 193, 255, 0.14);
-            --accent-strong: #0897cf;
-            --shadow: 0 26px 70px rgba(0, 0, 0, 0.34);
-            --field: #eef4fa;
-            --field-border: rgba(20, 31, 43, 0.12);
+            --surface-soft: rgba(0, 0, 0, 0.04);
+            --border: rgba(0, 0, 0, 0.10);
+            --border-strong: rgba(0, 0, 0, 0.16);
+            --text: #1c1c1c;
+            --muted: #5f5f5f;
+            --accent: #0f6cbd;
+            --accent-soft: rgba(15, 108, 189, 0.14);
+            --accent-strong: #0b5ea6;
+            --shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+            --field: #f3f3f3;
+            --field-border: rgba(0, 0, 0, 0.12);
         }
 
         body {
             background:
-                radial-gradient(circle at 18% 12%, rgba(39, 193, 255, 0.18), transparent 26%),
-                radial-gradient(circle at 88% 84%, rgba(17, 110, 146, 0.18), transparent 30%),
-                linear-gradient(180deg, #0a1219, #081018 58%, #071018 100%);
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.06), transparent 20%),
+                linear-gradient(180deg, #18181a, #111214 100%);
         }
 
         .page {
@@ -556,11 +555,11 @@
         }
 
         .window {
-            border: 1px solid rgba(39, 193, 255, 0.14);
-            border-radius: 18px;
-            background: linear-gradient(180deg, #0d141d 0%, #0a1118 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            background: rgba(27, 27, 29, 0.92);
             box-shadow:
-                0 30px 80px rgba(0, 0, 0, 0.40),
+                0 22px 54px rgba(0, 0, 0, 0.30),
                 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
         }
 
@@ -568,12 +567,12 @@
             height: 32px;
             padding: 0 10px 0 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
-            color: #d9f7ff;
+            background: rgba(255, 255, 255, 0.02);
+            color: #f2f2f2;
         }
 
         .window-title {
-            color: #f2fcff;
+            color: #f2f2f2;
             letter-spacing: 0.01em;
         }
 
@@ -581,15 +580,13 @@
             width: 11px;
             height: 11px;
             border-radius: 4px;
-            background: linear-gradient(180deg, #59ddff, #1198d1);
-            box-shadow:
-                0 0 18px rgba(39, 193, 255, 0.32),
-                inset 0 1px 0 rgba(255, 255, 255, 0.34);
+            background: linear-gradient(180deg, #66b3ff, #0f6cbd);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.30);
         }
 
         .window-buttons {
             gap: 10px;
-            color: rgba(219, 245, 255, 0.72);
+            color: rgba(242, 242, 242, 0.72);
         }
 
         .shell {
@@ -603,17 +600,14 @@
             gap: 10px;
             padding: 10px 8px;
             border-right: 1px solid rgba(255, 255, 255, 0.05);
-            background:
-                radial-gradient(circle at top left, rgba(39, 193, 255, 0.16), transparent 34%),
-                linear-gradient(180deg, #0d1721 0%, #0b141c 100%);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .brand-card {
-            padding: 10px 10px 11px;
-            border: 1px solid rgba(39, 193, 255, 0.10);
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 12px;
-            background: linear-gradient(180deg, rgba(39, 193, 255, 0.10), rgba(255, 255, 255, 0.02));
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .brand-kicker {
@@ -621,26 +615,26 @@
             font-size: 9px;
             letter-spacing: 0.10em;
             text-transform: uppercase;
-            color: rgba(182, 234, 248, 0.66);
+            color: rgba(214, 214, 214, 0.58);
         }
 
         .brand-title {
             margin-bottom: 3px;
-            font-size: 16px;
-            font-weight: 650;
-            letter-spacing: -0.03em;
-            color: #f4fbff;
+            font-size: 15px;
+            font-weight: 620;
+            letter-spacing: -0.02em;
+            color: #f5f5f5;
         }
 
         .brand-copy {
             font-size: 10px;
             line-height: 1.35;
-            color: rgba(214, 239, 247, 0.70);
+            color: rgba(222, 222, 222, 0.64);
         }
 
         .sidebar-title {
             padding: 0 8px;
-            color: rgba(190, 214, 227, 0.55);
+            color: rgba(210, 210, 210, 0.52);
         }
 
         .nav-item {
@@ -648,9 +642,9 @@
             min-height: 36px;
             padding: 7px 9px 7px 12px;
             border: 1px solid transparent;
-            border-radius: 10px;
-            color: #9fb0c2;
-            transition: background 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+            border-radius: 8px;
+            color: #c8c8c8;
+            transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
         }
 
         .nav-item::before {
@@ -666,20 +660,17 @@
 
         .nav-item:hover {
             background: rgba(255, 255, 255, 0.04);
-            color: #ecf9ff;
-            transform: translateX(1px);
+            color: #f7f7f7;
         }
 
         .nav-item.active {
-            border-color: rgba(39, 193, 255, 0.10);
-            background: rgba(39, 193, 255, 0.12);
-            color: #f4fcff;
-            box-shadow: inset 0 0 0 1px rgba(39, 193, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
         }
 
         .nav-item.active::before {
-            background: linear-gradient(180deg, #6de1ff, #1e9ad2);
-            box-shadow: 0 0 18px rgba(39, 193, 255, 0.40);
+            background: var(--accent);
         }
 
         .nav-item span {
@@ -691,14 +682,12 @@
             padding: 0 8px;
             font-size: 9px;
             line-height: 1.45;
-            color: rgba(182, 214, 227, 0.52);
+            color: rgba(205, 205, 205, 0.48);
         }
 
         .content {
             padding: 12px;
-            background:
-                radial-gradient(circle at top right, rgba(39, 193, 255, 0.10), transparent 22%),
-                linear-gradient(180deg, #f9fbfe 0%, #f2f6fb 100%);
+            background: #f3f3f3;
         }
 
         .panel {
@@ -706,19 +695,7 @@
         }
 
         .panel.active {
-            animation: panel-in 180ms ease-out;
-        }
-
-        @keyframes panel-in {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            animation: none;
         }
 
         .panel-header {
@@ -727,17 +704,17 @@
 
         .panel-header h2 {
             font-size: 16px;
-            color: #0e2231;
+            color: #1c1c1c;
         }
 
         .panel-header p {
-            color: #6b7784;
+            color: #616161;
         }
 
         .status-badge {
-            background: #112532;
-            color: #87e7ff;
-            letter-spacing: 0.04em;
+            background: rgba(0, 0, 0, 0.06);
+            color: #404040;
+            letter-spacing: 0.02em;
         }
 
         .stats {
@@ -746,103 +723,101 @@
 
         .stat {
             padding: 8px 9px;
-            border: 1px solid rgba(16, 32, 46, 0.06);
-            border-radius: 11px;
-            background: linear-gradient(180deg, #ffffff, #f5f9fd);
-            box-shadow: 0 10px 22px rgba(16, 32, 46, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: none;
         }
 
         .stat strong {
-            color: #647284;
+            color: #6a6a6a;
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
 
         .stat span {
-            color: #132434;
+            color: #1c1c1c;
             font-weight: 620;
         }
 
         .card {
-            border: 1px solid rgba(16, 32, 46, 0.07);
-            border-radius: 12px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 249, 252, 0.96));
-            box-shadow:
-                0 16px 28px rgba(16, 32, 46, 0.06),
-                0 1px 0 rgba(255, 255, 255, 0.88) inset;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: none;
         }
 
         .card-header {
             min-height: 34px;
-            border-bottom: 1px solid rgba(16, 32, 46, 0.06);
-            background: linear-gradient(180deg, rgba(39, 193, 255, 0.05), rgba(255, 255, 255, 0.06));
-            color: #677789;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            background: rgba(0, 0, 0, 0.02);
+            color: #616161;
         }
 
         .item {
             min-height: 42px;
             padding: 7px 9px;
-            border-top: 1px solid rgba(16, 32, 46, 0.06);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .item-info strong {
-            color: #132535;
+            color: #1c1c1c;
         }
 
         .item-info small {
-            color: #708090;
+            color: #6b6b6b;
         }
 
         .value,
         .value-wide {
-            border-color: rgba(16, 32, 46, 0.10);
-            background: #ecf4fa;
-            color: #0e2434;
+            border-color: rgba(0, 0, 0, 0.10);
+            background: #f5f5f5;
+            color: #1c1c1c;
         }
 
         .switch {
-            background: #cdd8e2;
+            background: #c9c9c9;
             box-shadow: none;
         }
 
         .switch.on {
-            background: linear-gradient(180deg, #33d1ff, #1498cf);
+            background: var(--accent);
         }
 
         .chip,
         .ghost-btn {
-            border-color: rgba(16, 32, 46, 0.10);
-            background: rgba(255, 255, 255, 0.78);
+            border-color: rgba(0, 0, 0, 0.10);
+            background: #fafafa;
         }
 
         .chip.active {
-            background: #122734;
-            color: #8ce8ff;
+            background: rgba(15, 108, 189, 0.12);
+            color: var(--accent-strong);
         }
 
         .primary-btn {
-            background: linear-gradient(180deg, #2fd6ff, #129ad1);
+            background: var(--accent);
             color: #ffffff;
-            box-shadow: 0 10px 20px rgba(18, 154, 209, 0.22);
+            box-shadow: none;
         }
 
         .preview-box {
-            border-color: rgba(16, 32, 46, 0.06);
-            background: linear-gradient(180deg, #eef6fc, #f6faff);
+            border-color: rgba(0, 0, 0, 0.06);
+            background: #f8f8f8;
         }
 
         .preview-window {
-            border-color: rgba(16, 32, 46, 0.08);
+            border-color: rgba(0, 0, 0, 0.08);
             background: #ffffff;
         }
 
         .preview-titlebar {
-            background: linear-gradient(180deg, rgba(39, 193, 255, 0.06), rgba(255, 255, 255, 0.02));
+            background: rgba(0, 0, 0, 0.03);
         }
 
         .footer {
             padding: 3px 2px 0;
-            color: #6a7787;
+            color: #616161;
         }
 
         @media (max-width: 640px) {
@@ -863,7 +838,7 @@
             <div class="titlebar">
                 <div class="window-title">
                     <span class="app-mark"></span>
-                    <span>SnapLingo Control Deck</span>
+                    <span>SnapLingo Settings</span>
                 </div>
                 <div class="window-buttons">
                     <span>−</span>
@@ -876,10 +851,10 @@
                 <aside class="sidebar">
                     <div class="brand-card">
                         <div class="brand-kicker">SnapLingo</div>
-                        <div class="brand-title">Control Deck</div>
-                        <div class="brand-copy">紧凑但完整的翻译工作流配置窗口。</div>
+                        <div class="brand-title">Settings</div>
+                        <div class="brand-copy">翻译工作流与界面行为配置。</div>
                     </div>
-                    <div class="sidebar-title">Modules</div>
+                    <div class="sidebar-title">Sections</div>
                     <div class="nav-list" role="tablist" aria-label="设置导航">
                         <button class="nav-item active" role="tab" aria-selected="true" data-panel="general">
                             <b>常规</b>
@@ -907,7 +882,7 @@
                         </button>
                     </div>
                     <div class="sidebar-footer">
-                        <div>Signal Deck</div>
+                        <div>WinUI-leaning</div>
                         <div>580 x 620 prototype</div>
                     </div>
                 </aside>
