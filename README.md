@@ -48,6 +48,8 @@ For the WinUI client under `SnapLingoWindows`, use the launcher script at the re
 .\run-windows-client.ps1
 ```
 
+If the app is already running, the launcher stops the current instance before rebuilding and starting the updated executable.
+
 Or double-click:
 
 ```text

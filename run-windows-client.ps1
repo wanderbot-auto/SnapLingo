@@ -50,11 +50,39 @@ $runtimeIdentifier = switch ($Platform) {
     default { throw "Unsupported platform: $Platform" }
 }
 
+function Stop-RunningAppInstance {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ExecutablePath
+    )
+
+    if (-not (Test-Path -LiteralPath $ExecutablePath)) {
+        return
+    }
+
+    $normalizedExecutablePath = [System.IO.Path]::GetFullPath($ExecutablePath)
+    $matchingProcesses = Get-Process -Name "SnapLingoWindows" -ErrorAction SilentlyContinue | Where-Object {
+        try {
+            $_.Path -and ([System.IO.Path]::GetFullPath($_.Path) -ieq $normalizedExecutablePath)
+        }
+        catch {
+            $false
+        }
+    }
+
+    foreach ($process in $matchingProcesses) {
+        Write-Host "Stopping running instance $($process.Id) before rebuild..."
+        Stop-Process -Id $process.Id -Force
+        $process.WaitForExit(5000) | Out-Null
+    }
+}
+
 Push-Location $repoRoot
 try {
     $exePath = Join-Path $repoRoot "SnapLingoWindows\bin\$Platform\$Configuration\$targetFramework\$runtimeIdentifier\SnapLingoWindows.exe"
 
     if (-not $NoBuild) {
+        Stop-RunningAppInstance -ExecutablePath $exePath
         $buildFailed = $false
 
         try {
