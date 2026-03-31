@@ -199,62 +199,65 @@
     </Page.Resources>
 
     <Grid Background="{StaticResource WindowBackdropBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="36" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <Grid
-            x:Name="AppTitleBar"
-            Grid.Row="0"
-            Background="Transparent">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <StackPanel
-                Grid.Column="0"
-                Margin="18,12,0,0"
-                Orientation="Horizontal"
-                Spacing="8"
-                VerticalAlignment="Top">
-                <Border Width="12" Height="12" Background="#FF6467" BorderBrush="#80FB2C36" BorderThickness="1" CornerRadius="999" />
-                <Border Width="12" Height="12" Background="#FFB900" BorderBrush="#80FE9A00" BorderThickness="1" CornerRadius="999" />
-                <Border Width="12" Height="12" Background="#05DF72" BorderBrush="#8000C950" BorderThickness="1" CornerRadius="999" />
-            </StackPanel>
-
-            <TextBlock
-                x:Name="SettingsTitleBarTextBlock"
-                Grid.Column="1"
-                Opacity="0"
-                Text="SnapLingo Settings" />
-        </Grid>
-
         <Border
-            Grid.Row="1"
-            Width="760"
-            Height="580"
-            Margin="0,10,0,24"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Background="White"
-            BorderBrush="#33FFFFFF"
+            Margin="18"
+            Background="{StaticResource ContentBackgroundBrush}"
+            BorderBrush="#26D4D4D8"
             BorderThickness="1"
-            CornerRadius="16">
+            CornerRadius="18">
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="44" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="224" />
+                    <ColumnDefinition Width="240" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
+                <Grid
+                    x:Name="AppTitleBar"
+                    Grid.ColumnSpan="2"
+                    Background="#F7F4EE">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="240" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Margin="20,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="#3F3F46"
+                        Text="SnapLingo" />
+
+                    <TextBlock
+                        x:Name="SettingsTitleBarTextBlock"
+                        Grid.Column="1"
+                        Margin="28,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        FontWeight="Medium"
+                        Foreground="{StaticResource ContentMutedBrush}"
+                        Text="SnapLingo Settings" />
+
+                    <Border
+                        Grid.ColumnSpan="2"
+                        VerticalAlignment="Bottom"
+                        BorderBrush="#14A1A1AA"
+                        BorderThickness="0,0,0,1" />
+                </Grid>
+
                 <Border
+                    Grid.Row="1"
                     Grid.Column="0"
                     Background="{StaticResource SidebarBackgroundBrush}"
                     BorderBrush="{StaticResource SidebarBorderBrush}"
                     BorderThickness="0,0,1,0"
-                    CornerRadius="16,0,0,16"
-                    Padding="16">
+                    CornerRadius="0,0,0,18"
+                    Padding="18,20,18,18">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -269,7 +272,7 @@
                             BorderBrush="{StaticResource SidebarBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="14"
-                            Padding="10">
+                            Padding="12">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <Border
                                     Width="40"
@@ -386,14 +389,15 @@
                 </Border>
 
                 <Border
+                    Grid.Row="1"
                     Grid.Column="1"
                     Background="{StaticResource ContentBackgroundBrush}"
-                    CornerRadius="0,16,16,0">
+                    CornerRadius="0,0,18,0">
                     <ScrollViewer
                         HorizontalScrollBarVisibility="Disabled"
                         VerticalScrollBarVisibility="Auto"
                         VerticalScrollMode="Auto">
-                        <Grid Padding="32">
+                        <Grid Padding="28,24,28,32">
                             <StackPanel
                                 x:Name="OverviewPanel"
                                 Spacing="32">
