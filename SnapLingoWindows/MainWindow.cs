@@ -39,7 +39,7 @@ public sealed class MainWindow : Window
 
     private void ConfigureWindow()
     {
-        appWindow.Resize(new Windows.Graphics.SizeInt32(690, 620));
+        appWindow.Resize(new Windows.Graphics.SizeInt32(840, 690));
         ConfigureTitleBar();
 
         if (appWindow.Presenter is OverlappedPresenter presenter)
@@ -65,12 +65,12 @@ public sealed class MainWindow : Window
         var titleBar = appWindow.TitleBar;
         titleBar.ButtonBackgroundColor = Color.FromArgb(0, 0, 0, 0);
         titleBar.ButtonInactiveBackgroundColor = Color.FromArgb(0, 0, 0, 0);
-        titleBar.ButtonForegroundColor = Color.FromArgb(255, 242, 242, 242);
-        titleBar.ButtonInactiveForegroundColor = Color.FromArgb(255, 160, 160, 160);
-        titleBar.ButtonHoverBackgroundColor = Color.FromArgb(24, 255, 255, 255);
-        titleBar.ButtonPressedBackgroundColor = Color.FromArgb(36, 255, 255, 255);
-        titleBar.ButtonHoverForegroundColor = Color.FromArgb(255, 255, 255, 255);
-        titleBar.ButtonPressedForegroundColor = Color.FromArgb(255, 255, 255, 255);
+        titleBar.ButtonForegroundColor = Color.FromArgb(255, 64, 64, 64);
+        titleBar.ButtonInactiveForegroundColor = Color.FromArgb(255, 140, 140, 140);
+        titleBar.ButtonHoverBackgroundColor = Color.FromArgb(20, 0, 0, 0);
+        titleBar.ButtonPressedBackgroundColor = Color.FromArgb(32, 0, 0, 0);
+        titleBar.ButtonHoverForegroundColor = Color.FromArgb(255, 23, 23, 23);
+        titleBar.ButtonPressedForegroundColor = Color.FromArgb(255, 23, 23, 23);
     }
 
     private void OnClosed(object sender, WindowEventArgs args)

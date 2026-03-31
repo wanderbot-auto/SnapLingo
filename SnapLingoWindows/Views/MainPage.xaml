@@ -8,80 +8,108 @@
     RequestedTheme="Light"
     mc:Ignorable="d">
     <Page.Resources>
-        <SolidColorBrush x:Key="ShellBackgroundBrush" Color="#19191B" />
-        <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#202024" />
-        <SolidColorBrush x:Key="SidebarSurfaceBrush" Color="#29292E" />
+        <SolidColorBrush x:Key="WindowBackdropBrush" Color="#F4F1EB" />
+        <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#1A1A1A" />
+        <SolidColorBrush x:Key="SidebarSurfaceBrush" Color="#2A2A2A" />
         <SolidColorBrush x:Key="SidebarBorderBrush" Color="#19FFFFFF" />
-        <SolidColorBrush x:Key="SidebarTextBrush" Color="#F5F5F5" />
-        <SolidColorBrush x:Key="SidebarMutedBrush" Color="#C4C4C8" />
-        <SolidColorBrush x:Key="SidebarSubtleBrush" Color="#8E8E93" />
-        <SolidColorBrush x:Key="NavSelectedBackgroundBrush" Color="#30FFFFFF" />
-        <SolidColorBrush x:Key="NavSelectedBorderBrush" Color="#1FFFFFFF" />
-        <SolidColorBrush x:Key="NavSelectedAccentBrush" Color="#0F6CBD" />
-        <SolidColorBrush x:Key="ContentBackgroundBrush" Color="#F3F3F3" />
-        <SolidColorBrush x:Key="ContentBorderBrush" Color="#12000000" />
-        <SolidColorBrush x:Key="ContentPrimaryTextBrush" Color="#15171A" />
-        <SolidColorBrush x:Key="ContentMutedBrush" Color="#666666" />
-        <SolidColorBrush x:Key="ChipBackgroundBrush" Color="#11000000" />
-        <SolidColorBrush x:Key="FieldBackgroundBrush" Color="#F7F7F7" />
-        <SolidColorBrush x:Key="FieldBorderBrush" Color="#16000000" />
-        <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#0F6CBD" />
-        <SolidColorBrush x:Key="PrimaryAccentSoftBrush" Color="#1F0F6CBD" />
+        <SolidColorBrush x:Key="SidebarTextBrush" Color="#E5FFFFFF" />
+        <SolidColorBrush x:Key="SidebarMutedBrush" Color="#99FFFFFF" />
+        <SolidColorBrush x:Key="SidebarSubtleBrush" Color="#4DFFFFFF" />
+        <SolidColorBrush x:Key="NavSelectedBackgroundBrush" Color="#14FFFFFF" />
+        <SolidColorBrush x:Key="NavSelectedBorderBrush" Color="#1AFFFFFF" />
+        <SolidColorBrush x:Key="NavSelectedAccentBrush" Color="#2B7FFF" />
+        <SolidColorBrush x:Key="PrimaryAccentBrush" Color="#2B7FFF" />
+        <SolidColorBrush x:Key="PrimaryAccentSoftBrush" Color="#162B7FFF" />
+        <SolidColorBrush x:Key="ContentBackgroundBrush" Color="#FBFBFA" />
+        <SolidColorBrush x:Key="ContentBorderBrush" Color="#CCE5E5E5" />
+        <SolidColorBrush x:Key="ContentPrimaryTextBrush" Color="#171717" />
+        <SolidColorBrush x:Key="ContentSecondaryTextBrush" Color="#404040" />
+        <SolidColorBrush x:Key="ContentMutedBrush" Color="#737373" />
+        <SolidColorBrush x:Key="FieldBackgroundBrush" Color="#FAFAFA" />
+        <SolidColorBrush x:Key="FieldBorderBrush" Color="#DCDCDC" />
+        <SolidColorBrush x:Key="SegmentBackgroundBrush" Color="#F3F3F3" />
+        <SolidColorBrush x:Key="SegmentSelectedBorderBrush" Color="#E7E7E7" />
+        <SolidColorBrush x:Key="StatusInfoBackgroundBrush" Color="#EFF6FF" />
+        <SolidColorBrush x:Key="StatusInfoBorderBrush" Color="#DBEAFE" />
+        <SolidColorBrush x:Key="SuccessBackgroundBrush" Color="#ECFDF5" />
+        <SolidColorBrush x:Key="SuccessBorderBrush" Color="#D1FAE5" />
+
+        <SvgImageSource x:Key="BasicHeaderIcon" UriSource="ms-appx:///Assets/FigmaIcons/header-basic.svg" />
+        <SvgImageSource x:Key="ProviderCardIcon" UriSource="ms-appx:///Assets/FigmaIcons/card-provider.svg" />
+        <SvgImageSource x:Key="HotkeyCardIcon" UriSource="ms-appx:///Assets/FigmaIcons/card-hotkey.svg" />
+        <SvgImageSource x:Key="StorageCardIcon" UriSource="ms-appx:///Assets/FigmaIcons/card-storage.svg" />
+        <SvgImageSource x:Key="WorkflowCardIcon" UriSource="ms-appx:///Assets/FigmaIcons/card-workflow.svg" />
+        <SvgImageSource x:Key="QuickActionsIcon" UriSource="ms-appx:///Assets/FigmaIcons/quick-actions.svg" />
+        <SvgImageSource x:Key="ActionPanelIcon" UriSource="ms-appx:///Assets/FigmaIcons/action-panel.svg" />
+        <SvgImageSource x:Key="ActionClipboardIcon" UriSource="ms-appx:///Assets/FigmaIcons/action-clipboard.svg" />
+        <SvgImageSource x:Key="HotkeyBannerIcon" UriSource="ms-appx:///Assets/FigmaIcons/hotkey-banner.svg" />
+        <SvgImageSource x:Key="SidebarSyncIcon" UriSource="ms-appx:///Assets/FigmaIcons/sidebar-sync.svg" />
 
         <Style x:Key="SidebarLabelTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="{StaticResource SidebarSubtleBrush}" />
+            <Setter Property="CharacterSpacing" Value="90" />
+        </Style>
+
+        <Style x:Key="SidebarNavTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Medium" />
         </Style>
 
         <Style x:Key="PanelTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
         </Style>
 
         <Style x:Key="PanelSubtitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
         </Style>
 
-        <Style x:Key="NavTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{StaticResource SidebarTextBrush}" />
-        </Style>
-
-        <Style x:Key="ValueTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
-        </Style>
-
-        <Style x:Key="SectionLabelTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
+        <Style x:Key="SectionTitleTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
         </Style>
 
         <Style x:Key="SectionHintTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
         </Style>
 
-        <Style x:Key="SettingsCardStyle" TargetType="Border">
-            <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ContentBorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Padding" Value="12" />
+        <Style x:Key="InfoLabelTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
         </Style>
 
-        <Style x:Key="StatCardStyle" TargetType="Border">
-            <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+        <Style x:Key="InfoValueTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
+            <Setter Property="TextWrapping" Value="WrapWholeWords" />
+        </Style>
+
+        <Style x:Key="SurfaceCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White" />
             <Setter Property="BorderBrush" Value="{StaticResource ContentBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="10" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="24" />
+        </Style>
+
+        <Style x:Key="OverviewStatCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="{StaticResource ContentBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="MinHeight" Value="90" />
         </Style>
 
         <Style x:Key="SidebarNavButtonStyle" TargetType="Button">
@@ -89,14 +117,15 @@
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Foreground" Value="{StaticResource SidebarMutedBrush}" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="10,8" />
-            <Setter Property="Foreground" Value="{StaticResource SidebarMutedBrush}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Height" Value="40" />
         </Style>
 
         <Style x:Key="ActionButtonStyle" TargetType="Button">
-            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="CornerRadius" Value="12" />
             <Setter Property="MinHeight" Value="40" />
             <Setter Property="Padding" Value="14,10" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -116,70 +145,106 @@
             <Setter Property="Foreground" Value="White" />
         </Style>
 
-        <Style x:Key="FormComboBoxStyle" TargetType="ComboBox">
+        <Style x:Key="SegmentSelectedButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="{StaticResource SegmentSelectedBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
             <Setter Property="MinHeight" Value="40" />
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="SegmentButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="FormComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="MinHeight" Value="52" />
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style x:Key="FormTextBoxStyle" TargetType="TextBox">
-            <Setter Property="MinHeight" Value="40" />
-            <Setter Property="Padding" Value="12,10" />
-            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="MinHeight" Value="48" />
+            <Setter Property="Padding" Value="14,12" />
+            <Setter Property="CornerRadius" Value="14" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style x:Key="FormPasswordBoxStyle" TargetType="PasswordBox">
-            <Setter Property="MinHeight" Value="40" />
-            <Setter Property="Padding" Value="12,10" />
-            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="MinHeight" Value="48" />
+            <Setter Property="Padding" Value="14,12" />
+            <Setter Property="CornerRadius" Value="14" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
     </Page.Resources>
 
-    <Grid Background="{StaticResource ShellBackgroundBrush}">
-        <Grid RowDefinitions="32,*">
-            <Grid
-                x:Name="AppTitleBar"
-                Grid.Row="0"
-                Background="{StaticResource ShellBackgroundBrush}">
+    <Grid Background="{StaticResource WindowBackdropBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid
+            x:Name="AppTitleBar"
+            Grid.Row="0"
+            Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel
+                Grid.Column="0"
+                Margin="18,12,0,0"
+                Orientation="Horizontal"
+                Spacing="8"
+                VerticalAlignment="Top">
+                <Border Width="12" Height="12" Background="#FF6467" BorderBrush="#80FB2C36" BorderThickness="1" CornerRadius="999" />
+                <Border Width="12" Height="12" Background="#FFB900" BorderBrush="#80FE9A00" BorderThickness="1" CornerRadius="999" />
+                <Border Width="12" Height="12" Background="#05DF72" BorderBrush="#8000C950" BorderThickness="1" CornerRadius="999" />
+            </StackPanel>
+
+            <TextBlock
+                x:Name="SettingsTitleBarTextBlock"
+                Grid.Column="1"
+                Opacity="0"
+                Text="SnapLingo Settings" />
+        </Grid>
+
+        <Border
+            Grid.Row="1"
+            Width="760"
+            Height="580"
+            Margin="0,10,0,24"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="White"
+            BorderBrush="#33FFFFFF"
+            BorderThickness="1"
+            CornerRadius="16">
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="148" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Border
-                    Grid.ColumnSpan="2"
-                    BorderBrush="{StaticResource SidebarBorderBrush}"
-                    BorderThickness="0,0,0,1" />
-
-                <StackPanel
-                    Grid.Column="0"
-                    Orientation="Horizontal"
-                    Spacing="8"
-                    Padding="12,0,0,0"
-                    VerticalAlignment="Center">
-                    <Border
-                        Width="11"
-                        Height="11"
-                        Background="{StaticResource PrimaryAccentBrush}"
-                        CornerRadius="4" />
-                    <TextBlock
-                        x:Name="SettingsTitleBarTextBlock"
-                        FontSize="12"
-                        FontWeight="SemiBold"
-                        Foreground="{StaticResource SidebarTextBrush}"
-                        Text="SnapLingo Settings" />
-                </StackPanel>
-            </Grid>
-
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="148" />
+                    <ColumnDefinition Width="224" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -188,42 +253,51 @@
                     Background="{StaticResource SidebarBackgroundBrush}"
                     BorderBrush="{StaticResource SidebarBorderBrush}"
                     BorderThickness="0,0,1,0"
-                    Padding="10">
-                    <Grid RowDefinitions="Auto,Auto,*,Auto">
+                    CornerRadius="16,0,0,16"
+                    Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
                         <Border
                             Grid.Row="0"
                             Background="{StaticResource SidebarSurfaceBrush}"
                             BorderBrush="{StaticResource SidebarBorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="12"
+                            CornerRadius="14"
                             Padding="10">
-                            <StackPanel Spacing="6">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <Border
-                                        Width="22"
-                                        Height="22"
-                                        Background="{StaticResource PrimaryAccentBrush}"
-                                        CornerRadius="7">
-                                        <TextBlock
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            FontSize="10"
-                                            FontWeight="SemiBold"
-                                            Foreground="White"
-                                            Text="SL" />
-                                    </Border>
-                                    <StackPanel Spacing="1">
-                                        <TextBlock
-                                            x:Name="SidebarAppNameTextBlock"
-                                            Style="{StaticResource SidebarLabelTextStyle}"
-                                            Text="SnapLingo" />
-                                        <TextBlock
-                                            x:Name="SidebarSettingsTextBlock"
-                                            FontSize="16"
-                                            FontWeight="SemiBold"
-                                            Foreground="{StaticResource SidebarTextBrush}"
-                                            Text="Settings" />
-                                    </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Border
+                                    Width="40"
+                                    Height="40"
+                                    Background="{StaticResource PrimaryAccentBrush}"
+                                    CornerRadius="10">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="14"
+                                        FontWeight="Bold"
+                                        Foreground="White"
+                                        Text="SL" />
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock
+                                        x:Name="SidebarAppNameTextBlock"
+                                        FontSize="14"
+                                        FontWeight="SemiBold"
+                                        Foreground="{StaticResource SidebarTextBrush}"
+                                        Text="SnapLingo" />
+                                    <TextBlock
+                                        x:Name="SidebarSettingsTextBlock"
+                                        Margin="0,2,0,0"
+                                        FontSize="12"
+                                        FontWeight="Medium"
+                                        Foreground="{StaticResource SidebarMutedBrush}"
+                                        Text="Settings Center" />
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -231,25 +305,22 @@
                         <TextBlock
                             x:Name="SectionsLabelTextBlock"
                             Grid.Row="1"
-                            Margin="4,10,0,6"
+                            Margin="12,18,0,10"
                             Style="{StaticResource SidebarLabelTextStyle}"
                             Text="SECTIONS" />
 
-                        <StackPanel Grid.Row="2" Spacing="4">
+                        <StackPanel
+                            Grid.Row="2"
+                            Spacing="4">
                             <Button
                                 x:Name="OverviewNavButton"
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Basic">
-                                <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
-                                    <Border
-                                        x:Name="OverviewNavAccent"
-                                        Width="4"
-                                        Height="20"
-                                        Background="{StaticResource NavSelectedAccentBrush}"
-                                        CornerRadius="999"
-                                        VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" x:Name="OverviewNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Basic" />
+                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
+                                    <Border x:Name="OverviewNavAccent" Width="4" Height="20" Background="{StaticResource NavSelectedAccentBrush}" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE713;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="OverviewNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Basic" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
 
@@ -258,15 +329,10 @@
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Provider">
-                                <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
-                                    <Border
-                                        x:Name="ProviderNavAccent"
-                                        Width="4"
-                                        Height="20"
-                                        Background="Transparent"
-                                        CornerRadius="999"
-                                        VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" x:Name="ProviderNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Provider" />
+                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
+                                    <Border x:Name="ProviderNavAccent" Width="4" Height="20" Background="Transparent" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xF1C1;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="ProviderNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Model" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
 
@@ -275,15 +341,10 @@
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Prompt">
-                                <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
-                                    <Border
-                                        x:Name="PromptNavAccent"
-                                        Width="4"
-                                        Height="20"
-                                        Background="Transparent"
-                                        CornerRadius="999"
-                                        VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" x:Name="PromptNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Prompt" />
+                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
+                                    <Border x:Name="PromptNavAccent" Width="4" Height="20" Background="Transparent" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE70F;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="PromptNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Prompt" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
 
@@ -292,34 +353,62 @@
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Appearance">
-                                <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
-                                    <Border
-                                        x:Name="AppearanceNavAccent"
-                                        Width="4"
-                                        Height="20"
-                                        Background="Transparent"
-                                        CornerRadius="999"
-                                        VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" x:Name="AppearanceNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Appearance" />
+                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
+                                    <Border x:Name="AppearanceNavAccent" Width="4" Height="20" Background="Transparent" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE790;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="AppearanceNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Appearance" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
+
+                            <Button
+                                x:Name="AdvancedNavButton"
+                                Click="OnNavigationClicked"
+                                Style="{StaticResource SidebarNavButtonStyle}"
+                                Tag="Advanced">
+                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
+                                    <Border x:Name="AdvancedNavAccent" Width="4" Height="20" Background="Transparent" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xF14C;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="AdvancedNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Advanced" VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Bottom">
+                            <Image Width="14" Height="14" Source="{StaticResource SidebarSyncIcon}" VerticalAlignment="Center" />
+                            <TextBlock
+                                x:Name="SidebarFooterTextBlock"
+                                FontSize="12"
+                                Foreground="{StaticResource SidebarMutedBrush}"
+                                Text="Stored securely on this device."
+                                VerticalAlignment="Center" />
                         </StackPanel>
                     </Grid>
                 </Border>
 
                 <Border
                     Grid.Column="1"
-                    Background="{StaticResource ContentBackgroundBrush}">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
-                        <Grid Padding="12">
-                            <StackPanel x:Name="OverviewPanel" Spacing="10">
-                                <TextBlock x:Name="BasicTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Basic" />
-                                <TextBlock
-                                    x:Name="BasicHintTextBlock"
-                                    Style="{StaticResource SectionHintTextStyle}"
-                                    Text="Manage launch behavior and the global hotkey without leaving the main configuration flow." />
+                    Background="{StaticResource ContentBackgroundBrush}"
+                    CornerRadius="0,16,16,0">
+                    <ScrollViewer
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto"
+                        VerticalScrollMode="Auto">
+                        <Grid Padding="32">
+                            <StackPanel
+                                x:Name="OverviewPanel"
+                                Spacing="32">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Image Width="24" Height="24" Source="{StaticResource BasicHeaderIcon}" VerticalAlignment="Center" />
+                                        <TextBlock x:Name="BasicTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Basic Settings" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        x:Name="BasicHintTextBlock"
+                                        Style="{StaticResource PanelSubtitleTextStyle}"
+                                        Text="Manage launch behavior and the global hotkey without leaving the main configuration flow." />
+                                </StackPanel>
 
-                                <Grid ColumnSpacing="8" RowSpacing="8">
+                                <Grid ColumnSpacing="16" RowSpacing="16">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
@@ -329,88 +418,199 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource StatCardStyle}">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock x:Name="BasicProviderLabelTextBlock" Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Provider" />
-                                            <TextBlock x:Name="OverviewProviderValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="OpenAI" />
-                                        </StackPanel>
+                                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource OverviewStatCardStyle}">
+                                        <Grid>
+                                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                <Ellipse.Fill>
+                                                    <RadialGradientBrush Center="0.45,0.45" RadiusX="0.65" RadiusY="0.65">
+                                                        <GradientStop Color="#22000000" Offset="0" />
+                                                        <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                    </RadialGradientBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <StackPanel Spacing="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <Image Width="16" Height="16" Source="{StaticResource ProviderCardIcon}" VerticalAlignment="Center" />
+                                                    <TextBlock x:Name="BasicProviderLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Provider" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <TextBlock x:Name="OverviewProviderValueTextBlock" Style="{StaticResource InfoValueTextStyle}" Text="OpenAI" />
+                                            </StackPanel>
+                                        </Grid>
                                     </Border>
-                                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource StatCardStyle}">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock x:Name="BasicHotkeyLabelTextBlock" Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Hotkey" />
-                                            <TextBlock x:Name="OverviewHotkeyValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="Ctrl + Shift + 1" />
-                                        </StackPanel>
+
+                                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource OverviewStatCardStyle}">
+                                        <Grid>
+                                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                <Ellipse.Fill>
+                                                    <RadialGradientBrush Center="0.45,0.45" RadiusX="0.65" RadiusY="0.65">
+                                                        <GradientStop Color="#22000000" Offset="0" />
+                                                        <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                    </RadialGradientBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <StackPanel Spacing="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <Image Width="16" Height="16" Source="{StaticResource HotkeyCardIcon}" VerticalAlignment="Center" />
+                                                    <TextBlock x:Name="BasicHotkeyLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Hotkey" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <TextBlock x:Name="OverviewHotkeyValueTextBlock" Style="{StaticResource InfoValueTextStyle}" Text="Ctrl + Alt + K" />
+                                            </StackPanel>
+                                        </Grid>
                                     </Border>
-                                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource StatCardStyle}">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock x:Name="BasicStorageLabelTextBlock" Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Storage" />
-                                            <TextBlock x:Name="StorageValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="Secure local" />
-                                        </StackPanel>
+
+                                    <Border
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Background="{StaticResource SuccessBackgroundBrush}"
+                                        BorderBrush="{StaticResource SuccessBorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="14"
+                                        Padding="16"
+                                        MinHeight="90">
+                                        <Grid>
+                                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                <Ellipse.Fill>
+                                                    <RadialGradientBrush Center="0.45,0.45" RadiusX="0.65" RadiusY="0.65">
+                                                        <GradientStop Color="#15000000" Offset="0" />
+                                                        <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                    </RadialGradientBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <StackPanel Spacing="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <Image Width="16" Height="16" Source="{StaticResource StorageCardIcon}" VerticalAlignment="Center" />
+                                                    <TextBlock x:Name="BasicStorageLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Storage" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <TextBlock x:Name="StorageValueTextBlock" Style="{StaticResource InfoValueTextStyle}" Text="Secure local" />
+                                            </StackPanel>
+                                        </Grid>
                                     </Border>
-                                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StatCardStyle}">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock x:Name="BasicWorkflowLabelTextBlock" Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Workflow" />
-                                            <TextBlock x:Name="OverviewWorkflowValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="Selection + hotkey" />
-                                        </StackPanel>
+
+                                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource OverviewStatCardStyle}">
+                                        <Grid>
+                                            <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                <Ellipse.Fill>
+                                                    <RadialGradientBrush Center="0.45,0.45" RadiusX="0.65" RadiusY="0.65">
+                                                        <GradientStop Color="#22000000" Offset="0" />
+                                                        <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                    </RadialGradientBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <StackPanel Spacing="8">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <Image Width="16" Height="16" Source="{StaticResource WorkflowCardIcon}" VerticalAlignment="Center" />
+                                                    <TextBlock x:Name="BasicWorkflowLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Workflow" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <TextBlock x:Name="OverviewWorkflowValueTextBlock" Style="{StaticResource InfoValueTextStyle}" Text="Ready" />
+                                            </StackPanel>
+                                        </Grid>
                                     </Border>
                                 </Grid>
 
-                                <Border Style="{StaticResource SettingsCardStyle}">
-                                    <StackPanel Spacing="10">
-                                        <TextBlock x:Name="QuickActionsLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Quick actions" />
-                                        <Grid ColumnSpacing="8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Button x:Name="ShowPanelButton" Grid.Column="0" Click="OnShowPanelClicked" Content="Show panel" Style="{StaticResource SecondaryActionButtonStyle}" />
-                                            <Button x:Name="UseClipboardButton" Grid.Column="1" Click="OnUseClipboardClicked" Content="Use clipboard" Style="{StaticResource PrimaryActionButtonStyle}" />
-                                        </Grid>
-                                        <TextBlock
-                                            x:Name="OverviewStatusTextBlock"
-                                            Foreground="{StaticResource ContentMutedBrush}"
-                                            Visibility="Collapsed"
-                                            TextWrapping="WrapWholeWords" />
+                                <Border Style="{StaticResource SurfaceCardStyle}">
+                                    <StackPanel Spacing="16">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Image Width="18" Height="18" Source="{StaticResource QuickActionsIcon}" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="QuickActionsLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Quick action mode" VerticalAlignment="Center" />
+                                        </StackPanel>
+
+                                        <Border Background="{StaticResource SegmentBackgroundBrush}" BorderBrush="{StaticResource ContentBorderBrush}" BorderThickness="1" CornerRadius="14" Padding="4">
+                                            <Grid ColumnDefinitions="*,*" ColumnSpacing="4">
+                                                <Button x:Name="ShowPanelButton" Grid.Column="0" Click="OnShowPanelClicked" Style="{StaticResource SegmentSelectedButtonStyle}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <Image Width="16" Height="16" Source="{StaticResource ActionPanelIcon}" VerticalAlignment="Center" />
+                                                        <TextBlock x:Name="ShowPanelButtonTextBlock" FontSize="14" FontWeight="SemiBold" Foreground="#155DFC" Text="Show panel" VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <Button x:Name="UseClipboardButton" Grid.Column="1" Click="OnUseClipboardClicked" Style="{StaticResource SegmentButtonStyle}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <Image Width="16" Height="16" Source="{StaticResource ActionClipboardIcon}" VerticalAlignment="Center" />
+                                                        <TextBlock x:Name="UseClipboardButtonTextBlock" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource ContentMutedBrush}" Text="Clipboard only" VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+
+                                        <Border Background="{StaticResource StatusInfoBackgroundBrush}" BorderBrush="{StaticResource StatusInfoBorderBrush}" BorderThickness="1" CornerRadius="14" Padding="16">
+                                            <Grid ColumnDefinitions="32,*" ColumnSpacing="12">
+                                                <Border Width="32" Height="32" Background="#DBEAFE" CornerRadius="999" VerticalAlignment="Top">
+                                                    <Image Width="16" Height="16" HorizontalAlignment="Center" Source="{StaticResource HotkeyBannerIcon}" VerticalAlignment="Center" />
+                                                </Border>
+
+                                                <StackPanel Grid.Column="1" Spacing="6">
+                                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                                        <TextBlock x:Name="HotkeyBannerPrefixTextBlock" FontSize="14" FontWeight="Medium" Foreground="{StaticResource ContentSecondaryTextBrush}" Text="Current hotkey is" VerticalAlignment="Center" />
+                                                        <Border Background="White" BorderBrush="{StaticResource FieldBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,4">
+                                                            <TextBlock x:Name="HotkeyKeyOneTextBlock" FontSize="12" FontWeight="Medium" Foreground="#525252" Text="Ctrl" />
+                                                        </Border>
+                                                        <TextBlock x:Name="HotkeyPlusOneTextBlock" FontSize="14" Foreground="{StaticResource ContentSecondaryTextBrush}" Text="+" VerticalAlignment="Center" />
+                                                        <Border Background="White" BorderBrush="{StaticResource FieldBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,4">
+                                                            <TextBlock x:Name="HotkeyKeyTwoTextBlock" FontSize="12" FontWeight="Medium" Foreground="#525252" Text="Alt" />
+                                                        </Border>
+                                                        <TextBlock x:Name="HotkeyPlusTwoTextBlock" FontSize="14" Foreground="{StaticResource ContentSecondaryTextBrush}" Text="+" VerticalAlignment="Center" />
+                                                        <Border Background="White" BorderBrush="{StaticResource FieldBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,4">
+                                                            <TextBlock x:Name="HotkeyKeyThreeTextBlock" FontSize="12" FontWeight="Medium" Foreground="#525252" Text="K" />
+                                                        </Border>
+                                                        <TextBlock x:Name="HotkeyPlusThreeTextBlock" FontSize="14" Foreground="{StaticResource ContentSecondaryTextBrush}" Text="+" VerticalAlignment="Center" Visibility="Collapsed" />
+                                                        <Border x:Name="HotkeyKeyFourBorder" Background="White" BorderBrush="{StaticResource FieldBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,4" Visibility="Collapsed">
+                                                            <TextBlock x:Name="HotkeyKeyFourTextBlock" FontSize="12" FontWeight="Medium" Foreground="#525252" Text="Space" />
+                                                        </Border>
+                                                    </StackPanel>
+
+                                                    <TextBlock
+                                                        x:Name="HotkeyBannerHintTextBlock"
+                                                        FontSize="12"
+                                                        Foreground="{StaticResource ContentMutedBrush}"
+                                                        Text="Select text and press the hotkey to open the translation or polish panel."
+                                                        TextWrapping="WrapWholeWords" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+
+                                        <TextBlock x:Name="OverviewStatusTextBlock" Foreground="{StaticResource ContentMutedBrush}" TextWrapping="WrapWholeWords" Visibility="Collapsed" />
                                     </StackPanel>
                                 </Border>
 
-                                <Border Style="{StaticResource SettingsCardStyle}">
-                                    <StackPanel Spacing="10">
-                                        <TextBlock x:Name="HotkeySectionLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Hotkey" />
-                                        <TextBlock
-                                            x:Name="HotkeyHintTextBlock"
-                                            Style="{StaticResource SectionHintTextStyle}"
-                                            Text="Choose the shortcut that opens the translation panel from anywhere in Windows." />
+                                <Border Style="{StaticResource SurfaceCardStyle}">
+                                    <StackPanel Spacing="16">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock x:Name="HotkeySectionLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Global hotkey" />
+                                            <TextBlock x:Name="HotkeyHintTextBlock" Style="{StaticResource SectionHintTextStyle}" Text="Choose the shortcut that opens the translation panel from anywhere in Windows." />
+                                        </StackPanel>
                                         <ComboBox x:Name="HotkeyComboBox" SelectionChanged="OnHotkeyChanged" Style="{StaticResource FormComboBoxStyle}" />
-                                        <TextBlock
-                                            x:Name="HotkeyStatusTextBlock"
-                                            Foreground="{StaticResource ContentMutedBrush}"
-                                            Visibility="Collapsed"
-                                            TextWrapping="WrapWholeWords" />
+                                        <TextBlock x:Name="HotkeyStatusTextBlock" Foreground="{StaticResource ContentMutedBrush}" TextWrapping="WrapWholeWords" Visibility="Collapsed" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
 
-                            <StackPanel x:Name="ProviderPanel" Spacing="10" Visibility="Collapsed">
-                                <TextBlock x:Name="ProviderTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Provider" />
-                                <TextBlock
-                                    x:Name="ProviderHintTextBlock"
-                                    Style="{StaticResource SectionHintTextStyle}"
-                                    Text="Connect a provider, pick the active model, and refresh the list from its API after saving your key." />
+                            <StackPanel
+                                x:Name="ProviderPanel"
+                                Spacing="24"
+                                Visibility="Collapsed">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon FontFamily="Segoe Fluent Icons" FontSize="20" Foreground="{StaticResource PrimaryAccentBrush}" Glyph="&#xF1C1;" />
+                                        <TextBlock x:Name="ProviderTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Model" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        x:Name="ProviderHintTextBlock"
+                                        Style="{StaticResource PanelSubtitleTextStyle}"
+                                        Text="Connect a provider, pick the active model, and refresh the list from its API after saving your key." />
+                                </StackPanel>
 
-                                <Border Style="{StaticResource SettingsCardStyle}">
-                                    <StackPanel Spacing="10">
-                                        <TextBlock x:Name="ProviderFieldLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Provider" />
+                                <Border Style="{StaticResource SurfaceCardStyle}">
+                                    <StackPanel Spacing="16">
+                                        <TextBlock x:Name="ProviderFieldLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Provider" />
                                         <ComboBox x:Name="ProviderComboBox" SelectionChanged="OnProviderChanged" Style="{StaticResource FormComboBoxStyle}" />
-                                        <TextBlock x:Name="ModelFieldLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Model" />
-                                        <ComboBox
-                                            x:Name="ModelComboBox"
-                                            PlaceholderText="Save an API key to load models"
-                                            SelectionChanged="OnModelChanged"
-                                            Style="{StaticResource FormComboBoxStyle}" />
-                                        <TextBlock x:Name="ApiKeyFieldLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="API key" />
+
+                                        <TextBlock x:Name="ModelFieldLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Model" />
+                                        <ComboBox x:Name="ModelComboBox" PlaceholderText="Save an API key to load models" SelectionChanged="OnModelChanged" Style="{StaticResource FormComboBoxStyle}" />
+
+                                        <TextBlock x:Name="ApiKeyFieldLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="API key" />
                                         <PasswordBox x:Name="ApiKeyPasswordBox" Style="{StaticResource FormPasswordBoxStyle}" />
-                                        <Grid ColumnSpacing="8">
+
+                                        <Grid ColumnSpacing="12">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
@@ -418,27 +618,33 @@
                                             <Button x:Name="SaveKeyButton" Grid.Column="0" Click="OnSaveKeyClicked" Content="Save key" Style="{StaticResource PrimaryActionButtonStyle}" />
                                             <Button x:Name="ClearKeyButton" Grid.Column="1" Click="OnClearKeyClicked" Content="Clear key" Style="{StaticResource SecondaryActionButtonStyle}" />
                                         </Grid>
-                                        <TextBlock
-                                            x:Name="ProviderStatusTextBlock"
-                                            Foreground="{StaticResource ContentMutedBrush}"
-                                            Visibility="Collapsed"
-                                            TextWrapping="WrapWholeWords" />
+
+                                        <TextBlock x:Name="ProviderStatusTextBlock" Foreground="{StaticResource ContentMutedBrush}" TextWrapping="WrapWholeWords" Visibility="Collapsed" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
 
-                            <StackPanel x:Name="PromptPanel" Spacing="10" Visibility="Collapsed">
-                                <TextBlock x:Name="PromptTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Prompt" />
-                                <TextBlock
-                                    x:Name="PromptHintTextBlock"
-                                    Style="{StaticResource SectionHintTextStyle}"
-                                    Text="Switch between prompt profiles or create your own prompt set for translate and polish actions." />
+                            <StackPanel
+                                x:Name="PromptPanel"
+                                Spacing="24"
+                                Visibility="Collapsed">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon FontFamily="Segoe Fluent Icons" FontSize="20" Foreground="{StaticResource PrimaryAccentBrush}" Glyph="&#xE70F;" />
+                                        <TextBlock x:Name="PromptTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Prompt" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        x:Name="PromptHintTextBlock"
+                                        Style="{StaticResource PanelSubtitleTextStyle}"
+                                        Text="Switch between prompt profiles or create your own prompt set for translate and polish actions." />
+                                </StackPanel>
 
-                                <Border Style="{StaticResource SettingsCardStyle}">
-                                    <StackPanel Spacing="10">
-                                        <TextBlock x:Name="PromptProfileLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Prompt profile" />
+                                <Border Style="{StaticResource SurfaceCardStyle}">
+                                    <StackPanel Spacing="16">
+                                        <TextBlock x:Name="PromptProfileLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Prompt profile" />
                                         <ComboBox x:Name="PromptComboBox" SelectionChanged="OnPromptChanged" Style="{StaticResource FormComboBoxStyle}" />
-                                        <Grid ColumnSpacing="8">
+
+                                        <Grid ColumnSpacing="12">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
@@ -448,44 +654,109 @@
                                             <Button x:Name="SavePromptButton" Grid.Column="1" Click="OnSavePromptClicked" Content="Save" Style="{StaticResource PrimaryActionButtonStyle}" />
                                             <Button x:Name="DeletePromptButton" Grid.Column="2" Click="OnDeletePromptClicked" Content="Delete" Style="{StaticResource SecondaryActionButtonStyle}" />
                                         </Grid>
-                                        <TextBlock x:Name="PromptNameLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Name" />
+
+                                        <TextBlock x:Name="PromptNameLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Name" />
                                         <TextBox x:Name="PromptNameTextBox" TextChanged="OnPromptNameChanged" Style="{StaticResource FormTextBoxStyle}" />
-                                        <TextBlock x:Name="TranslatePromptLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Translate prompt" />
-                                        <TextBox
-                                            x:Name="TranslatePromptTextBox"
-                                            AcceptsReturn="True"
-                                            Height="120"
-                                            TextChanged="OnTranslatePromptChanged"
-                                            Style="{StaticResource FormTextBoxStyle}"
-                                            TextWrapping="Wrap" />
-                                        <TextBlock x:Name="PolishPromptLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Polish prompt" />
-                                        <TextBox
-                                            x:Name="PolishPromptTextBox"
-                                            AcceptsReturn="True"
-                                            Height="120"
-                                            TextChanged="OnPolishPromptChanged"
-                                            Style="{StaticResource FormTextBoxStyle}"
-                                            TextWrapping="Wrap" />
-                                        <TextBlock
-                                            x:Name="PromptStatusTextBlock"
-                                            Foreground="{StaticResource ContentMutedBrush}"
-                                            Visibility="Collapsed"
-                                            TextWrapping="WrapWholeWords" />
+
+                                        <TextBlock x:Name="TranslatePromptLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Translate prompt" />
+                                        <TextBox x:Name="TranslatePromptTextBox" AcceptsReturn="True" Height="120" TextChanged="OnTranslatePromptChanged" Style="{StaticResource FormTextBoxStyle}" TextWrapping="Wrap" />
+
+                                        <TextBlock x:Name="PolishPromptLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Polish prompt" />
+                                        <TextBox x:Name="PolishPromptTextBox" AcceptsReturn="True" Height="120" TextChanged="OnPolishPromptChanged" Style="{StaticResource FormTextBoxStyle}" TextWrapping="Wrap" />
+
+                                        <TextBlock x:Name="PromptStatusTextBlock" Foreground="{StaticResource ContentMutedBrush}" TextWrapping="WrapWholeWords" Visibility="Collapsed" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
 
-                            <StackPanel x:Name="AppearancePanel" Spacing="10" Visibility="Collapsed">
-                                <TextBlock x:Name="AppearanceTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Appearance" />
-                                <TextBlock
-                                    x:Name="AppearanceHintTextBlock"
-                                    Style="{StaticResource SectionHintTextStyle}"
-                                    Text="Choose the interface language. Changes apply immediately without restarting SnapLingo." />
+                            <StackPanel
+                                x:Name="AppearancePanel"
+                                Spacing="24"
+                                Visibility="Collapsed">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon FontFamily="Segoe Fluent Icons" FontSize="20" Foreground="{StaticResource PrimaryAccentBrush}" Glyph="&#xE790;" />
+                                        <TextBlock x:Name="AppearanceTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Appearance" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        x:Name="AppearanceHintTextBlock"
+                                        Style="{StaticResource PanelSubtitleTextStyle}"
+                                        Text="Choose the interface language. Changes apply immediately without restarting SnapLingo." />
+                                </StackPanel>
 
-                                <Border Style="{StaticResource SettingsCardStyle}">
-                                    <StackPanel Spacing="10">
-                                        <TextBlock x:Name="LanguageLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Language" />
+                                <Border Style="{StaticResource SurfaceCardStyle}">
+                                    <StackPanel Spacing="16">
+                                        <TextBlock x:Name="LanguageLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Language" />
                                         <ComboBox x:Name="LanguageComboBox" SelectionChanged="OnLanguageChanged" Style="{StaticResource FormComboBoxStyle}" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel
+                                x:Name="AdvancedPanel"
+                                Spacing="24"
+                                Visibility="Collapsed">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon FontFamily="Segoe Fluent Icons" FontSize="20" Foreground="{StaticResource PrimaryAccentBrush}" Glyph="&#xF14C;" />
+                                        <TextBlock x:Name="AdvancedTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Advanced" />
+                                    </StackPanel>
+                                    <TextBlock
+                                        x:Name="AdvancedHintTextBlock"
+                                        Style="{StaticResource PanelSubtitleTextStyle}"
+                                        Text="Review storage, workflow, and language status for the current desktop setup." />
+                                </StackPanel>
+
+                                <Grid ColumnSpacing="16" RowSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource OverviewStatCardStyle}">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock x:Name="AdvancedProviderLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Provider" />
+                                            <TextBlock x:Name="AdvancedProviderValueTextBlock" Style="{StaticResource InfoValueTextStyle}" Text="OpenAI" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource OverviewStatCardStyle}">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock x:Name="AdvancedModelLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Model" />
+                                            <TextBlock x:Name="AdvancedModelValueTextBlock" Style="{StaticResource InfoValueTextStyle}" Text="gpt-4o-mini" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource OverviewStatCardStyle}">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock x:Name="AdvancedStorageLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Storage" />
+                                            <TextBlock x:Name="AdvancedStorageValueTextBlock" Style="{StaticResource InfoValueTextStyle}" Text="Secure local" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource OverviewStatCardStyle}">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock x:Name="AdvancedWorkflowLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Workflow" />
+                                            <TextBlock x:Name="AdvancedWorkflowValueTextBlock" Style="{StaticResource InfoValueTextStyle}" Text="Ready" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <Border Style="{StaticResource SurfaceCardStyle}">
+                                    <StackPanel Spacing="16">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                            <TextBlock x:Name="AdvancedCredentialLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="API key" />
+                                            <TextBlock x:Name="AdvancedCredentialValueTextBlock" Grid.Column="1" FontSize="14" Foreground="{StaticResource ContentSecondaryTextBrush}" Text="Saved securely" />
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                            <TextBlock x:Name="AdvancedLanguageLabelTextBlock" Style="{StaticResource InfoLabelTextStyle}" Text="Language" />
+                                            <TextBlock x:Name="AdvancedLanguageValueTextBlock" Grid.Column="1" FontSize="14" Foreground="{StaticResource ContentSecondaryTextBrush}" Text="English" />
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -493,6 +764,6 @@
                     </ScrollViewer>
                 </Border>
             </Grid>
-        </Grid>
+        </Border>
     </Grid>
 </Page>

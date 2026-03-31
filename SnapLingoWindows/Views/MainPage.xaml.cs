@@ -12,6 +12,7 @@ public sealed partial class MainPage : Page
         Provider,
         Prompt,
         Appearance,
+        Advanced,
     }
 
     private readonly IReadOnlyList<ProviderChoice> providerChoices;
@@ -115,6 +116,7 @@ public sealed partial class MainPage : Page
             PolishPromptTextBox.IsEnabled = ViewModel.CanEditSelectedPrompt;
             SavePromptButton.IsEnabled = ViewModel.CanEditSelectedPrompt;
             DeletePromptButton.IsEnabled = ViewModel.CanDeleteSelectedPrompt;
+            ApiKeyPasswordBox.PlaceholderText = ViewModel.SelectedProvider.ApiKeyPlaceholder();
             HotkeyComboBox.SelectedItem = shortcutChoices.FirstOrDefault(choice => choice.Preset == ViewModel.SelectedShortcutPreset);
             LanguageComboBox.SelectedItem = languageChoices.FirstOrDefault(choice => choice.Language == ViewModel.SelectedLanguage);
 
@@ -143,6 +145,15 @@ public sealed partial class MainPage : Page
             ApplyStatusText(HotkeyStatusTextBlock, ViewModel.HotkeyStatusMessage);
             OverviewProviderValueTextBlock.Text = ViewModel.SelectedProvider.DisplayName();
             OverviewHotkeyValueTextBlock.Text = ViewModel.SelectedShortcutPreset.DisplayName();
+            StorageValueTextBlock.Text = ViewModel.Localizer.Get("storage_secure_local");
+            OverviewWorkflowValueTextBlock.Text = BuildWorkflowStatusText();
+            AdvancedProviderValueTextBlock.Text = ViewModel.SelectedProvider.DisplayName();
+            AdvancedModelValueTextBlock.Text = ViewModel.SelectedModelId;
+            AdvancedStorageValueTextBlock.Text = ViewModel.Localizer.Get("storage_secure_local");
+            AdvancedWorkflowValueTextBlock.Text = BuildWorkflowStatusText();
+            AdvancedLanguageValueTextBlock.Text = GetCurrentLanguageLabel();
+            AdvancedCredentialValueTextBlock.Text = BuildCredentialStatusText();
+            RenderHotkeyBanner(ViewModel.SelectedShortcutPreset);
             ApplyStatusText(OverviewStatusTextBlock, ViewModel.HotkeyStatusMessage ?? ViewModel.ProviderStatusMessage);
         }
         finally
@@ -161,6 +172,8 @@ public sealed partial class MainPage : Page
         ProviderNavTextBlock.Text = ViewModel.Localizer.Get("nav_provider");
         PromptNavTextBlock.Text = ViewModel.Localizer.Get("nav_prompt");
         AppearanceNavTextBlock.Text = ViewModel.Localizer.Get("nav_appearance");
+        AdvancedNavTextBlock.Text = ViewModel.Localizer.Get("nav_advanced");
+        SidebarFooterTextBlock.Text = ViewModel.Localizer.Get("sidebar_footer_status");
 
         BasicTitleTextBlock.Text = ViewModel.Localizer.Get("basic_title");
         BasicHintTextBlock.Text = ViewModel.Localizer.Get("basic_hint");
@@ -168,13 +181,11 @@ public sealed partial class MainPage : Page
         BasicHotkeyLabelTextBlock.Text = ViewModel.Localizer.Get("label_hotkey");
         BasicStorageLabelTextBlock.Text = ViewModel.Localizer.Get("label_storage");
         BasicWorkflowLabelTextBlock.Text = ViewModel.Localizer.Get("label_workflow");
-        StorageValueTextBlock.Text = ViewModel.Localizer.Get("storage_secure_local");
-        OverviewWorkflowValueTextBlock.Text = ViewModel.Workflow.Phase == WorkflowPhase.Idle
-            ? ViewModel.Localizer.Get("workflow_ready")
-            : ViewModel.Localizer.Get("workflow_active");
         QuickActionsLabelTextBlock.Text = ViewModel.Localizer.Get("quick_actions");
-        ShowPanelButton.Content = ViewModel.Localizer.Get("button_show_panel");
-        UseClipboardButton.Content = ViewModel.Localizer.Get("button_use_clipboard");
+        ShowPanelButtonTextBlock.Text = ViewModel.Localizer.Get("button_show_panel");
+        UseClipboardButtonTextBlock.Text = ViewModel.Localizer.Get("button_use_clipboard");
+        HotkeyBannerPrefixTextBlock.Text = ViewModel.Localizer.Get("hotkey_banner_prefix");
+        HotkeyBannerHintTextBlock.Text = ViewModel.Localizer.Get("hotkey_banner_hint");
         HotkeySectionLabelTextBlock.Text = ViewModel.Localizer.Get("label_hotkey");
         HotkeyHintTextBlock.Text = ViewModel.Localizer.Get("hotkey_hint");
 
@@ -199,6 +210,15 @@ public sealed partial class MainPage : Page
         AppearanceTitleTextBlock.Text = ViewModel.Localizer.Get("appearance_title");
         AppearanceHintTextBlock.Text = ViewModel.Localizer.Get("appearance_hint");
         LanguageLabelTextBlock.Text = ViewModel.Localizer.Get("label_language");
+
+        AdvancedTitleTextBlock.Text = ViewModel.Localizer.Get("advanced_title");
+        AdvancedHintTextBlock.Text = ViewModel.Localizer.Get("advanced_hint");
+        AdvancedProviderLabelTextBlock.Text = ViewModel.Localizer.Get("label_provider");
+        AdvancedModelLabelTextBlock.Text = ViewModel.Localizer.Get("label_model");
+        AdvancedStorageLabelTextBlock.Text = ViewModel.Localizer.Get("label_storage");
+        AdvancedWorkflowLabelTextBlock.Text = ViewModel.Localizer.Get("label_workflow");
+        AdvancedCredentialLabelTextBlock.Text = ViewModel.Localizer.Get("label_api_key");
+        AdvancedLanguageLabelTextBlock.Text = ViewModel.Localizer.Get("label_language");
     }
 
     private IReadOnlyList<PromptChoice> BuildPromptChoices()
@@ -344,11 +364,13 @@ public sealed partial class MainPage : Page
         ProviderPanel.Visibility = section == SettingsSection.Provider ? Visibility.Visible : Visibility.Collapsed;
         PromptPanel.Visibility = section == SettingsSection.Prompt ? Visibility.Visible : Visibility.Collapsed;
         AppearancePanel.Visibility = section == SettingsSection.Appearance ? Visibility.Visible : Visibility.Collapsed;
+        AdvancedPanel.Visibility = section == SettingsSection.Advanced ? Visibility.Visible : Visibility.Collapsed;
 
         ApplyNavigationState(OverviewNavButton, OverviewNavAccent, section == SettingsSection.Basic);
         ApplyNavigationState(ProviderNavButton, ProviderNavAccent, section == SettingsSection.Provider);
         ApplyNavigationState(PromptNavButton, PromptNavAccent, section == SettingsSection.Prompt);
         ApplyNavigationState(AppearanceNavButton, AppearanceNavAccent, section == SettingsSection.Appearance);
+        ApplyNavigationState(AdvancedNavButton, AdvancedNavAccent, section == SettingsSection.Advanced);
     }
 
     private void ApplyNavigationState(Button button, Border accent, bool isSelected)
@@ -359,9 +381,50 @@ public sealed partial class MainPage : Page
         button.BorderBrush = isSelected
             ? (Brush)Resources["NavSelectedBorderBrush"]
             : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+        button.Foreground = isSelected
+            ? (Brush)Resources["SidebarTextBrush"]
+            : (Brush)Resources["SidebarMutedBrush"];
         accent.Background = isSelected
             ? (Brush)Resources["NavSelectedAccentBrush"]
             : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+    }
+
+    private string BuildWorkflowStatusText()
+    {
+        return ViewModel.Workflow.Phase == WorkflowPhase.Idle
+            ? ViewModel.Localizer.Get("workflow_ready")
+            : ViewModel.Localizer.Get("workflow_active");
+    }
+
+    private string GetCurrentLanguageLabel()
+    {
+        return languageChoices.First(choice => choice.Language == ViewModel.SelectedLanguage).Label;
+    }
+
+    private string BuildCredentialStatusText()
+    {
+        return string.IsNullOrWhiteSpace(ViewModel.ApiKeyInput)
+            ? ViewModel.Localizer.Get("status_api_key_missing")
+            : ViewModel.Localizer.Get("status_api_key_saved");
+    }
+
+    private void RenderHotkeyBanner(ShortcutPreset preset)
+    {
+        var parts = preset.DisplayName().Split(" + ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var keyTextBlocks = new[] { HotkeyKeyOneTextBlock, HotkeyKeyTwoTextBlock, HotkeyKeyThreeTextBlock, HotkeyKeyFourTextBlock };
+        var plusBlocks = new[] { HotkeyPlusOneTextBlock, HotkeyPlusTwoTextBlock, HotkeyPlusThreeTextBlock };
+
+        for (var index = 0; index < keyTextBlocks.Length; index++)
+        {
+            keyTextBlocks[index].Text = index < parts.Length ? parts[index] : string.Empty;
+        }
+
+        HotkeyKeyFourBorder.Visibility = parts.Length > 3 ? Visibility.Visible : Visibility.Collapsed;
+
+        for (var index = 0; index < plusBlocks.Length; index++)
+        {
+            plusBlocks[index].Visibility = parts.Length > index + 1 ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 
     private static void ApplyStatusText(TextBlock textBlock, string? message)
