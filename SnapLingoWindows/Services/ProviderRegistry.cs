@@ -82,7 +82,7 @@ public sealed class ProviderRegistry
         ProviderKind.Gemini => new ProviderPreset(provider, ProviderProtocolStyle.GeminiGenerateContent, "https://generativelanguage.googleapis.com/v1beta/models", "gemini-2.5-flash"),
         ProviderKind.ZhipuGLM => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.z.ai/api/paas/v4", "glm-5"),
         ProviderKind.Kimi => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.moonshot.cn/v1", "kimi-k2.5"),
-        ProviderKind.MiniMax => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.minimaxi.com/v1", "MiniMax-M2.5"),
+        ProviderKind.MiniMax => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.minimaxi.com/v1", "MiniMax-M2.7"),
         ProviderKind.AlibabaBailian => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen3.5-plus"),
         ProviderKind.VolcengineArk => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://ark.cn-beijing.volces.com/api/v3", "doubao-seed-1-6-251015"),
         _ => throw new InvalidOperationException($"Unsupported provider: {provider}"),
@@ -206,13 +206,15 @@ public sealed class ProviderRegistry
             case ProviderKind.MiniMax:
                 catalog = new ProviderModelCatalog(
                     [
+                        new ProviderModelOption("MiniMax-M2.7", "MiniMax-M2.7", new DateTimeOffset(2026, 03, 01, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("MiniMax-M2.7-highspeed", "MiniMax-M2.7-highspeed", new DateTimeOffset(2026, 03, 01, 0, 0, 0, TimeSpan.Zero)),
                         new ProviderModelOption("MiniMax-M2.5", "MiniMax-M2.5", new DateTimeOffset(2026, 02, 01, 0, 0, 0, TimeSpan.Zero)),
                         new ProviderModelOption("MiniMax-M2.5-highspeed", "MiniMax-M2.5-highspeed", new DateTimeOffset(2026, 02, 01, 0, 0, 0, TimeSpan.Zero)),
                         new ProviderModelOption("MiniMax-M2.1", "MiniMax-M2.1", new DateTimeOffset(2025, 12, 22, 0, 0, 0, TimeSpan.Zero)),
                         new ProviderModelOption("MiniMax-M2.1-highspeed", "MiniMax-M2.1-highspeed", new DateTimeOffset(2025, 12, 22, 0, 0, 0, TimeSpan.Zero)),
                         new ProviderModelOption("MiniMax-M2", "MiniMax-M2", new DateTimeOffset(2025, 01, 01, 0, 0, 0, TimeSpan.Zero)),
                     ],
-                    "MiniMax-M2.5"
+                    "MiniMax-M2.7"
                 );
                 return true;
             case ProviderKind.AlibabaBailian:
