@@ -40,6 +40,27 @@ env HOME="$PWD/.codex-home" \
   swift test
 ```
 
+## Windows Client
+
+For the WinUI client under `SnapLingoWindows`, use the launcher script at the repo root:
+
+```powershell
+.\run-windows-client.ps1
+```
+
+Or double-click:
+
+```text
+run-windows-client.cmd
+```
+
+Useful options:
+
+- `.\run-windows-client.ps1 -Configuration Release`
+- `.\run-windows-client.ps1 -Platform ARM64`
+- `.\run-windows-client.ps1 -NoBuild`
+- `.\run-windows-client.ps1 -RequireBuild`
+
 ## Provider Notes
 
 - `OpenAI` uses the Responses API.

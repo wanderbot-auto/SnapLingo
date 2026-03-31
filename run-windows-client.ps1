@@ -32,6 +32,11 @@ $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
 
 [xml]$projectXml = Get-Content -LiteralPath $projectPath
 $targetFrameworkNode = $projectXml.SelectSingleNode("//Project/PropertyGroup/TargetFramework")
+
+if ($null -eq $targetFrameworkNode) {
+    throw "Cannot resolve TargetFramework node from $projectPath"
+}
+
 $targetFramework = $targetFrameworkNode.InnerText
 
 if ([string]::IsNullOrWhiteSpace($targetFramework)) {
@@ -78,28 +83,7 @@ try {
     }
 
     Write-Host "Launching $exePath"
-    $process = Start-Process -FilePath $exePath -WorkingDirectory (Split-Path -Path $exePath -Parent) -PassThru
-
-    Start-Sleep -Seconds 5
-    $process.Refresh()
-
-    if ($process.HasExited) {
-        throw "SnapLingoWindows exited before showing a usable window."
-    }
-
-    if ($process.MainWindowTitle -like "*could not be started*") {
-        try {
-            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-        }
-        catch {
-        }
-
-        throw "Windows reported a startup failure: $($process.MainWindowTitle)"
-    }
-
-    if ($process.MainWindowHandle -eq 0 -and [string]::IsNullOrWhiteSpace($process.MainWindowTitle)) {
-        Write-Warning "The app process started, but no main window was detected yet."
-    }
+    Start-Process -FilePath $exePath -WorkingDirectory (Split-Path -Path $exePath -Parent) | Out-Null
 }
 finally {
     Pop-Location
