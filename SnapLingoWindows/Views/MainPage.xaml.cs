@@ -11,6 +11,7 @@ public sealed partial class MainPage : Page
         Overview,
         Provider,
         Hotkey,
+        Prompt,
     }
 
     private readonly IReadOnlyList<ProviderChoice> providerChoices;
@@ -47,6 +48,7 @@ public sealed partial class MainPage : Page
         ProviderComboBox.ItemsSource = providerChoices;
 
         ModelComboBox.DisplayMemberPath = nameof(ProviderModelOption.Label);
+        PromptComboBox.DisplayMemberPath = nameof(PromptProfile.Name);
 
         HotkeyComboBox.DisplayMemberPath = nameof(ShortcutChoice.Label);
         HotkeyComboBox.ItemsSource = shortcutChoices;
@@ -95,6 +97,14 @@ public sealed partial class MainPage : Page
             ModelComboBox.PlaceholderText = ViewModel.IsLoadingModels
                 ? "Loading models..."
                 : "Save an API key to load models";
+            PromptComboBox.ItemsSource = ViewModel.AvailablePrompts;
+            PromptComboBox.SelectedItem = ViewModel.AvailablePrompts
+                .FirstOrDefault(prompt => string.Equals(prompt.Id, ViewModel.SelectedPromptId, StringComparison.OrdinalIgnoreCase));
+            PromptNameTextBox.IsEnabled = ViewModel.CanEditSelectedPrompt;
+            TranslatePromptTextBox.IsEnabled = ViewModel.CanEditSelectedPrompt;
+            PolishPromptTextBox.IsEnabled = ViewModel.CanEditSelectedPrompt;
+            SavePromptButton.IsEnabled = ViewModel.CanEditSelectedPrompt;
+            DeletePromptButton.IsEnabled = ViewModel.CanDeleteSelectedPrompt;
             HotkeyComboBox.SelectedItem = shortcutChoices.FirstOrDefault(choice => choice.Preset == ViewModel.SelectedShortcutPreset);
 
             if (ApiKeyPasswordBox.Password != ViewModel.ApiKeyInput)
@@ -102,7 +112,23 @@ public sealed partial class MainPage : Page
                 ApiKeyPasswordBox.Password = ViewModel.ApiKeyInput;
             }
 
+            if (PromptNameTextBox.Text != ViewModel.PromptEditorName)
+            {
+                PromptNameTextBox.Text = ViewModel.PromptEditorName;
+            }
+
+            if (TranslatePromptTextBox.Text != ViewModel.PromptEditorTranslate)
+            {
+                TranslatePromptTextBox.Text = ViewModel.PromptEditorTranslate;
+            }
+
+            if (PolishPromptTextBox.Text != ViewModel.PromptEditorPolish)
+            {
+                PolishPromptTextBox.Text = ViewModel.PromptEditorPolish;
+            }
+
             ApplyStatusText(ProviderStatusTextBlock, ViewModel.ProviderStatusMessage);
+            ApplyStatusText(PromptStatusTextBlock, ViewModel.PromptStatusMessage);
             ApplyStatusText(HotkeyStatusTextBlock, ViewModel.HotkeyStatusMessage);
             OverviewProviderValueTextBlock.Text = ViewModel.SelectedProvider.DisplayName();
             OverviewHotkeyValueTextBlock.Text = ViewModel.SelectedShortcutPreset.DisplayName();
@@ -167,6 +193,61 @@ public sealed partial class MainPage : Page
         (Application.Current as App)?.SettingsWindow.ApplyHotkeyPreset(choice.Preset);
     }
 
+    private void OnPromptChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (suppressSelectionEvents || PromptComboBox.SelectedItem is not PromptProfile prompt)
+        {
+            return;
+        }
+
+        ViewModel.UpdateSelectedPrompt(prompt.Id);
+    }
+
+    private void OnPromptNameChanged(object sender, TextChangedEventArgs e)
+    {
+        if (suppressSelectionEvents)
+        {
+            return;
+        }
+
+        ViewModel.UpdatePromptEditorName(PromptNameTextBox.Text);
+    }
+
+    private void OnTranslatePromptChanged(object sender, TextChangedEventArgs e)
+    {
+        if (suppressSelectionEvents)
+        {
+            return;
+        }
+
+        ViewModel.UpdatePromptEditorTranslate(TranslatePromptTextBox.Text);
+    }
+
+    private void OnPolishPromptChanged(object sender, TextChangedEventArgs e)
+    {
+        if (suppressSelectionEvents)
+        {
+            return;
+        }
+
+        ViewModel.UpdatePromptEditorPolish(PolishPromptTextBox.Text);
+    }
+
+    private void OnCreatePromptClicked(object sender, RoutedEventArgs e)
+    {
+        ViewModel.CreatePrompt();
+    }
+
+    private void OnSavePromptClicked(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SavePrompt();
+    }
+
+    private void OnDeletePromptClicked(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DeleteSelectedPrompt();
+    }
+
     private async void OnSaveKeyClicked(object sender, RoutedEventArgs e)
     {
         await ViewModel.SaveApiKeyAsync(ApiKeyPasswordBox.Password);
@@ -183,10 +264,12 @@ public sealed partial class MainPage : Page
         OverviewPanel.Visibility = section == SettingsSection.Overview ? Visibility.Visible : Visibility.Collapsed;
         ProviderPanel.Visibility = section == SettingsSection.Provider ? Visibility.Visible : Visibility.Collapsed;
         HotkeyPanel.Visibility = section == SettingsSection.Hotkey ? Visibility.Visible : Visibility.Collapsed;
+        PromptPanel.Visibility = section == SettingsSection.Prompt ? Visibility.Visible : Visibility.Collapsed;
 
         ApplyNavigationState(OverviewNavButton, OverviewNavAccent, section == SettingsSection.Overview);
         ApplyNavigationState(ProviderNavButton, ProviderNavAccent, section == SettingsSection.Provider);
         ApplyNavigationState(HotkeyNavButton, HotkeyNavAccent, section == SettingsSection.Hotkey);
+        ApplyNavigationState(PromptNavButton, PromptNavAccent, section == SettingsSection.Prompt);
     }
 
     private void ApplyNavigationState(Button button, Border accent, bool isSelected)

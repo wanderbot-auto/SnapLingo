@@ -15,9 +15,15 @@ public sealed class MainViewModel : BindableBase
     private ShortcutPreset selectedShortcutPreset;
     private string apiKeyInput = string.Empty;
     private string? providerStatusMessage;
+    private string? promptStatusMessage;
     private string? hotkeyStatusMessage;
     private IReadOnlyList<ProviderModelOption> availableModels = [];
+    private IReadOnlyList<PromptProfile> availablePrompts = [];
     private string selectedModelId = string.Empty;
+    private string selectedPromptId = PromptProfile.DefaultId;
+    private string promptEditorName = string.Empty;
+    private string promptEditorTranslate = string.Empty;
+    private string promptEditorPolish = string.Empty;
     private bool isLoadingModels;
 
     public MainViewModel()
@@ -40,6 +46,9 @@ public sealed class MainViewModel : BindableBase
         {
             SelectedProvider = selectedProvider,
         };
+        availablePrompts = LoadPromptProfiles();
+        selectedPromptId = ResolveSavedPromptId();
+        ApplySelectedPrompt(selectedPromptId, saveSettings: false, announceSelection: false);
         RestoreSelectedModels();
         Workflow = new WorkflowStateStore();
         Workflow.ResetForIdle();
@@ -83,6 +92,12 @@ public sealed class MainViewModel : BindableBase
         private set => SetProperty(ref providerStatusMessage, value);
     }
 
+    public string? PromptStatusMessage
+    {
+        get => promptStatusMessage;
+        private set => SetProperty(ref promptStatusMessage, value);
+    }
+
     public string? HotkeyStatusMessage
     {
         get => hotkeyStatusMessage;
@@ -102,10 +117,40 @@ public sealed class MainViewModel : BindableBase
         }
     }
 
+    public IReadOnlyList<PromptProfile> AvailablePrompts
+    {
+        get => availablePrompts;
+        private set => SetProperty(ref availablePrompts, value);
+    }
+
     public string SelectedModelId
     {
         get => selectedModelId;
         private set => SetProperty(ref selectedModelId, value);
+    }
+
+    public string SelectedPromptId
+    {
+        get => selectedPromptId;
+        private set => SetProperty(ref selectedPromptId, value);
+    }
+
+    public string PromptEditorName
+    {
+        get => promptEditorName;
+        private set => SetProperty(ref promptEditorName, value);
+    }
+
+    public string PromptEditorTranslate
+    {
+        get => promptEditorTranslate;
+        private set => SetProperty(ref promptEditorTranslate, value);
+    }
+
+    public string PromptEditorPolish
+    {
+        get => promptEditorPolish;
+        private set => SetProperty(ref promptEditorPolish, value);
     }
 
     public bool IsLoadingModels
@@ -122,6 +167,9 @@ public sealed class MainViewModel : BindableBase
 
     public bool HasAvailableModels => AvailableModels.Count > 0;
     public bool CanSelectModel => HasAvailableModels && !IsLoadingModels && !string.IsNullOrWhiteSpace(ApiKeyInput);
+    public PromptProfile SelectedPromptProfile => ResolveSelectedPromptProfile();
+    public bool CanEditSelectedPrompt => !SelectedPromptProfile.IsBuiltIn;
+    public bool CanDeleteSelectedPrompt => !SelectedPromptProfile.IsBuiltIn;
 
     public async Task InitializeAsync()
     {
@@ -217,6 +265,93 @@ public sealed class MainViewModel : BindableBase
         ProviderStatusMessage = $"Using model {modelId}.";
     }
 
+    public void UpdateSelectedPrompt(string promptId)
+    {
+        ApplySelectedPrompt(promptId, saveSettings: true, announceSelection: true);
+    }
+
+    public void UpdatePromptEditorName(string value)
+    {
+        PromptEditorName = value;
+    }
+
+    public void UpdatePromptEditorTranslate(string value)
+    {
+        PromptEditorTranslate = value;
+    }
+
+    public void UpdatePromptEditorPolish(string value)
+    {
+        PromptEditorPolish = value;
+    }
+
+    public void CreatePrompt()
+    {
+        var template = SelectedPromptProfile;
+        var prompt = new PromptProfile(
+            Guid.NewGuid().ToString("N"),
+            GeneratePromptName(),
+            template.TranslatePrompt,
+            template.PolishPrompt
+        );
+
+        AvailablePrompts = AvailablePrompts.Concat([prompt]).ToList();
+        ApplySelectedPrompt(prompt.Id, saveSettings: true, announceSelection: false);
+        PromptStatusMessage = $"Created prompt {prompt.Name}.";
+    }
+
+    public void SavePrompt()
+    {
+        if (SelectedPromptProfile.IsBuiltIn)
+        {
+            PromptStatusMessage = "Default prompt is read-only.";
+            return;
+        }
+
+        var name = PromptEditorName.Trim();
+        var translatePrompt = PromptEditorTranslate.Trim();
+        var polishPrompt = PromptEditorPolish.Trim();
+
+        if (string.IsNullOrWhiteSpace(name) ||
+            string.IsNullOrWhiteSpace(translatePrompt) ||
+            string.IsNullOrWhiteSpace(polishPrompt))
+        {
+            PromptStatusMessage = "Name, translate prompt, and polish prompt are required.";
+            return;
+        }
+
+        var updatedPrompt = SelectedPromptProfile with
+        {
+            Name = name,
+            TranslatePrompt = translatePrompt,
+            PolishPrompt = polishPrompt,
+        };
+
+        AvailablePrompts = AvailablePrompts
+            .Select(prompt => string.Equals(prompt.Id, updatedPrompt.Id, StringComparison.OrdinalIgnoreCase) ? updatedPrompt : prompt)
+            .ToList();
+
+        ApplySelectedPrompt(updatedPrompt.Id, saveSettings: true, announceSelection: false);
+        PromptStatusMessage = $"Saved prompt {updatedPrompt.Name}.";
+    }
+
+    public void DeleteSelectedPrompt()
+    {
+        if (SelectedPromptProfile.IsBuiltIn)
+        {
+            PromptStatusMessage = "Default prompt cannot be deleted.";
+            return;
+        }
+
+        var deletedPromptName = SelectedPromptProfile.Name;
+        AvailablePrompts = AvailablePrompts
+            .Where(prompt => !string.Equals(prompt.Id, SelectedPromptId, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        ApplySelectedPrompt(PromptProfile.DefaultId, saveSettings: true, announceSelection: false);
+        PromptStatusMessage = $"Deleted prompt {deletedPromptName}.";
+    }
+
     public void SetHotkeyStatusMessage(string message)
     {
         HotkeyStatusMessage = message;
@@ -283,6 +418,84 @@ public sealed class MainViewModel : BindableBase
         }
     }
 
+    private IReadOnlyList<PromptProfile> LoadPromptProfiles()
+    {
+        var prompts = new List<PromptProfile>
+        {
+            PromptProfile.CreateDefault(),
+        };
+        var usedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            PromptProfile.DefaultId,
+        };
+
+        foreach (var savedPrompt in settingsDocument.PromptProfiles ?? [])
+        {
+            if (savedPrompt is null)
+            {
+                continue;
+            }
+
+            var id = savedPrompt.Id?.Trim();
+            var name = savedPrompt.Name?.Trim();
+            var translatePrompt = savedPrompt.TranslatePrompt?.Trim();
+            var polishPrompt = savedPrompt.PolishPrompt?.Trim();
+
+            if (string.IsNullOrWhiteSpace(id) ||
+                string.Equals(id, PromptProfile.DefaultId, StringComparison.OrdinalIgnoreCase) ||
+                !usedIds.Add(id) ||
+                string.IsNullOrWhiteSpace(name) ||
+                string.IsNullOrWhiteSpace(translatePrompt) ||
+                string.IsNullOrWhiteSpace(polishPrompt))
+            {
+                continue;
+            }
+
+            prompts.Add(new PromptProfile(id, name, translatePrompt, polishPrompt));
+        }
+
+        return prompts;
+    }
+
+    private string ResolveSavedPromptId()
+    {
+        return AvailablePrompts.Any(prompt => string.Equals(prompt.Id, settingsDocument.SelectedPromptId, StringComparison.OrdinalIgnoreCase))
+            ? settingsDocument.SelectedPromptId
+            : PromptProfile.DefaultId;
+    }
+
+    private PromptProfile ResolveSelectedPromptProfile()
+    {
+        return AvailablePrompts.FirstOrDefault(prompt => string.Equals(prompt.Id, SelectedPromptId, StringComparison.OrdinalIgnoreCase))
+            ?? AvailablePrompts.First(prompt => string.Equals(prompt.Id, PromptProfile.DefaultId, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void ApplySelectedPrompt(string promptId, bool saveSettings, bool announceSelection)
+    {
+        var selectedPrompt = AvailablePrompts.FirstOrDefault(prompt => string.Equals(prompt.Id, promptId, StringComparison.OrdinalIgnoreCase))
+            ?? AvailablePrompts.First(prompt => string.Equals(prompt.Id, PromptProfile.DefaultId, StringComparison.OrdinalIgnoreCase));
+
+        SelectedPromptId = selectedPrompt.Id;
+        PromptEditorName = selectedPrompt.Name;
+        PromptEditorTranslate = selectedPrompt.TranslatePrompt;
+        PromptEditorPolish = selectedPrompt.PolishPrompt;
+        providerRegistry.SetSelectedPrompt(selectedPrompt);
+
+        OnPropertyChanged(nameof(SelectedPromptProfile));
+        OnPropertyChanged(nameof(CanEditSelectedPrompt));
+        OnPropertyChanged(nameof(CanDeleteSelectedPrompt));
+
+        if (announceSelection)
+        {
+            PromptStatusMessage = $"Using prompt {selectedPrompt.Name}.";
+        }
+
+        if (saveSettings)
+        {
+            SaveSettings();
+        }
+    }
+
     private void RestoreSelectedModels()
     {
         foreach (var provider in Enum.GetValues<ProviderKind>())
@@ -323,10 +536,35 @@ public sealed class MainViewModel : BindableBase
             .ToList();
     }
 
+    private string GeneratePromptName()
+    {
+        const string baseName = "Custom Prompt";
+        var usedNames = AvailablePrompts
+            .Select(prompt => prompt.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        if (!usedNames.Contains(baseName))
+        {
+            return baseName;
+        }
+
+        var index = 2;
+        while (usedNames.Contains($"{baseName} {index}"))
+        {
+            index++;
+        }
+
+        return $"{baseName} {index}";
+    }
+
     private void SaveSettings()
     {
         settingsDocument.SelectedProvider = SelectedProvider.ToString();
         settingsDocument.SelectedShortcutPreset = SelectedShortcutPreset.ToString();
+        settingsDocument.SelectedPromptId = SelectedPromptId;
+        settingsDocument.PromptProfiles = AvailablePrompts
+            .Where(prompt => !prompt.IsBuiltIn)
+            .ToList();
         settingsStore.Save(settingsDocument);
     }
 }

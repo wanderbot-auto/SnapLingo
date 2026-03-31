@@ -42,12 +42,14 @@ public static class ProviderValidation
 internal abstract class ProviderClientBase : IProviderClient
 {
     private readonly ProviderPreset preset;
+    private readonly PromptProfile promptProfile;
     private readonly SecureSecretStore secretStore;
     private readonly HttpClient httpClient;
 
-    protected ProviderClientBase(ProviderPreset preset, SecureSecretStore secretStore, HttpClient httpClient)
+    protected ProviderClientBase(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
     {
         this.preset = preset;
+        this.promptProfile = promptProfile;
         this.secretStore = secretStore;
         this.httpClient = httpClient;
     }
@@ -56,6 +58,7 @@ internal abstract class ProviderClientBase : IProviderClient
     public abstract Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken);
 
     protected ProviderPreset Preset => preset;
+    protected PromptProfile PromptProfile => promptProfile;
 
     protected string LoadApiKey()
     {
@@ -103,28 +106,20 @@ internal abstract class ProviderClientBase : IProviderClient
 
 internal sealed class OpenAIResponsesProvider : ProviderClientBase
 {
-    public OpenAIResponsesProvider(ProviderPreset preset, SecureSecretStore secretStore, HttpClient httpClient)
-        : base(preset, secretStore, httpClient)
+    public OpenAIResponsesProvider(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
+        : base(preset, promptProfile, secretStore, httpClient)
     {
     }
 
     public override async Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
     {
-        var output = await RequestAsync(
-            "Translate the user's text into natural, professional English. Return only the final translated text.",
-            text,
-            cancellationToken
-        );
+        var output = await RequestAsync(PromptProfile.TranslatePrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Translate);
     }
 
     public override async Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
     {
-        var output = await RequestAsync(
-            "Rewrite the user's text into natural, professional English that is ready to send. Keep the meaning intact. Return only the final polished text.",
-            text,
-            cancellationToken
-        );
+        var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Polish);
     }
 
@@ -169,28 +164,20 @@ internal sealed class OpenAIResponsesProvider : ProviderClientBase
 
 internal sealed class OpenAIChatProvider : ProviderClientBase
 {
-    public OpenAIChatProvider(ProviderPreset preset, SecureSecretStore secretStore, HttpClient httpClient)
-        : base(preset, secretStore, httpClient)
+    public OpenAIChatProvider(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
+        : base(preset, promptProfile, secretStore, httpClient)
     {
     }
 
     public override async Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
     {
-        var output = await RequestAsync(
-            "Translate the user's text into natural, professional English. Return only the final translated text.",
-            text,
-            cancellationToken
-        );
+        var output = await RequestAsync(PromptProfile.TranslatePrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Translate);
     }
 
     public override async Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
     {
-        var output = await RequestAsync(
-            "Rewrite the user's text into natural, professional English that is ready to send. Keep the meaning intact. Return only the final polished text.",
-            text,
-            cancellationToken
-        );
+        var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Polish);
     }
 
@@ -239,28 +226,20 @@ internal sealed class OpenAIChatProvider : ProviderClientBase
 
 internal sealed class AnthropicMessagesProvider : ProviderClientBase
 {
-    public AnthropicMessagesProvider(ProviderPreset preset, SecureSecretStore secretStore, HttpClient httpClient)
-        : base(preset, secretStore, httpClient)
+    public AnthropicMessagesProvider(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
+        : base(preset, promptProfile, secretStore, httpClient)
     {
     }
 
     public override async Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
     {
-        var output = await RequestAsync(
-            "Translate the user's text into natural, professional English. Return only the final translated text.",
-            text,
-            cancellationToken
-        );
+        var output = await RequestAsync(PromptProfile.TranslatePrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Translate);
     }
 
     public override async Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
     {
-        var output = await RequestAsync(
-            "Rewrite the user's text into natural, professional English that is ready to send. Keep the meaning intact. Return only the final polished text.",
-            text,
-            cancellationToken
-        );
+        var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Polish);
     }
 
@@ -307,28 +286,20 @@ internal sealed class AnthropicMessagesProvider : ProviderClientBase
 
 internal sealed class GeminiGenerateContentProvider : ProviderClientBase
 {
-    public GeminiGenerateContentProvider(ProviderPreset preset, SecureSecretStore secretStore, HttpClient httpClient)
-        : base(preset, secretStore, httpClient)
+    public GeminiGenerateContentProvider(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
+        : base(preset, promptProfile, secretStore, httpClient)
     {
     }
 
     public override async Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
     {
-        var output = await RequestAsync(
-            "Translate the user's text into natural, professional English. Return only the final translated text.",
-            text,
-            cancellationToken
-        );
+        var output = await RequestAsync(PromptProfile.TranslatePrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Translate);
     }
 
     public override async Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
     {
-        var output = await RequestAsync(
-            "Rewrite the user's text into natural, professional English that is ready to send. Keep the meaning intact. Return only the final polished text.",
-            text,
-            cancellationToken
-        );
+        var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Polish);
     }
 

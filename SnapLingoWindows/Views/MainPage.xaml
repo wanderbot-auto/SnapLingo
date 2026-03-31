@@ -231,6 +231,23 @@
                                     <TextBlock Grid.Column="1" x:Name="HotkeyNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Hotkey" />
                                 </Grid>
                             </Button>
+
+                            <Button
+                                x:Name="PromptNavButton"
+                                Click="OnNavigationClicked"
+                                Style="{StaticResource SidebarNavButtonStyle}"
+                                Tag="Prompt">
+                                <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
+                                    <Border
+                                        x:Name="PromptNavAccent"
+                                        Width="4"
+                                        Height="20"
+                                        Background="Transparent"
+                                        CornerRadius="999"
+                                        VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" x:Name="PromptNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Prompt" />
+                                </Grid>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -331,6 +348,43 @@
                                         <ComboBox x:Name="HotkeyComboBox" SelectionChanged="OnHotkeyChanged" />
                                         <TextBlock
                                             x:Name="HotkeyStatusTextBlock"
+                                            Foreground="{StaticResource ContentMutedBrush}"
+                                            Visibility="Collapsed"
+                                            TextWrapping="WrapWholeWords" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel x:Name="PromptPanel" Spacing="10" Visibility="Collapsed">
+                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Prompt" />
+
+                                <Border Style="{StaticResource SettingsCardStyle}">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Prompt profile" />
+                                        <ComboBox x:Name="PromptComboBox" SelectionChanged="OnPromptChanged" />
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button x:Name="CreatePromptButton" Click="OnCreatePromptClicked" Content="New prompt" />
+                                            <Button x:Name="SavePromptButton" Click="OnSavePromptClicked" Content="Save prompt" />
+                                            <Button x:Name="DeletePromptButton" Click="OnDeletePromptClicked" Content="Delete prompt" />
+                                        </StackPanel>
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Name" />
+                                        <TextBox x:Name="PromptNameTextBox" TextChanged="OnPromptNameChanged" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Translate prompt" />
+                                        <TextBox
+                                            x:Name="TranslatePromptTextBox"
+                                            AcceptsReturn="True"
+                                            Height="120"
+                                            TextChanged="OnTranslatePromptChanged"
+                                            TextWrapping="Wrap" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Polish prompt" />
+                                        <TextBox
+                                            x:Name="PolishPromptTextBox"
+                                            AcceptsReturn="True"
+                                            Height="120"
+                                            TextChanged="OnPolishPromptChanged"
+                                            TextWrapping="Wrap" />
+                                        <TextBlock
+                                            x:Name="PromptStatusTextBlock"
                                             Foreground="{StaticResource ContentMutedBrush}"
                                             Visibility="Collapsed"
                                             TextWrapping="WrapWholeWords" />

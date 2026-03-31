@@ -8,6 +8,7 @@ public sealed class ProviderRegistry
     private readonly SecureSecretStore secretStore;
     private readonly HttpClient httpClient;
     private readonly Dictionary<ProviderKind, string> selectedModels = new();
+    private PromptProfile selectedPrompt = PromptProfile.CreateDefault();
 
     public ProviderRegistry(SecureSecretStore secretStore, HttpClient? httpClient = null)
     {
@@ -25,10 +26,10 @@ public sealed class ProviderRegistry
 
         return preset.Style switch
         {
-            ProviderProtocolStyle.OpenAIResponses => new OpenAIResponsesProvider(preset, secretStore, httpClient),
-            ProviderProtocolStyle.OpenAIChatCompletions => new OpenAIChatProvider(preset, secretStore, httpClient),
-            ProviderProtocolStyle.AnthropicMessages => new AnthropicMessagesProvider(preset, secretStore, httpClient),
-            ProviderProtocolStyle.GeminiGenerateContent => new GeminiGenerateContentProvider(preset, secretStore, httpClient),
+            ProviderProtocolStyle.OpenAIResponses => new OpenAIResponsesProvider(preset, ResolvePrompt(), secretStore, httpClient),
+            ProviderProtocolStyle.OpenAIChatCompletions => new OpenAIChatProvider(preset, ResolvePrompt(), secretStore, httpClient),
+            ProviderProtocolStyle.AnthropicMessages => new AnthropicMessagesProvider(preset, ResolvePrompt(), secretStore, httpClient),
+            ProviderProtocolStyle.GeminiGenerateContent => new GeminiGenerateContentProvider(preset, ResolvePrompt(), secretStore, httpClient),
             _ => throw new InvalidOperationException($"Unsupported provider style: {preset.Style}"),
         };
     }
@@ -99,6 +100,11 @@ public sealed class ProviderRegistry
 
     public void DeleteKey(ProviderKind provider) => secretStore.DeleteSecret(provider);
 
+    public void SetSelectedPrompt(PromptProfile? prompt)
+    {
+        selectedPrompt = prompt ?? PromptProfile.CreateDefault();
+    }
+
     public void SetSelectedModel(ProviderKind provider, string? modelId)
     {
         if (string.IsNullOrWhiteSpace(modelId))
@@ -125,6 +131,8 @@ public sealed class ProviderRegistry
         var preset = GetPreset(provider);
         return preset with { Model = ResolveModel(provider) };
     }
+
+    private PromptProfile ResolvePrompt() => selectedPrompt ?? PromptProfile.CreateDefault();
 
     private static HttpRequestMessage CreateModelsRequest(ProviderPreset preset, string apiKey)
     {
