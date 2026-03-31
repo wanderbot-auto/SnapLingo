@@ -302,6 +302,11 @@
                                     <StackPanel Spacing="8">
                                         <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Provider" />
                                         <ComboBox x:Name="ProviderComboBox" SelectionChanged="OnProviderChanged" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Model" />
+                                        <ComboBox
+                                            x:Name="ModelComboBox"
+                                            PlaceholderText="Save an API key to load models"
+                                            SelectionChanged="OnModelChanged" />
                                         <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="API key" />
                                         <PasswordBox x:Name="ApiKeyPasswordBox" />
                                         <StackPanel Orientation="Horizontal" Spacing="8">

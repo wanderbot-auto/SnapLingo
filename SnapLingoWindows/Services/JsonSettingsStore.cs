@@ -38,4 +38,5 @@ public sealed class AppSettingsDocument
 {
     public string SelectedProvider { get; set; } = ProviderKind.OpenAI.ToString();
     public string SelectedShortcutPreset { get; set; } = ShortcutPreset.ControlAltSpace.ToString();
+    public Dictionary<string, string> SelectedModels { get; set; } = new(StringComparer.Ordinal);
 }

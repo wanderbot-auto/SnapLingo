@@ -16,6 +16,7 @@ public sealed partial class MainPage : Page
     private readonly IReadOnlyList<ProviderChoice> providerChoices;
     private readonly IReadOnlyList<ShortcutChoice> shortcutChoices;
     private bool suppressSelectionEvents;
+    private bool hasInitialized;
 
     public MainViewModel ViewModel { get; }
     public FrameworkElement TitleBarElement => AppTitleBar;
@@ -34,6 +35,7 @@ public sealed partial class MainPage : Page
         ConfigureControls();
         ViewModel.PropertyChanged += OnViewModelChanged;
         ViewModel.Workflow.PropertyChanged += OnWorkflowChanged;
+        Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         SelectSection(SettingsSection.Overview);
         Render();
@@ -44,14 +46,28 @@ public sealed partial class MainPage : Page
         ProviderComboBox.DisplayMemberPath = nameof(ProviderChoice.Label);
         ProviderComboBox.ItemsSource = providerChoices;
 
+        ModelComboBox.DisplayMemberPath = nameof(ProviderModelOption.Label);
+
         HotkeyComboBox.DisplayMemberPath = nameof(ShortcutChoice.Label);
         HotkeyComboBox.ItemsSource = shortcutChoices;
+    }
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (hasInitialized)
+        {
+            return;
+        }
+
+        hasInitialized = true;
+        await ViewModel.InitializeAsync();
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         ViewModel.PropertyChanged -= OnViewModelChanged;
         ViewModel.Workflow.PropertyChanged -= OnWorkflowChanged;
+        Loaded -= OnLoaded;
         Unloaded -= OnUnloaded;
     }
 
@@ -72,6 +88,13 @@ public sealed partial class MainPage : Page
         try
         {
             ProviderComboBox.SelectedItem = providerChoices.FirstOrDefault(choice => choice.Kind == ViewModel.SelectedProvider);
+            ModelComboBox.ItemsSource = ViewModel.AvailableModels;
+            ModelComboBox.SelectedItem = ViewModel.AvailableModels
+                .FirstOrDefault(option => string.Equals(option.Id, ViewModel.SelectedModelId, StringComparison.OrdinalIgnoreCase));
+            ModelComboBox.IsEnabled = ViewModel.CanSelectModel;
+            ModelComboBox.PlaceholderText = ViewModel.IsLoadingModels
+                ? "Loading models..."
+                : "Save an API key to load models";
             HotkeyComboBox.SelectedItem = shortcutChoices.FirstOrDefault(choice => choice.Preset == ViewModel.SelectedShortcutPreset);
 
             if (ApiKeyPasswordBox.Password != ViewModel.ApiKeyInput)
@@ -113,14 +136,24 @@ public sealed partial class MainPage : Page
         await ViewModel.UseCurrentClipboardAsync();
     }
 
-    private void OnProviderChanged(object sender, SelectionChangedEventArgs e)
+    private async void OnProviderChanged(object sender, SelectionChangedEventArgs e)
     {
         if (suppressSelectionEvents || ProviderComboBox.SelectedItem is not ProviderChoice choice)
         {
             return;
         }
 
-        ViewModel.UpdateProvider(choice.Kind);
+        await ViewModel.UpdateProviderAsync(choice.Kind);
+    }
+
+    private void OnModelChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (suppressSelectionEvents || ModelComboBox.SelectedItem is not ProviderModelOption option)
+        {
+            return;
+        }
+
+        ViewModel.UpdateSelectedModel(option.Id);
     }
 
     private void OnHotkeyChanged(object sender, SelectionChangedEventArgs e)
@@ -134,9 +167,9 @@ public sealed partial class MainPage : Page
         (Application.Current as App)?.SettingsWindow.ApplyHotkeyPreset(choice.Preset);
     }
 
-    private void OnSaveKeyClicked(object sender, RoutedEventArgs e)
+    private async void OnSaveKeyClicked(object sender, RoutedEventArgs e)
     {
-        ViewModel.SaveApiKey(ApiKeyPasswordBox.Password);
+        await ViewModel.SaveApiKeyAsync(ApiKeyPasswordBox.Password);
     }
 
     private void OnClearKeyClicked(object sender, RoutedEventArgs e)
