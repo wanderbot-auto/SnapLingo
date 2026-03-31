@@ -1,0 +1,63 @@
+using System.Runtime.InteropServices;
+
+namespace SnapLingoWindows.Services;
+
+public static partial class NativeMethods
+{
+    public const uint WM_HOTKEY = 0x0312;
+    public const int GWLP_WNDPROC = -4;
+
+    public const uint MOD_ALT = 0x0001;
+    public const uint MOD_CONTROL = 0x0002;
+    public const uint MOD_SHIFT = 0x0004;
+    public const uint MOD_NOREPEAT = 0x4000;
+
+    public const int SW_HIDE = 0;
+    public const int SW_SHOWNORMAL = 1;
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool RegisterHotKey(nint hWnd, int id, uint fsModifiers, uint vk);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool UnregisterHotKey(nint hWnd, int id);
+
+    [LibraryImport("user32.dll")]
+    public static partial uint GetClipboardSequenceNumber();
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool GetCursorPos(out POINT point);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool SetForegroundWindow(nint hWnd);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool ShowWindow(nint hWnd, int command);
+
+    [LibraryImport("user32.dll", EntryPoint = "CallWindowProcW")]
+    public static partial nint CallWindowProc(nint previousWindowProc, nint hWnd, uint message, nuint wParam, nint lParam);
+
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
+    private static partial nint SetWindowLongPtr64(nint hWnd, int index, nint newWindowProc);
+
+    [LibraryImport("user32.dll", EntryPoint = "SetWindowLongW", SetLastError = true)]
+    private static partial int SetWindowLong32(nint hWnd, int index, int newWindowProc);
+
+    public static nint SetWindowLongPtr(nint hWnd, int index, nint newWindowProc)
+    {
+        return IntPtr.Size == 8
+            ? SetWindowLongPtr64(hWnd, index, newWindowProc)
+            : new nint(SetWindowLong32(hWnd, index, newWindowProc.ToInt32()));
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct POINT
+    {
+        public int X;
+        public int Y;
+    }
+}

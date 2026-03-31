@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Page
+    x:Class="SnapLingoWindows.Views.TranslationPanelPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid Padding="20">
+        <StackPanel Spacing="16">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <RadioButton x:Name="TranslateModeRadioButton" Checked="OnTranslateModeChecked" Content="Translate" GroupName="Modes" />
+                <RadioButton x:Name="PolishModeRadioButton" Checked="OnPolishModeChecked" Content="Polish" GroupName="Modes" />
+            </StackPanel>
+
+            <Border Style="{StaticResource SectionCardStyle}">
+                <StackPanel Spacing="14">
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            x:Name="PrimaryTitleTextBlock"
+                            Style="{StaticResource SectionTitleTextStyle}"
+                            VerticalAlignment="Center" />
+
+                        <Border
+                            Grid.Column="1"
+                            Background="{ThemeResource AccentFillColorSecondaryBrush}"
+                            CornerRadius="999"
+                            Padding="10,4">
+                            <TextBlock x:Name="ModeSourceTextBlock" FontWeight="SemiBold" />
+                        </Border>
+                    </Grid>
+
+                    <ProgressRing x:Name="BusyProgressRing" Height="28" IsActive="False" Width="28" />
+
+                    <TextBox
+                        x:Name="PrimaryTextTextBox"
+                        AcceptsReturn="True"
+                        IsReadOnly="True"
+                        MinHeight="180"
+                        Style="{StaticResource FlatReadOnlyTextBoxStyle}" />
+
+                    <TextBlock x:Name="SecondaryStatusTextBlock" Opacity="0.78" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border x:Name="ClipboardPromptBorder" Style="{StaticResource SectionCardStyle}">
+                <TextBlock
+                    Text="Direct capture is not ready on Windows. Press Ctrl+C to continue."
+                    TextWrapping="Wrap" />
+            </Border>
+
+            <Border x:Name="OriginalPreviewBorder" Style="{StaticResource SectionCardStyle}">
+                <StackPanel Spacing="10">
+                    <TextBlock Style="{StaticResource SectionTitleTextStyle}" Text="Original Text" />
+                    <TextBox
+                        x:Name="OriginalPreviewTextBox"
+                        AcceptsReturn="True"
+                        IsReadOnly="True"
+                        MinHeight="88"
+                        Style="{StaticResource FlatReadOnlyTextBoxStyle}" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button x:Name="CopyButton" Click="OnCopyClicked" Content="Copy" />
+                <Button x:Name="RetryButton" Click="OnRetryClicked" Content="Retry" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>
