@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace SnapLingoWindows;
 
 public partial class App : Application
@@ -20,7 +22,46 @@ public partial class App : Application
 
     public void ShowTranslationPanel()
     {
-        TranslationWindow ??= new TranslationPanelWindow(ViewModel);
-        TranslationWindow.PresentPanel();
+        EnsureTranslationWindow();
+
+        try
+        {
+            TranslationWindow!.PresentPanel();
+        }
+        catch (COMException)
+        {
+            TranslationWindow = CreateTranslationWindow();
+            TranslationWindow.PresentPanel();
+        }
+    }
+
+    private void EnsureTranslationWindow()
+    {
+        if (TranslationWindow is null || TranslationWindow.IsClosed)
+        {
+            TranslationWindow = CreateTranslationWindow();
+        }
+    }
+
+    private TranslationPanelWindow CreateTranslationWindow()
+    {
+        var window = new TranslationPanelWindow(ViewModel);
+        window.Closed += OnTranslationWindowClosed;
+        return window;
+    }
+
+    private void OnTranslationWindowClosed(object sender, WindowEventArgs args)
+    {
+        if (sender is not TranslationPanelWindow window)
+        {
+            return;
+        }
+
+        window.Closed -= OnTranslationWindowClosed;
+
+        if (ReferenceEquals(TranslationWindow, window))
+        {
+            TranslationWindow = null;
+        }
     }
 }

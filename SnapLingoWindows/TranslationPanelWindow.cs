@@ -10,6 +10,9 @@ public sealed class TranslationPanelWindow : Window
     private readonly MainViewModel viewModel;
     private readonly AppWindow appWindow;
     private readonly nint hwnd;
+    private bool isClosed;
+
+    public bool IsClosed => isClosed;
 
     public TranslationPanelWindow(MainViewModel viewModel)
     {
@@ -83,6 +86,7 @@ public sealed class TranslationPanelWindow : Window
 
     private void OnClosed(object sender, WindowEventArgs args)
     {
+        isClosed = true;
         viewModel.HideRequested -= OnHideRequested;
         Closed -= OnClosed;
     }
