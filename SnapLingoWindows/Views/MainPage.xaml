@@ -185,7 +185,7 @@
                                 x:Name="OverviewNavButton"
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
-                                Tag="Overview">
+                                Tag="Basic">
                                 <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
                                     <Border
                                         x:Name="OverviewNavAccent"
@@ -194,7 +194,7 @@
                                         Background="{StaticResource NavSelectedAccentBrush}"
                                         CornerRadius="999"
                                         VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" x:Name="OverviewNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Overview" />
+                                    <TextBlock Grid.Column="1" x:Name="OverviewNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Basic" />
                                 </Grid>
                             </Button>
 
@@ -212,23 +212,6 @@
                                         CornerRadius="999"
                                         VerticalAlignment="Center" />
                                     <TextBlock Grid.Column="1" x:Name="ProviderNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Provider" />
-                                </Grid>
-                            </Button>
-
-                            <Button
-                                x:Name="HotkeyNavButton"
-                                Click="OnNavigationClicked"
-                                Style="{StaticResource SidebarNavButtonStyle}"
-                                Tag="Hotkey">
-                                <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
-                                    <Border
-                                        x:Name="HotkeyNavAccent"
-                                        Width="4"
-                                        Height="20"
-                                        Background="Transparent"
-                                        CornerRadius="999"
-                                        VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" x:Name="HotkeyNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Hotkey" />
                                 </Grid>
                             </Button>
 
@@ -258,7 +241,7 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
                         <Grid Padding="12">
                             <StackPanel x:Name="OverviewPanel" Spacing="10">
-                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Overview" />
+                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Basic" />
 
                                 <Grid ColumnSpacing="8" RowSpacing="8">
                                     <Grid.ColumnDefinitions>
@@ -310,6 +293,18 @@
                                             TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </Border>
+
+                                <Border Style="{StaticResource SettingsCardStyle}">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Hotkey" />
+                                        <ComboBox x:Name="HotkeyComboBox" SelectionChanged="OnHotkeyChanged" />
+                                        <TextBlock
+                                            x:Name="HotkeyStatusTextBlock"
+                                            Foreground="{StaticResource ContentMutedBrush}"
+                                            Visibility="Collapsed"
+                                            TextWrapping="WrapWholeWords" />
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
 
                             <StackPanel x:Name="ProviderPanel" Spacing="10" Visibility="Collapsed">
@@ -332,22 +327,6 @@
                                         </StackPanel>
                                         <TextBlock
                                             x:Name="ProviderStatusTextBlock"
-                                            Foreground="{StaticResource ContentMutedBrush}"
-                                            Visibility="Collapsed"
-                                            TextWrapping="WrapWholeWords" />
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <StackPanel x:Name="HotkeyPanel" Spacing="10" Visibility="Collapsed">
-                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Hotkey" />
-
-                                <Border Style="{StaticResource SettingsCardStyle}">
-                                    <StackPanel Spacing="8">
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Preset" />
-                                        <ComboBox x:Name="HotkeyComboBox" SelectionChanged="OnHotkeyChanged" />
-                                        <TextBlock
-                                            x:Name="HotkeyStatusTextBlock"
                                             Foreground="{StaticResource ContentMutedBrush}"
                                             Visibility="Collapsed"
                                             TextWrapping="WrapWholeWords" />

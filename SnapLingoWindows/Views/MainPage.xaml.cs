@@ -8,9 +8,8 @@ public sealed partial class MainPage : Page
 {
     private enum SettingsSection
     {
-        Overview,
+        Basic,
         Provider,
-        Hotkey,
         Prompt,
     }
 
@@ -38,7 +37,7 @@ public sealed partial class MainPage : Page
         ViewModel.Workflow.PropertyChanged += OnWorkflowChanged;
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        SelectSection(SettingsSection.Overview);
+        SelectSection(SettingsSection.Basic);
         Render();
     }
 
@@ -133,7 +132,7 @@ public sealed partial class MainPage : Page
             OverviewProviderValueTextBlock.Text = ViewModel.SelectedProvider.DisplayName();
             OverviewHotkeyValueTextBlock.Text = ViewModel.SelectedShortcutPreset.DisplayName();
             OverviewWorkflowValueTextBlock.Text = ViewModel.Workflow.Phase == WorkflowPhase.Idle ? "Ready" : "Active";
-            ApplyStatusText(OverviewStatusTextBlock, ViewModel.ProviderStatusMessage);
+            ApplyStatusText(OverviewStatusTextBlock, ViewModel.HotkeyStatusMessage ?? ViewModel.ProviderStatusMessage);
         }
         finally
         {
@@ -261,14 +260,12 @@ public sealed partial class MainPage : Page
 
     private void SelectSection(SettingsSection section)
     {
-        OverviewPanel.Visibility = section == SettingsSection.Overview ? Visibility.Visible : Visibility.Collapsed;
+        OverviewPanel.Visibility = section == SettingsSection.Basic ? Visibility.Visible : Visibility.Collapsed;
         ProviderPanel.Visibility = section == SettingsSection.Provider ? Visibility.Visible : Visibility.Collapsed;
-        HotkeyPanel.Visibility = section == SettingsSection.Hotkey ? Visibility.Visible : Visibility.Collapsed;
         PromptPanel.Visibility = section == SettingsSection.Prompt ? Visibility.Visible : Visibility.Collapsed;
 
-        ApplyNavigationState(OverviewNavButton, OverviewNavAccent, section == SettingsSection.Overview);
+        ApplyNavigationState(OverviewNavButton, OverviewNavAccent, section == SettingsSection.Basic);
         ApplyNavigationState(ProviderNavButton, ProviderNavAccent, section == SettingsSection.Provider);
-        ApplyNavigationState(HotkeyNavButton, HotkeyNavAccent, section == SettingsSection.Hotkey);
         ApplyNavigationState(PromptNavButton, PromptNavAccent, section == SettingsSection.Prompt);
     }
 

@@ -38,12 +38,13 @@ public sealed class MainWindow : Window
 
     private void ConfigureWindow()
     {
-        appWindow.Resize(new Windows.Graphics.SizeInt32(580, 620));
+        appWindow.Resize(new Windows.Graphics.SizeInt32(690, 620));
         ConfigureTitleBar();
 
         if (appWindow.Presenter is OverlappedPresenter presenter)
         {
             presenter.IsMaximizable = false;
+            presenter.IsResizable = false;
         }
     }
 
