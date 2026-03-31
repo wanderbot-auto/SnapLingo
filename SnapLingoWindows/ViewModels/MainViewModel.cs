@@ -304,11 +304,23 @@ public sealed class MainViewModel : BindableBase
 
     private IReadOnlyList<ProviderModelOption> BuildFallbackModels(ProviderKind provider, string currentModelId)
     {
-        var modelId = string.IsNullOrWhiteSpace(currentModelId)
+        var preferredModelId = string.IsNullOrWhiteSpace(currentModelId)
             ? providerRegistry.GetPreset(provider).Model
             : currentModelId.Trim();
+        var presetModels = providerRegistry.GetPresetModels(provider)
+            .Where(modelId => !string.IsNullOrWhiteSpace(modelId))
+            .Select(modelId => modelId.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
-        return [new ProviderModelOption(modelId, modelId)];
+        if (!presetModels.Contains(preferredModelId, StringComparer.OrdinalIgnoreCase))
+        {
+            presetModels.Insert(0, preferredModelId);
+        }
+
+        return presetModels
+            .Select(modelId => new ProviderModelOption(modelId, modelId))
+            .ToList();
     }
 
     private void SaveSettings()

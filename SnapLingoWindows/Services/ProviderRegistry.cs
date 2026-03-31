@@ -87,6 +87,12 @@ public sealed class ProviderRegistry
         _ => throw new InvalidOperationException($"Unsupported provider: {provider}"),
     };
 
+    public IReadOnlyList<string> GetPresetModels(ProviderKind provider) => provider switch
+    {
+        ProviderKind.MiniMax => ["MiniMax-M2.7", "MiniMax-M2.5"],
+        _ => [GetPreset(provider).Model],
+    };
+
     public string LoadKey(ProviderKind provider) => secretStore.LoadSecret(provider);
 
     public void SaveKey(string secret, ProviderKind provider) => secretStore.SaveSecret(secret, provider);
