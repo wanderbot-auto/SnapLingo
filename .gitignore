@@ -1,3 +1,4 @@
 .build/
 .cache/
 .codex-home/
+.dotnet-cli/
