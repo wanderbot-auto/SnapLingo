@@ -7,18 +7,27 @@ param(
 
     [switch]$NoBuild,
 
-    [switch]$RequireBuild
+    [switch]$RequireBuild,
+
+    [switch]$Watch,
+
+    [int]$WatchDelayMs = 800
 )
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 $repoRoot = $PSScriptRoot
-$projectPath = Join-Path $repoRoot "SnapLingoWindows\SnapLingoWindows.csproj"
+$projectRoot = Join-Path $repoRoot "SnapLingoWindows"
+$projectPath = Join-Path $projectRoot "SnapLingoWindows.csproj"
 $dotnetCliHome = Join-Path $repoRoot ".dotnet-cli"
 
 if (-not (Test-Path -LiteralPath $projectPath)) {
     throw "Cannot find Windows project: $projectPath"
+}
+
+if ($WatchDelayMs -lt 200) {
+    throw "WatchDelayMs must be at least 200."
 }
 
 $dotnetCommand = Get-Command dotnet -ErrorAction SilentlyContinue
@@ -50,6 +59,8 @@ $runtimeIdentifier = switch ($Platform) {
     default { throw "Unsupported platform: $Platform" }
 }
 
+$exePath = Join-Path $repoRoot "SnapLingoWindows\bin\$Platform\$Configuration\$targetFramework\$runtimeIdentifier\SnapLingoWindows.exe"
+
 function Stop-RunningAppInstance {
     param(
         [Parameter(Mandatory = $true)]
@@ -77,11 +88,12 @@ function Stop-RunningAppInstance {
     }
 }
 
-Push-Location $repoRoot
-try {
-    $exePath = Join-Path $repoRoot "SnapLingoWindows\bin\$Platform\$Configuration\$targetFramework\$runtimeIdentifier\SnapLingoWindows.exe"
+function Invoke-BuildAndLaunch {
+    param(
+        [switch]$SkipBuild
+    )
 
-    if (-not $NoBuild) {
+    if (-not $SkipBuild) {
         Stop-RunningAppInstance -ExecutablePath $exePath
         $buildFailed = $false
 
@@ -112,6 +124,88 @@ try {
 
     Write-Host "Launching $exePath"
     Start-Process -FilePath $exePath -WorkingDirectory (Split-Path -Path $exePath -Parent) | Out-Null
+}
+
+function Resolve-WatchedPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [System.IO.WaitForChangedResult]$Result
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Result.Name)) {
+        return $null
+    }
+
+    $candidatePath = Join-Path $projectRoot $Result.Name
+    $normalizedPath = [System.IO.Path]::GetFullPath($candidatePath)
+
+    if ($normalizedPath -match '\\(bin|obj)(\\|$)') {
+        return $null
+    }
+
+    return $normalizedPath
+}
+
+function Start-WatchLoop {
+    $watcher = [System.IO.FileSystemWatcher]::new($projectRoot)
+    $watcher.IncludeSubdirectories = $true
+    $watcher.NotifyFilter = [System.IO.NotifyFilters]'FileName, DirectoryName, LastWrite, CreationTime'
+
+    $changeTypes =
+        [System.IO.WatcherChangeTypes]::Changed `
+        -bor [System.IO.WatcherChangeTypes]::Created `
+        -bor [System.IO.WatcherChangeTypes]::Deleted `
+        -bor [System.IO.WatcherChangeTypes]::Renamed
+
+    try {
+        Write-Host "Watching $projectRoot for changes. Press Ctrl+C to stop."
+
+        while ($true) {
+            $change = $watcher.WaitForChanged($changeTypes, 250)
+            if ($change.TimedOut) {
+                continue
+            }
+
+            $changedPath = Resolve-WatchedPath -Result $change
+            if ($null -eq $changedPath) {
+                continue
+            }
+
+            while ($true) {
+                $nextChange = $watcher.WaitForChanged($changeTypes, $WatchDelayMs)
+                if ($nextChange.TimedOut) {
+                    break
+                }
+
+                $nextChangedPath = Resolve-WatchedPath -Result $nextChange
+                if ($null -ne $nextChangedPath) {
+                    $changedPath = $nextChangedPath
+                }
+            }
+
+            Write-Host ""
+            Write-Host "Detected change: $changedPath"
+
+            try {
+                Invoke-BuildAndLaunch
+            }
+            catch {
+                Write-Error $_
+            }
+        }
+    }
+    finally {
+        $watcher.Dispose()
+    }
+}
+
+Push-Location $repoRoot
+try {
+    Invoke-BuildAndLaunch -SkipBuild:$NoBuild
+
+    if ($Watch) {
+        Start-WatchLoop
+    }
 }
 finally {
     Pop-Location

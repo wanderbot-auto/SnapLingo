@@ -50,6 +50,20 @@ For the WinUI client under `SnapLingoWindows`, use the launcher script at the re
 
 If the app is already running, the launcher stops the current instance before rebuilding and starting the updated executable.
 
+For auto-rebuild during active development, run watch mode once and leave it open:
+
+```powershell
+.\run-windows-client.ps1 -Watch
+```
+
+Or double-click:
+
+```text
+run-windows-client-watch.cmd
+```
+
+Watch mode keeps listening under `SnapLingoWindows`, then automatically rebuilds and relaunches the app after code changes.
+
 Or double-click:
 
 ```text
@@ -62,6 +76,8 @@ Useful options:
 - `.\run-windows-client.ps1 -Platform ARM64`
 - `.\run-windows-client.ps1 -NoBuild`
 - `.\run-windows-client.ps1 -RequireBuild`
+- `.\run-windows-client.ps1 -Watch`
+- `.\run-windows-client.ps1 -Watch -NoBuild`
 
 ## Provider Notes
 
