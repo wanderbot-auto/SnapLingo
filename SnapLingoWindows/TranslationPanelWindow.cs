@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
 using WinRT.Interop;
@@ -27,9 +28,9 @@ public sealed class TranslationPanelWindow : Window
 
     public void PresentPanel()
     {
-        PositionNearCursor();
-        NativeMethods.ShowWindow(hwnd, NativeMethods.SW_SHOWNORMAL);
         Activate();
+        NativeMethods.ShowWindow(hwnd, NativeMethods.SW_SHOWNORMAL);
+        TryPositionNearCursor();
         NativeMethods.SetForegroundWindow(hwnd);
     }
 
@@ -44,28 +45,35 @@ public sealed class TranslationPanelWindow : Window
         }
     }
 
-    private void PositionNearCursor()
+    private void TryPositionNearCursor()
     {
         if (!NativeMethods.GetCursorPos(out var point))
         {
             return;
         }
 
-        var displayArea = DisplayArea.GetFromWindowId(appWindow.Id, DisplayAreaFallback.Primary);
-        var workArea = displayArea.WorkArea;
+        try
+        {
+            var displayArea = DisplayArea.GetFromWindowId(appWindow.Id, DisplayAreaFallback.Primary);
+            var workArea = displayArea.WorkArea;
 
-        var desiredX = point.X - (appWindow.Size.Width / 2);
-        var desiredY = point.Y - (appWindow.Size.Height / 2);
+            var desiredX = point.X - (appWindow.Size.Width / 2);
+            var desiredY = point.Y - (appWindow.Size.Height / 2);
 
-        var minX = workArea.X + 20;
-        var minY = workArea.Y + 20;
-        var maxX = workArea.X + workArea.Width - appWindow.Size.Width - 20;
-        var maxY = workArea.Y + workArea.Height - appWindow.Size.Height - 20;
+            var minX = workArea.X + 20;
+            var minY = workArea.Y + 20;
+            var maxX = workArea.X + workArea.Width - appWindow.Size.Width - 20;
+            var maxY = workArea.Y + workArea.Height - appWindow.Size.Height - 20;
 
-        var targetX = Math.Clamp(desiredX, minX, maxX);
-        var targetY = Math.Clamp(desiredY, minY, maxY);
+            var targetX = Math.Clamp(desiredX, minX, maxX);
+            var targetY = Math.Clamp(desiredY, minY, maxY);
 
-        appWindow.Move(new Windows.Graphics.PointInt32(targetX, targetY));
+            appWindow.Move(new Windows.Graphics.PointInt32(targetX, targetY));
+        }
+        catch (COMException)
+        {
+            // First activation can race window initialization; keep the panel open even if positioning is skipped.
+        }
     }
 
     private void OnHideRequested(object? sender, EventArgs e)
