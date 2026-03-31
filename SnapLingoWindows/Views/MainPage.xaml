@@ -53,25 +53,25 @@
         </Style>
 
         <Style x:Key="SidebarNavTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="Medium" />
         </Style>
 
         <Style x:Key="PanelTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontSize" Value="22" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
         </Style>
 
         <Style x:Key="PanelSubtitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
         </Style>
 
         <Style x:Key="SectionTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
         </Style>
@@ -83,13 +83,13 @@
         </Style>
 
         <Style x:Key="InfoLabelTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
         </Style>
 
         <Style x:Key="InfoValueTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
@@ -99,17 +99,17 @@
             <Setter Property="Background" Value="White" />
             <Setter Property="BorderBrush" Value="{StaticResource ContentBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="16" />
-            <Setter Property="Padding" Value="24" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Padding" Value="18" />
         </Style>
 
         <Style x:Key="OverviewStatCardStyle" TargetType="Border">
             <Setter Property="Background" Value="White" />
             <Setter Property="BorderBrush" Value="{StaticResource ContentBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="14" />
-            <Setter Property="Padding" Value="16" />
-            <Setter Property="MinHeight" Value="90" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="MinHeight" Value="82" />
         </Style>
 
         <Style x:Key="SidebarNavButtonStyle" TargetType="Button">
@@ -121,13 +121,13 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Height" Value="40" />
+            <Setter Property="Height" Value="36" />
         </Style>
 
         <Style x:Key="ActionButtonStyle" TargetType="Button">
             <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="MinHeight" Value="40" />
-            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="MinHeight" Value="38" />
+            <Setter Property="Padding" Value="12,8" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="SemiBold" />
@@ -150,8 +150,8 @@
             <Setter Property="BorderBrush" Value="{StaticResource SegmentSelectedBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="MinHeight" Value="40" />
-            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="Padding" Value="10,8" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
         </Style>
@@ -161,16 +161,16 @@
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="MinHeight" Value="40" />
-            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="Padding" Value="10,8" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
         </Style>
 
         <Style x:Key="FormComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="MinHeight" Value="52" />
-            <Setter Property="Padding" Value="14,10" />
-            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="CornerRadius" Value="12" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
@@ -178,9 +178,9 @@
         </Style>
 
         <Style x:Key="FormTextBoxStyle" TargetType="TextBox">
-            <Setter Property="MinHeight" Value="48" />
-            <Setter Property="Padding" Value="14,12" />
-            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="MinHeight" Value="42" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="CornerRadius" Value="12" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
@@ -188,9 +188,9 @@
         </Style>
 
         <Style x:Key="FormPasswordBoxStyle" TargetType="PasswordBox">
-            <Setter Property="MinHeight" Value="48" />
-            <Setter Property="Padding" Value="14,12" />
-            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="MinHeight" Value="42" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="CornerRadius" Value="12" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
@@ -200,7 +200,7 @@
 
     <Grid Background="{StaticResource WindowBackdropBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="44" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -209,15 +209,15 @@
             Grid.Row="0"
             Background="Transparent">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="240" />
+                <ColumnDefinition Width="196" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <TextBlock
                 Grid.Column="0"
-                Margin="24,0,0,0"
+                Margin="18,0,0,0"
                 VerticalAlignment="Center"
-                FontSize="13"
+                FontSize="12"
                 FontWeight="SemiBold"
                 Foreground="#3F3F46"
                 Text="SnapLingo" />
@@ -225,9 +225,9 @@
             <TextBlock
                 x:Name="SettingsTitleBarTextBlock"
                 Grid.Column="1"
-                Margin="28,0,0,0"
+                Margin="18,0,0,0"
                 VerticalAlignment="Center"
-                FontSize="12"
+                FontSize="11"
                 FontWeight="Medium"
                 Foreground="{StaticResource ContentMutedBrush}"
                 Text="SnapLingo Settings" />
@@ -241,18 +241,16 @@
 
         <Border
             Grid.Row="1"
-            Width="860"
-            Height="640"
-            Margin="0,8,0,20"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
+            Margin="14,6,14,14"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
             Background="White"
             BorderBrush="#33FFFFFF"
             BorderThickness="1"
-            CornerRadius="16">
+            CornerRadius="14">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="240" />
+                    <ColumnDefinition Width="196" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -261,8 +259,8 @@
                     Background="{StaticResource SidebarBackgroundBrush}"
                     BorderBrush="{StaticResource SidebarBorderBrush}"
                     BorderThickness="0,0,1,0"
-                    CornerRadius="16,0,0,16"
-                    Padding="18">
+                    CornerRadius="14,0,0,14"
+                    Padding="14">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -313,7 +311,7 @@
                         <TextBlock
                             x:Name="SectionsLabelTextBlock"
                             Grid.Row="1"
-                            Margin="12,18,0,10"
+                            Margin="8,14,0,8"
                             Style="{StaticResource SidebarLabelTextStyle}"
                             Text="SECTIONS" />
 
@@ -381,30 +379,36 @@
                             </Button>
                         </StackPanel>
 
-                        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Bottom">
-                            <Image Width="14" Height="14" Source="{StaticResource SidebarSyncIcon}" VerticalAlignment="Center" />
+                        <Grid Grid.Row="3" ColumnSpacing="8" VerticalAlignment="Bottom">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Width="14" Height="14" Source="{StaticResource SidebarSyncIcon}" VerticalAlignment="Top" />
                             <TextBlock
                                 x:Name="SidebarFooterTextBlock"
+                                Grid.Column="1"
                                 FontSize="12"
                                 Foreground="{StaticResource SidebarMutedBrush}"
                                 Text="Stored securely on this device."
+                                TextWrapping="WrapWholeWords"
                                 VerticalAlignment="Center" />
-                        </StackPanel>
+                        </Grid>
                     </Grid>
                 </Border>
 
                 <Border
                     Grid.Column="1"
                     Background="{StaticResource ContentBackgroundBrush}"
-                    CornerRadius="0,16,16,0">
+                    CornerRadius="0,14,14,0">
                     <ScrollViewer
                         HorizontalScrollBarVisibility="Disabled"
                         VerticalScrollBarVisibility="Auto"
                         VerticalScrollMode="Auto">
-                        <Grid Padding="32">
+                        <Grid Padding="20,18,20,24">
                             <StackPanel
                                 x:Name="OverviewPanel"
-                                Spacing="32">
+                                Spacing="24">
                                 <StackPanel Spacing="6">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <Image Width="24" Height="24" Source="{StaticResource BasicHeaderIcon}" VerticalAlignment="Center" />
@@ -416,7 +420,7 @@
                                         Text="Manage launch behavior and the global hotkey without leaving the main configuration flow." />
                                 </StackPanel>
 
-                                <Grid ColumnSpacing="16" RowSpacing="16">
+                                <Grid ColumnSpacing="12" RowSpacing="12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
@@ -472,9 +476,9 @@
                                         Background="{StaticResource SuccessBackgroundBrush}"
                                         BorderBrush="{StaticResource SuccessBorderBrush}"
                                         BorderThickness="1"
-                                        CornerRadius="14"
-                                        Padding="16"
-                                        MinHeight="90">
+                                        CornerRadius="12"
+                                        Padding="14"
+                                        MinHeight="82">
                                         <Grid>
                                             <Ellipse Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Top">
                                                 <Ellipse.Fill>
@@ -594,7 +598,7 @@
 
                             <StackPanel
                                 x:Name="ProviderPanel"
-                                Spacing="24"
+                                Spacing="20"
                                 Visibility="Collapsed">
                                 <StackPanel Spacing="6">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -634,7 +638,7 @@
 
                             <StackPanel
                                 x:Name="PromptPanel"
-                                Spacing="24"
+                                Spacing="20"
                                 Visibility="Collapsed">
                                 <StackPanel Spacing="6">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -679,7 +683,7 @@
 
                             <StackPanel
                                 x:Name="AppearancePanel"
-                                Spacing="24"
+                                Spacing="20"
                                 Visibility="Collapsed">
                                 <StackPanel Spacing="6">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -702,7 +706,7 @@
 
                             <StackPanel
                                 x:Name="AdvancedPanel"
-                                Spacing="24"
+                                Spacing="20"
                                 Visibility="Collapsed">
                                 <StackPanel Spacing="6">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -715,7 +719,7 @@
                                         Text="Review storage, workflow, and language status for the current desktop setup." />
                                 </StackPanel>
 
-                                <Grid ColumnSpacing="16" RowSpacing="16">
+                                <Grid ColumnSpacing="12" RowSpacing="12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />

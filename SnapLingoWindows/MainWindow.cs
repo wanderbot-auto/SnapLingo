@@ -39,7 +39,7 @@ public sealed class MainWindow : Window
 
     private void ConfigureWindow()
     {
-        appWindow.Resize(new Windows.Graphics.SizeInt32(1040, 760));
+        appWindow.Resize(new Windows.Graphics.SizeInt32(680, 580));
         ConfigureTitleBar();
         NativeWindowStyler.ApplySettingsShellStyle(hwnd);
     }
