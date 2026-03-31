@@ -35,6 +35,11 @@ public sealed class ProviderRegistry
 
     public async Task<ProviderModelCatalog> FetchModelsAsync(ProviderKind provider, CancellationToken cancellationToken = default)
     {
+        if (TryGetDocumentedModelCatalog(provider, out var documentedCatalog))
+        {
+            return documentedCatalog;
+        }
+
         var preset = GetPreset(provider);
         var apiKey = LoadKey(provider).Trim();
         if (string.IsNullOrWhiteSpace(apiKey))
@@ -53,11 +58,11 @@ public sealed class ProviderRegistry
 
         var root = JsonNode.Parse(body) ?? throw new ProviderException("The provider model list response was malformed.");
 
-        var models = preset.Style switch
+        var models = provider switch
         {
-            ProviderProtocolStyle.GeminiGenerateContent => ParseGeminiModels(root),
-            ProviderProtocolStyle.AnthropicMessages => ParseAnthropicModels(root),
-            ProviderProtocolStyle.OpenAIResponses or ProviderProtocolStyle.OpenAIChatCompletions => ParseOpenAICompatibleModels(root),
+            ProviderKind.OpenAI => ParseOpenAIModels(root),
+            ProviderKind.Anthropic => ParseAnthropicModels(root),
+            ProviderKind.Gemini => ParseGeminiModels(root),
             _ => throw new ProviderException("SnapLingo does not know how to list models for this provider yet."),
         };
 
@@ -75,11 +80,11 @@ public sealed class ProviderRegistry
         ProviderKind.OpenAI => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIResponses, "https://api.openai.com/v1", "gpt-4.1-mini"),
         ProviderKind.Anthropic => new ProviderPreset(provider, ProviderProtocolStyle.AnthropicMessages, "https://api.anthropic.com/v1", "claude-sonnet-4-20250514"),
         ProviderKind.Gemini => new ProviderPreset(provider, ProviderProtocolStyle.GeminiGenerateContent, "https://generativelanguage.googleapis.com/v1beta/models", "gemini-2.5-flash"),
-        ProviderKind.ZhipuGLM => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.z.ai/api/paas/v4", "glm-4.5-air"),
-        ProviderKind.Kimi => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.moonshot.cn/v1", "kimi-k2-turbo-preview"),
-        ProviderKind.MiniMax => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.minimaxi.com/v1", "MiniMax-M2.5-highspeed"),
-        ProviderKind.AlibabaBailian => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen3.5-flash"),
-        ProviderKind.VolcengineArk => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://ark.cn-beijing.volces.com/api/v3", "doubao-seed-1-6-250615"),
+        ProviderKind.ZhipuGLM => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.z.ai/api/paas/v4", "glm-5"),
+        ProviderKind.Kimi => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.moonshot.cn/v1", "kimi-k2.5"),
+        ProviderKind.MiniMax => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.minimaxi.com/v1", "MiniMax-M2.5"),
+        ProviderKind.AlibabaBailian => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen3.5-plus"),
+        ProviderKind.VolcengineArk => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://ark.cn-beijing.volces.com/api/v3", "doubao-seed-1-6-251015"),
         _ => throw new InvalidOperationException($"Unsupported provider: {provider}"),
     };
 
@@ -118,16 +123,16 @@ public sealed class ProviderRegistry
 
     private static HttpRequestMessage CreateModelsRequest(ProviderPreset preset, string apiKey)
     {
-        return preset.Style switch
+        return preset.Kind switch
         {
-            ProviderProtocolStyle.GeminiGenerateContent => CreateGeminiModelsRequest(preset, apiKey),
-            ProviderProtocolStyle.AnthropicMessages => CreateAnthropicModelsRequest(preset, apiKey),
-            ProviderProtocolStyle.OpenAIResponses or ProviderProtocolStyle.OpenAIChatCompletions => CreateOpenAICompatibleModelsRequest(preset, apiKey),
+            ProviderKind.OpenAI => CreateOpenAIModelsRequest(preset, apiKey),
+            ProviderKind.Anthropic => CreateAnthropicModelsRequest(preset, apiKey),
+            ProviderKind.Gemini => CreateGeminiModelsRequest(preset, apiKey),
             _ => throw new ProviderException("SnapLingo does not know how to list models for this provider yet."),
         };
     }
 
-    private static HttpRequestMessage CreateOpenAICompatibleModelsRequest(ProviderPreset preset, string apiKey)
+    private static HttpRequestMessage CreateOpenAIModelsRequest(ProviderPreset preset, string apiKey)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{preset.BaseUrl}/models");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
@@ -149,7 +154,7 @@ public sealed class ProviderRegistry
         return request;
     }
 
-    private static IReadOnlyList<ProviderModelOption> ParseOpenAICompatibleModels(JsonNode root)
+    private static IReadOnlyList<ProviderModelOption> ParseOpenAIModels(JsonNode root)
     {
         var models = (root["data"] as JsonArray ?? [])
             .Select(item =>
@@ -173,6 +178,70 @@ public sealed class ProviderRegistry
             .ToList();
 
         return models;
+    }
+
+    private static bool TryGetDocumentedModelCatalog(ProviderKind provider, out ProviderModelCatalog catalog)
+    {
+        switch (provider)
+        {
+            case ProviderKind.ZhipuGLM:
+                catalog = new ProviderModelCatalog(
+                    [
+                        new ProviderModelOption("glm-5", "GLM-5", new DateTimeOffset(2026, 01, 01, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("glm-4.7", "GLM-4.7", new DateTimeOffset(2025, 12, 01, 0, 0, 0, TimeSpan.Zero)),
+                    ],
+                    "glm-5"
+                );
+                return true;
+            case ProviderKind.Kimi:
+                catalog = new ProviderModelCatalog(
+                    [
+                        new ProviderModelOption("kimi-k2.5", "kimi-k2.5", new DateTimeOffset(2026, 03, 01, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("kimi-k2", "kimi-k2", new DateTimeOffset(2025, 09, 05, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("kimi-k2-thinking", "kimi-k2-thinking", new DateTimeOffset(2025, 11, 06, 0, 0, 0, TimeSpan.Zero)),
+                    ],
+                    "kimi-k2.5"
+                );
+                return true;
+            case ProviderKind.MiniMax:
+                catalog = new ProviderModelCatalog(
+                    [
+                        new ProviderModelOption("MiniMax-M2.5", "MiniMax-M2.5", new DateTimeOffset(2026, 02, 01, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("MiniMax-M2.5-highspeed", "MiniMax-M2.5-highspeed", new DateTimeOffset(2026, 02, 01, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("MiniMax-M2.1", "MiniMax-M2.1", new DateTimeOffset(2025, 12, 22, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("MiniMax-M2.1-highspeed", "MiniMax-M2.1-highspeed", new DateTimeOffset(2025, 12, 22, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("MiniMax-M2", "MiniMax-M2", new DateTimeOffset(2025, 01, 01, 0, 0, 0, TimeSpan.Zero)),
+                    ],
+                    "MiniMax-M2.5"
+                );
+                return true;
+            case ProviderKind.AlibabaBailian:
+                catalog = new ProviderModelCatalog(
+                    [
+                        new ProviderModelOption("qwen3.5-plus", "qwen3.5-plus", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("qwen3.5-plus-2026-02-15", "qwen3.5-plus-2026-02-15", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("qwen3.5-flash", "qwen3.5-flash", new DateTimeOffset(2026, 02, 23, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("qwen3.5-flash-2026-02-23", "qwen3.5-flash-2026-02-23", new DateTimeOffset(2026, 02, 23, 0, 0, 0, TimeSpan.Zero)),
+                    ],
+                    "qwen3.5-plus"
+                );
+                return true;
+            case ProviderKind.VolcengineArk:
+                catalog = new ProviderModelCatalog(
+                    [
+                        new ProviderModelOption("doubao-seed-2-0-pro-260215", "doubao-seed-2-0-pro-260215", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("doubao-seed-2-0-lite-260215", "doubao-seed-2-0-lite-260215", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("doubao-seed-2-0-mini-260215", "doubao-seed-2-0-mini-260215", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("doubao-seed-1-6-251015", "doubao-seed-1-6-251015", new DateTimeOffset(2025, 10, 15, 0, 0, 0, TimeSpan.Zero)),
+                        new ProviderModelOption("doubao-seed-1-6-250615", "doubao-seed-1-6-250615", new DateTimeOffset(2025, 06, 15, 0, 0, 0, TimeSpan.Zero)),
+                    ],
+                    "doubao-seed-2-0-pro-260215"
+                );
+                return true;
+            default:
+                catalog = null!;
+                return false;
+        }
     }
 
     private static IReadOnlyList<ProviderModelOption> ParseAnthropicModels(JsonNode root)
