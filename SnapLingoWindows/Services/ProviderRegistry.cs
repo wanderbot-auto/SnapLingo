@@ -35,11 +35,6 @@ public sealed class ProviderRegistry
 
     public async Task<ProviderModelCatalog> FetchModelsAsync(ProviderKind provider, CancellationToken cancellationToken = default)
     {
-        if (TryGetDocumentedModelCatalog(provider, out var documentedCatalog))
-        {
-            return documentedCatalog;
-        }
-
         var preset = GetPreset(provider);
         var apiKey = LoadKey(provider).Trim();
         if (string.IsNullOrWhiteSpace(apiKey))
@@ -53,7 +48,7 @@ public sealed class ProviderRegistry
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new ProviderException($"Could not load models from {provider.DisplayName()}. HTTP {(int)response.StatusCode}.");
+            throw new ProviderException(BuildModelsRequestErrorMessage(provider, (int)response.StatusCode));
         }
 
         var root = JsonNode.Parse(body) ?? throw new ProviderException("The provider model list response was malformed.");
@@ -61,6 +56,10 @@ public sealed class ProviderRegistry
         var models = provider switch
         {
             ProviderKind.OpenAI => ParseOpenAIModels(root),
+            ProviderKind.ZhipuGLM => ParseOpenAIModels(root),
+            ProviderKind.Kimi => ParseOpenAIModels(root),
+            ProviderKind.MiniMax => ParseOpenAIModels(root),
+            ProviderKind.AlibabaBailian => ParseOpenAIModels(root),
             ProviderKind.Anthropic => ParseAnthropicModels(root),
             ProviderKind.Gemini => ParseGeminiModels(root),
             _ => throw new ProviderException("SnapLingo does not know how to list models for this provider yet."),
@@ -126,8 +125,15 @@ public sealed class ProviderRegistry
         return preset.Kind switch
         {
             ProviderKind.OpenAI => CreateOpenAIModelsRequest(preset, apiKey),
+            ProviderKind.ZhipuGLM => CreateZhipuModelsRequest(preset, apiKey),
+            ProviderKind.Kimi => CreateKimiModelsRequest(preset, apiKey),
+            ProviderKind.MiniMax => CreateMiniMaxModelsRequest(preset, apiKey),
+            ProviderKind.AlibabaBailian => CreateAlibabaBailianModelsRequest(preset, apiKey),
             ProviderKind.Anthropic => CreateAnthropicModelsRequest(preset, apiKey),
             ProviderKind.Gemini => CreateGeminiModelsRequest(preset, apiKey),
+            ProviderKind.VolcengineArk => throw new ProviderException(
+                "Volcengine Ark does not expose model listing through the runtime API key used by SnapLingo. Its official model-list APIs are control-plane APIs that use HMAC-signed credentials."
+            ),
             _ => throw new ProviderException("SnapLingo does not know how to list models for this provider yet."),
         };
     }
@@ -138,6 +144,18 @@ public sealed class ProviderRegistry
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         return request;
     }
+
+    private static HttpRequestMessage CreateZhipuModelsRequest(ProviderPreset preset, string apiKey)
+        => CreateOpenAIModelsRequest(preset, apiKey);
+
+    private static HttpRequestMessage CreateKimiModelsRequest(ProviderPreset preset, string apiKey)
+        => CreateOpenAIModelsRequest(preset, apiKey);
+
+    private static HttpRequestMessage CreateMiniMaxModelsRequest(ProviderPreset preset, string apiKey)
+        => CreateOpenAIModelsRequest(preset, apiKey);
+
+    private static HttpRequestMessage CreateAlibabaBailianModelsRequest(ProviderPreset preset, string apiKey)
+        => CreateOpenAIModelsRequest(preset, apiKey);
 
     private static HttpRequestMessage CreateAnthropicModelsRequest(ProviderPreset preset, string apiKey)
     {
@@ -180,70 +198,19 @@ public sealed class ProviderRegistry
         return models;
     }
 
-    private static bool TryGetDocumentedModelCatalog(ProviderKind provider, out ProviderModelCatalog catalog)
+    private static string BuildModelsRequestErrorMessage(ProviderKind provider, int statusCode)
     {
-        switch (provider)
+        if (provider == ProviderKind.VolcengineArk)
         {
-            case ProviderKind.ZhipuGLM:
-                catalog = new ProviderModelCatalog(
-                    [
-                        new ProviderModelOption("glm-5", "GLM-5", new DateTimeOffset(2026, 01, 01, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("glm-4.7", "GLM-4.7", new DateTimeOffset(2025, 12, 01, 0, 0, 0, TimeSpan.Zero)),
-                    ],
-                    "glm-5"
-                );
-                return true;
-            case ProviderKind.Kimi:
-                catalog = new ProviderModelCatalog(
-                    [
-                        new ProviderModelOption("kimi-k2.5", "kimi-k2.5", new DateTimeOffset(2026, 03, 01, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("kimi-k2", "kimi-k2", new DateTimeOffset(2025, 09, 05, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("kimi-k2-thinking", "kimi-k2-thinking", new DateTimeOffset(2025, 11, 06, 0, 0, 0, TimeSpan.Zero)),
-                    ],
-                    "kimi-k2.5"
-                );
-                return true;
-            case ProviderKind.MiniMax:
-                catalog = new ProviderModelCatalog(
-                    [
-                        new ProviderModelOption("MiniMax-M2.7", "MiniMax-M2.7", new DateTimeOffset(2026, 03, 01, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("MiniMax-M2.7-highspeed", "MiniMax-M2.7-highspeed", new DateTimeOffset(2026, 03, 01, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("MiniMax-M2.5", "MiniMax-M2.5", new DateTimeOffset(2026, 02, 01, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("MiniMax-M2.5-highspeed", "MiniMax-M2.5-highspeed", new DateTimeOffset(2026, 02, 01, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("MiniMax-M2.1", "MiniMax-M2.1", new DateTimeOffset(2025, 12, 22, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("MiniMax-M2.1-highspeed", "MiniMax-M2.1-highspeed", new DateTimeOffset(2025, 12, 22, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("MiniMax-M2", "MiniMax-M2", new DateTimeOffset(2025, 01, 01, 0, 0, 0, TimeSpan.Zero)),
-                    ],
-                    "MiniMax-M2.7"
-                );
-                return true;
-            case ProviderKind.AlibabaBailian:
-                catalog = new ProviderModelCatalog(
-                    [
-                        new ProviderModelOption("qwen3.5-plus", "qwen3.5-plus", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("qwen3.5-plus-2026-02-15", "qwen3.5-plus-2026-02-15", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("qwen3.5-flash", "qwen3.5-flash", new DateTimeOffset(2026, 02, 23, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("qwen3.5-flash-2026-02-23", "qwen3.5-flash-2026-02-23", new DateTimeOffset(2026, 02, 23, 0, 0, 0, TimeSpan.Zero)),
-                    ],
-                    "qwen3.5-plus"
-                );
-                return true;
-            case ProviderKind.VolcengineArk:
-                catalog = new ProviderModelCatalog(
-                    [
-                        new ProviderModelOption("doubao-seed-2-0-pro-260215", "doubao-seed-2-0-pro-260215", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("doubao-seed-2-0-lite-260215", "doubao-seed-2-0-lite-260215", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("doubao-seed-2-0-mini-260215", "doubao-seed-2-0-mini-260215", new DateTimeOffset(2026, 02, 15, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("doubao-seed-1-6-251015", "doubao-seed-1-6-251015", new DateTimeOffset(2025, 10, 15, 0, 0, 0, TimeSpan.Zero)),
-                        new ProviderModelOption("doubao-seed-1-6-250615", "doubao-seed-1-6-250615", new DateTimeOffset(2025, 06, 15, 0, 0, 0, TimeSpan.Zero)),
-                    ],
-                    "doubao-seed-2-0-pro-260215"
-                );
-                return true;
-            default:
-                catalog = null!;
-                return false;
+            return "Volcengine Ark does not expose model listing through the runtime API key used by SnapLingo. Its official model-list APIs are control-plane APIs that use HMAC-signed credentials.";
         }
+
+        if (statusCode is 404 or 405)
+        {
+            return $"{provider.DisplayName()} did not expose a model-list endpoint for this API key or base URL. SnapLingo kept the single preset model instead.";
+        }
+
+        return $"Could not load models from {provider.DisplayName()}. HTTP {statusCode}.";
     }
 
     private static IReadOnlyList<ProviderModelOption> ParseAnthropicModels(JsonNode root)
