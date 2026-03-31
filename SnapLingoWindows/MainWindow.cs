@@ -41,12 +41,7 @@ public sealed class MainWindow : Window
     {
         appWindow.Resize(new Windows.Graphics.SizeInt32(1040, 760));
         ConfigureTitleBar();
-
-        if (appWindow.Presenter is OverlappedPresenter presenter)
-        {
-            presenter.IsMaximizable = false;
-            presenter.IsResizable = false;
-        }
+        NativeWindowStyler.ApplySettingsShellStyle(hwnd);
     }
 
     private void OnGlobalHotkeyPressed()

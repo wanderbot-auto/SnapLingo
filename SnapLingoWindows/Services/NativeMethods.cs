@@ -6,6 +6,8 @@ public static partial class NativeMethods
 {
     public const uint WM_HOTKEY = 0x0312;
     public const int GWLP_WNDPROC = -4;
+    public const int GWL_STYLE = -16;
+    public const int GWL_EXSTYLE = -20;
 
     public const uint MOD_ALT = 0x0001;
     public const uint MOD_CONTROL = 0x0002;
@@ -14,6 +16,18 @@ public static partial class NativeMethods
 
     public const int SW_HIDE = 0;
     public const int SW_SHOWNORMAL = 1;
+
+    public const uint WS_MAXIMIZEBOX = 0x00010000;
+    public const uint WS_THICKFRAME = 0x00040000;
+
+    public const uint WS_EX_CLIENTEDGE = 0x00000200;
+    public const uint WS_EX_STATICEDGE = 0x00020000;
+
+    public const uint SWP_NOSIZE = 0x0001;
+    public const uint SWP_NOMOVE = 0x0002;
+    public const uint SWP_NOZORDER = 0x0004;
+    public const uint SWP_NOACTIVATE = 0x0010;
+    public const uint SWP_FRAMECHANGED = 0x0020;
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -41,11 +55,35 @@ public static partial class NativeMethods
     [LibraryImport("user32.dll", EntryPoint = "CallWindowProcW")]
     public static partial nint CallWindowProc(nint previousWindowProc, nint hWnd, uint message, nuint wParam, nint lParam);
 
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
+    private static partial nint GetWindowLongPtr64(nint hWnd, int index);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongW", SetLastError = true)]
+    private static partial int GetWindowLong32(nint hWnd, int index);
+
     [LibraryImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
     private static partial nint SetWindowLongPtr64(nint hWnd, int index, nint newWindowProc);
 
     [LibraryImport("user32.dll", EntryPoint = "SetWindowLongW", SetLastError = true)]
     private static partial int SetWindowLong32(nint hWnd, int index, int newWindowProc);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool SetWindowPos(
+        nint hWnd,
+        nint hWndInsertAfter,
+        int x,
+        int y,
+        int cx,
+        int cy,
+        uint flags);
+
+    public static nint GetWindowLongPtr(nint hWnd, int index)
+    {
+        return IntPtr.Size == 8
+            ? GetWindowLongPtr64(hWnd, index)
+            : new nint(GetWindowLong32(hWnd, index));
+    }
 
     public static nint SetWindowLongPtr(nint hWnd, int index, nint newWindowProc)
     {
