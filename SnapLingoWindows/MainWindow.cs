@@ -1,6 +1,7 @@
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
 using WinRT.Interop;
+using Windows.UI;
 
 namespace SnapLingoWindows;
 
@@ -14,9 +15,12 @@ public sealed class MainWindow : Window
     public MainWindow(MainViewModel viewModel)
     {
         this.viewModel = viewModel;
-        Content = new MainPage(viewModel);
+        var page = new MainPage(viewModel);
+        Content = page;
         Title = "SnapLingo Settings";
         SystemBackdrop = new MicaBackdrop();
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(page.TitleBarElement);
 
         hwnd = WindowNative.GetWindowHandle(this);
         appWindow = AppWindow.GetFromWindowId(Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd));
@@ -35,6 +39,7 @@ public sealed class MainWindow : Window
     private void ConfigureWindow()
     {
         appWindow.Resize(new Windows.Graphics.SizeInt32(580, 620));
+        ConfigureTitleBar();
 
         if (appWindow.Presenter is OverlappedPresenter presenter)
         {
@@ -46,6 +51,24 @@ public sealed class MainWindow : Window
     {
         (Application.Current as App)?.ShowTranslationPanel();
         _ = viewModel.HandleHotkeyAsync();
+    }
+
+    private void ConfigureTitleBar()
+    {
+        if (!AppWindowTitleBar.IsCustomizationSupported())
+        {
+            return;
+        }
+
+        var titleBar = appWindow.TitleBar;
+        titleBar.ButtonBackgroundColor = Color.FromArgb(0, 0, 0, 0);
+        titleBar.ButtonInactiveBackgroundColor = Color.FromArgb(0, 0, 0, 0);
+        titleBar.ButtonForegroundColor = Color.FromArgb(255, 242, 242, 242);
+        titleBar.ButtonInactiveForegroundColor = Color.FromArgb(255, 160, 160, 160);
+        titleBar.ButtonHoverBackgroundColor = Color.FromArgb(24, 255, 255, 255);
+        titleBar.ButtonPressedBackgroundColor = Color.FromArgb(36, 255, 255, 255);
+        titleBar.ButtonHoverForegroundColor = Color.FromArgb(255, 255, 255, 255);
+        titleBar.ButtonPressedForegroundColor = Color.FromArgb(255, 255, 255, 255);
     }
 
     private void OnClosed(object sender, WindowEventArgs args)

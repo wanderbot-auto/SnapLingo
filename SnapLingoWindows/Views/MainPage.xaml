@@ -70,14 +70,42 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="Transparent">
-        <Border
-            Margin="10"
-            Background="{StaticResource ShellBackgroundBrush}"
-            BorderBrush="{StaticResource SidebarBorderBrush}"
-            BorderThickness="1"
-            CornerRadius="16">
-            <Grid>
+    <Grid Background="{StaticResource ShellBackgroundBrush}">
+        <Grid RowDefinitions="32,*">
+            <Grid
+                x:Name="AppTitleBar"
+                Grid.Row="0"
+                Background="{StaticResource ShellBackgroundBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="164" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                    Grid.ColumnSpan="2"
+                    BorderBrush="{StaticResource SidebarBorderBrush}"
+                    BorderThickness="0,0,0,1" />
+
+                <StackPanel
+                    Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Padding="12,0,0,0"
+                    VerticalAlignment="Center">
+                    <Border
+                        Width="11"
+                        Height="11"
+                        Background="{StaticResource PrimaryAccentBrush}"
+                        CornerRadius="4" />
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource SidebarTextBrush}"
+                        Text="SnapLingo Settings" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="164" />
                     <ColumnDefinition Width="*" />
@@ -88,7 +116,6 @@
                     Background="{StaticResource SidebarBackgroundBrush}"
                     BorderBrush="{StaticResource SidebarBorderBrush}"
                     BorderThickness="0,0,1,0"
-                    CornerRadius="16,0,0,16"
                     Padding="10">
                     <Grid RowDefinitions="Auto,Auto,*,Auto">
                         <Border
@@ -229,8 +256,7 @@
 
                 <Border
                     Grid.Column="1"
-                    Background="{StaticResource ContentBackgroundBrush}"
-                    CornerRadius="0,16,16,0">
+                    Background="{StaticResource ContentBackgroundBrush}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
                         <Grid Padding="12">
                             <StackPanel x:Name="OverviewPanel" Spacing="10">
@@ -411,6 +437,6 @@
                     </ScrollViewer>
                 </Border>
             </Grid>
-        </Border>
+        </Grid>
     </Grid>
 </Page>

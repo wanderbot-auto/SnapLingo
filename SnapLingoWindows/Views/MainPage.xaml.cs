@@ -19,6 +19,7 @@ public sealed partial class MainPage : Page
     private bool suppressSelectionEvents;
 
     public MainViewModel ViewModel { get; }
+    public FrameworkElement TitleBarElement => AppTitleBar;
 
     public MainPage(MainViewModel viewModel)
     {
