@@ -8,6 +8,7 @@
     RequestedTheme="Light"
     mc:Ignorable="d">
     <Page.Resources>
+        <SolidColorBrush x:Key="TransparentBrush" Color="#00000000" />
         <SolidColorBrush x:Key="WindowBackdropBrush" Color="#F4F1EB" />
         <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#1A1A1A" />
         <SolidColorBrush x:Key="SidebarSurfaceBrush" Color="#2A2A2A" />
@@ -15,6 +16,8 @@
         <SolidColorBrush x:Key="SidebarTextBrush" Color="#E5FFFFFF" />
         <SolidColorBrush x:Key="SidebarMutedBrush" Color="#99FFFFFF" />
         <SolidColorBrush x:Key="SidebarSubtleBrush" Color="#4DFFFFFF" />
+        <SolidColorBrush x:Key="SidebarNavTextBrush" Color="#C6CDD8" />
+        <SolidColorBrush x:Key="SidebarNavSelectedTextBrush" Color="#F8FAFC" />
         <SolidColorBrush x:Key="NavSelectedBackgroundBrush" Color="#14FFFFFF" />
         <SolidColorBrush x:Key="NavSelectedBorderBrush" Color="#1AFFFFFF" />
         <SolidColorBrush x:Key="NavSelectedAccentBrush" Color="#2B7FFF" />
@@ -113,11 +116,11 @@
         </Style>
 
         <Style x:Key="SidebarNavButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="{StaticResource TransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource TransparentBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Foreground" Value="{StaticResource SidebarMutedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource SidebarNavTextBrush}" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="Padding" Value="0" />
@@ -209,13 +212,13 @@
             Grid.Row="0"
             Background="Transparent">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="196" />
+                <ColumnDefinition Width="168" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <TextBlock
                 Grid.Column="0"
-                Margin="18,0,0,0"
+                Margin="14,0,0,0"
                 VerticalAlignment="Center"
                 FontSize="12"
                 FontWeight="SemiBold"
@@ -250,7 +253,7 @@
             CornerRadius="14">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="196" />
+                    <ColumnDefinition Width="168" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -260,7 +263,7 @@
                     BorderBrush="{StaticResource SidebarBorderBrush}"
                     BorderThickness="0,0,1,0"
                     CornerRadius="14,0,0,14"
-                    Padding="14">
+                    Padding="12">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -311,7 +314,7 @@
                         <TextBlock
                             x:Name="SectionsLabelTextBlock"
                             Grid.Row="1"
-                            Margin="8,14,0,8"
+                            Margin="6,12,0,8"
                             Style="{StaticResource SidebarLabelTextStyle}"
                             Text="SECTIONS" />
 
@@ -323,10 +326,10 @@
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Basic">
-                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
+                                <Grid ColumnDefinitions="4,16,*" Padding="0,0,8,0">
                                     <Border x:Name="OverviewNavAccent" Width="4" Height="20" Background="{StaticResource NavSelectedAccentBrush}" CornerRadius="999" VerticalAlignment="Center" />
-                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE713;" VerticalAlignment="Center" />
-                                    <TextBlock x:Name="OverviewNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Basic" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="{Binding Foreground, ElementName=OverviewNavButton}" Glyph="&#xE713;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="OverviewNavTextBlock" Grid.Column="2" Margin="10,0,0,0" Foreground="{Binding Foreground, ElementName=OverviewNavButton}" Style="{StaticResource SidebarNavTextStyle}" Text="Basic" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
 
@@ -335,10 +338,10 @@
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Provider">
-                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
-                                    <Border x:Name="ProviderNavAccent" Width="4" Height="20" Background="Transparent" CornerRadius="999" VerticalAlignment="Center" />
-                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xF1C1;" VerticalAlignment="Center" />
-                                    <TextBlock x:Name="ProviderNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Model" VerticalAlignment="Center" />
+                                <Grid ColumnDefinitions="4,16,*" Padding="0,0,8,0">
+                                    <Border x:Name="ProviderNavAccent" Width="4" Height="20" Background="{StaticResource TransparentBrush}" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="{Binding Foreground, ElementName=ProviderNavButton}" Glyph="&#xF1C1;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="ProviderNavTextBlock" Grid.Column="2" Margin="10,0,0,0" Foreground="{Binding Foreground, ElementName=ProviderNavButton}" Style="{StaticResource SidebarNavTextStyle}" Text="Model" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
 
@@ -347,10 +350,10 @@
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Prompt">
-                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
-                                    <Border x:Name="PromptNavAccent" Width="4" Height="20" Background="Transparent" CornerRadius="999" VerticalAlignment="Center" />
-                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE70F;" VerticalAlignment="Center" />
-                                    <TextBlock x:Name="PromptNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Prompt" VerticalAlignment="Center" />
+                                <Grid ColumnDefinitions="4,16,*" Padding="0,0,8,0">
+                                    <Border x:Name="PromptNavAccent" Width="4" Height="20" Background="{StaticResource TransparentBrush}" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="{Binding Foreground, ElementName=PromptNavButton}" Glyph="&#xE70F;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="PromptNavTextBlock" Grid.Column="2" Margin="10,0,0,0" Foreground="{Binding Foreground, ElementName=PromptNavButton}" Style="{StaticResource SidebarNavTextStyle}" Text="Prompt" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
 
@@ -359,10 +362,10 @@
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Appearance">
-                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
-                                    <Border x:Name="AppearanceNavAccent" Width="4" Height="20" Background="Transparent" CornerRadius="999" VerticalAlignment="Center" />
-                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE790;" VerticalAlignment="Center" />
-                                    <TextBlock x:Name="AppearanceNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Appearance" VerticalAlignment="Center" />
+                                <Grid ColumnDefinitions="4,16,*" Padding="0,0,8,0">
+                                    <Border x:Name="AppearanceNavAccent" Width="4" Height="20" Background="{StaticResource TransparentBrush}" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="{Binding Foreground, ElementName=AppearanceNavButton}" Glyph="&#xE790;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="AppearanceNavTextBlock" Grid.Column="2" Margin="10,0,0,0" Foreground="{Binding Foreground, ElementName=AppearanceNavButton}" Style="{StaticResource SidebarNavTextStyle}" Text="Appearance" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
 
@@ -371,10 +374,10 @@
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
                                 Tag="Advanced">
-                                <Grid ColumnDefinitions="4,18,*" Padding="0,0,12,0">
-                                    <Border x:Name="AdvancedNavAccent" Width="4" Height="20" Background="Transparent" CornerRadius="999" VerticalAlignment="Center" />
-                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xF14C;" VerticalAlignment="Center" />
-                                    <TextBlock x:Name="AdvancedNavTextBlock" Grid.Column="2" Margin="12,0,0,0" Style="{StaticResource SidebarNavTextStyle}" Text="Advanced" VerticalAlignment="Center" />
+                                <Grid ColumnDefinitions="4,16,*" Padding="0,0,8,0">
+                                    <Border x:Name="AdvancedNavAccent" Width="4" Height="20" Background="{StaticResource TransparentBrush}" CornerRadius="999" VerticalAlignment="Center" />
+                                    <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="16" Foreground="{Binding Foreground, ElementName=AdvancedNavButton}" Glyph="&#xF14C;" VerticalAlignment="Center" />
+                                    <TextBlock x:Name="AdvancedNavTextBlock" Grid.Column="2" Margin="10,0,0,0" Foreground="{Binding Foreground, ElementName=AdvancedNavButton}" Style="{StaticResource SidebarNavTextStyle}" Text="Advanced" VerticalAlignment="Center" />
                                 </Grid>
                             </Button>
                         </StackPanel>

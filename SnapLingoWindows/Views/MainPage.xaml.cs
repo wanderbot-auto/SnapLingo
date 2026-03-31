@@ -18,6 +18,7 @@ public sealed partial class MainPage : Page
     private readonly IReadOnlyList<ProviderChoice> providerChoices;
     private readonly IReadOnlyList<ShortcutChoice> shortcutChoices;
     private readonly IReadOnlyList<LanguageChoice> languageChoices;
+    private SettingsSection? currentSection;
     private bool suppressSelectionEvents;
     private bool hasInitialized;
 
@@ -360,6 +361,12 @@ public sealed partial class MainPage : Page
 
     private void SelectSection(SettingsSection section)
     {
+        if (currentSection == section)
+        {
+            return;
+        }
+
+        currentSection = section;
         OverviewPanel.Visibility = section == SettingsSection.Basic ? Visibility.Visible : Visibility.Collapsed;
         ProviderPanel.Visibility = section == SettingsSection.Provider ? Visibility.Visible : Visibility.Collapsed;
         PromptPanel.Visibility = section == SettingsSection.Prompt ? Visibility.Visible : Visibility.Collapsed;
@@ -377,16 +384,16 @@ public sealed partial class MainPage : Page
     {
         button.Background = isSelected
             ? (Brush)Resources["NavSelectedBackgroundBrush"]
-            : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+            : (Brush)Resources["TransparentBrush"];
         button.BorderBrush = isSelected
             ? (Brush)Resources["NavSelectedBorderBrush"]
-            : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+            : (Brush)Resources["TransparentBrush"];
         button.Foreground = isSelected
-            ? (Brush)Resources["SidebarTextBrush"]
-            : (Brush)Resources["SidebarMutedBrush"];
+            ? (Brush)Resources["SidebarNavSelectedTextBrush"]
+            : (Brush)Resources["SidebarNavTextBrush"];
         accent.Background = isSelected
             ? (Brush)Resources["NavSelectedAccentBrush"]
-            : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+            : (Brush)Resources["TransparentBrush"];
     }
 
     private string BuildWorkflowStatusText()
