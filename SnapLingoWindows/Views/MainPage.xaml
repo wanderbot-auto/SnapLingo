@@ -199,23 +199,6 @@
                             </Button>
 
                             <Button
-                                x:Name="WorkflowNavButton"
-                                Click="OnNavigationClicked"
-                                Style="{StaticResource SidebarNavButtonStyle}"
-                                Tag="Workflow">
-                                <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
-                                    <Border
-                                        x:Name="WorkflowNavAccent"
-                                        Width="4"
-                                        Height="20"
-                                        Background="Transparent"
-                                        CornerRadius="999"
-                                        VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" x:Name="WorkflowNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Workflow" />
-                                </Grid>
-                            </Button>
-
-                            <Button
                                 x:Name="ProviderNavButton"
                                 Click="OnNavigationClicked"
                                 Style="{StaticResource SidebarNavButtonStyle}"
@@ -308,30 +291,6 @@
                                             Foreground="{StaticResource ContentMutedBrush}"
                                             Visibility="Collapsed"
                                             TextWrapping="WrapWholeWords" />
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <StackPanel x:Name="WorkflowPanel" Spacing="10" Visibility="Collapsed">
-                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Workflow" />
-
-                                <Border Style="{StaticResource SettingsCardStyle}">
-                                    <StackPanel Spacing="8">
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Trigger summary" />
-                                        <TextBlock
-                                            x:Name="HotkeySummaryTextBlock"
-                                            Style="{StaticResource ValueTextStyle}"
-                                            TextWrapping="WrapWholeWords" />
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Style="{StaticResource SettingsCardStyle}">
-                                    <StackPanel Spacing="8">
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Quick actions" />
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <Button Click="OnShowPanelClicked" Content="Show panel" />
-                                            <Button Click="OnUseClipboardClicked" Content="Use clipboard" />
-                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

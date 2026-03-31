@@ -9,7 +9,6 @@ public sealed partial class MainPage : Page
     private enum SettingsSection
     {
         Overview,
-        Workflow,
         Provider,
         Hotkey,
     }
@@ -74,7 +73,6 @@ public sealed partial class MainPage : Page
         {
             ProviderComboBox.SelectedItem = providerChoices.FirstOrDefault(choice => choice.Kind == ViewModel.SelectedProvider);
             HotkeyComboBox.SelectedItem = shortcutChoices.FirstOrDefault(choice => choice.Preset == ViewModel.SelectedShortcutPreset);
-            HotkeySummaryTextBlock.Text = $"Current trigger: {ViewModel.SelectedShortcutPreset.DisplayName()}";
 
             if (ApiKeyPasswordBox.Password != ViewModel.ApiKeyInput)
             {
@@ -150,12 +148,10 @@ public sealed partial class MainPage : Page
     private void SelectSection(SettingsSection section)
     {
         OverviewPanel.Visibility = section == SettingsSection.Overview ? Visibility.Visible : Visibility.Collapsed;
-        WorkflowPanel.Visibility = section == SettingsSection.Workflow ? Visibility.Visible : Visibility.Collapsed;
         ProviderPanel.Visibility = section == SettingsSection.Provider ? Visibility.Visible : Visibility.Collapsed;
         HotkeyPanel.Visibility = section == SettingsSection.Hotkey ? Visibility.Visible : Visibility.Collapsed;
 
         ApplyNavigationState(OverviewNavButton, OverviewNavAccent, section == SettingsSection.Overview);
-        ApplyNavigationState(WorkflowNavButton, WorkflowNavAccent, section == SettingsSection.Workflow);
         ApplyNavigationState(ProviderNavButton, ProviderNavAccent, section == SettingsSection.Provider);
         ApplyNavigationState(HotkeyNavButton, HotkeyNavAccent, section == SettingsSection.Hotkey);
     }
