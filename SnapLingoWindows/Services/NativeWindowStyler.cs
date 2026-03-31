@@ -36,6 +36,7 @@ public static class NativeWindowStyler
                 $"Failed to refresh window chrome. Win32 error: {Marshal.GetLastWin32Error()}");
         }
 
+        TryApplyRoundedCorners(hwnd);
         TryRemoveDwmBorder(hwnd);
     }
 
@@ -77,6 +78,16 @@ public static class NativeWindowStyler
             hwnd,
             NativeMethods.DWMWA_BORDER_COLOR,
             in color,
+            sizeof(uint));
+    }
+
+    private static void TryApplyRoundedCorners(nint hwnd)
+    {
+        var preference = NativeMethods.DWM_WINDOW_CORNER_PREFERENCE_ROUND;
+        _ = NativeMethods.DwmSetWindowAttribute(
+            hwnd,
+            NativeMethods.DWMWA_WINDOW_CORNER_PREFERENCE,
+            in preference,
             sizeof(uint));
     }
 }

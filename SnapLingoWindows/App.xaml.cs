@@ -35,6 +35,11 @@ public partial class App : Application
         }
     }
 
+    public void HideSettingsWindow()
+    {
+        SettingsWindow.HideWindow();
+    }
+
     private void EnsureTranslationWindow()
     {
         if (TranslationWindow is null || TranslationWindow.IsClosed)

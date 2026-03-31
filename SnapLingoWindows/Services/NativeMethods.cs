@@ -33,7 +33,9 @@ public static partial class NativeMethods
     public const uint SWP_NOACTIVATE = 0x0010;
     public const uint SWP_FRAMECHANGED = 0x0020;
 
+    public const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
     public const int DWMWA_BORDER_COLOR = 34;
+    public const uint DWM_WINDOW_CORNER_PREFERENCE_ROUND = 2;
     public const uint DWM_COLOR_NONE = 0xFFFFFFFE;
 
     [LibraryImport("user32.dll", SetLastError = true)]

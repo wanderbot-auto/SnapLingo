@@ -36,6 +36,11 @@ public sealed class MainWindow : Window
         viewModel.SetHotkeyStatusMessage(hotkeyService.Register(preset));
     }
 
+    public void HideWindow()
+    {
+        NativeMethods.ShowWindow(hwnd, NativeMethods.SW_HIDE);
+    }
+
     private void ConfigureWindow()
     {
         appWindow.Resize(new Windows.Graphics.SizeInt32(680, 580));

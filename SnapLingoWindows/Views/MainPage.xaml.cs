@@ -246,6 +246,16 @@ public sealed partial class MainPage : Page
         (Application.Current as App)?.ShowTranslationPanel();
     }
 
+    private void OnHideWindowClicked(object sender, RoutedEventArgs e)
+    {
+        (Application.Current as App)?.HideSettingsWindow();
+    }
+
+    private void OnCloseWindowClicked(object sender, RoutedEventArgs e)
+    {
+        Application.Current.Exit();
+    }
+
     private async void OnUseClipboardClicked(object sender, RoutedEventArgs e)
     {
         (Application.Current as App)?.ShowTranslationPanel();

@@ -61,38 +61,38 @@
         </Style>
 
         <Style x:Key="PanelTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
         </Style>
 
         <Style x:Key="PanelSubtitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
         </Style>
 
         <Style x:Key="SectionTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
         </Style>
 
         <Style x:Key="SectionHintTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
         </Style>
 
         <Style x:Key="InfoLabelTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="Medium" />
             <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
         </Style>
 
         <Style x:Key="InfoValueTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
@@ -102,17 +102,17 @@
             <Setter Property="Background" Value="White" />
             <Setter Property="BorderBrush" Value="{StaticResource ContentBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Padding" Value="14" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="12" />
         </Style>
 
         <Style x:Key="OverviewStatCardStyle" TargetType="Border">
             <Setter Property="Background" Value="White" />
             <Setter Property="BorderBrush" Value="{StaticResource ContentBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Padding" Value="12" />
-            <Setter Property="MinHeight" Value="72" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="MinHeight" Value="64" />
         </Style>
 
         <Style x:Key="SidebarNavButtonStyle" TargetType="Button">
@@ -127,14 +127,26 @@
             <Setter Property="Height" Value="36" />
         </Style>
 
+        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="{StaticResource TransparentBrush}" />
+            <Setter Property="Foreground" Value="#4B5563" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
         <Style x:Key="ActionButtonStyle" TargetType="Button">
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="MinHeight" Value="34" />
-            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="9,5" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
 
         <Style x:Key="SecondaryActionButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
@@ -154,8 +166,8 @@
             <Setter Property="BorderBrush" Value="{StaticResource SegmentSelectedBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="MinHeight" Value="34" />
-            <Setter Property="Padding" Value="9,6" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,5" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
         </Style>
@@ -165,43 +177,43 @@
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="MinHeight" Value="34" />
-            <Setter Property="Padding" Value="9,6" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,5" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
         </Style>
 
         <Style x:Key="FormComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="MinHeight" Value="38" />
-            <Setter Property="Padding" Value="10,6" />
-            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="9,5" />
+            <Setter Property="CornerRadius" Value="10" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
 
         <Style x:Key="FormTextBoxStyle" TargetType="TextBox">
-            <Setter Property="MinHeight" Value="36" />
-            <Setter Property="Padding" Value="10,8" />
-            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="9,6" />
+            <Setter Property="CornerRadius" Value="10" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
 
         <Style x:Key="FormPasswordBoxStyle" TargetType="PasswordBox">
-            <Setter Property="MinHeight" Value="36" />
-            <Setter Property="Padding" Value="10,8" />
-            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="9,6" />
+            <Setter Property="CornerRadius" Value="10" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="{StaticResource FieldBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
     </Page.Resources>
 
@@ -218,6 +230,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="168" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <TextBlock
@@ -239,8 +252,29 @@
                 Foreground="{StaticResource ContentMutedBrush}"
                 Text="SnapLingo Settings" />
 
+            <StackPanel
+                Grid.Column="2"
+                Margin="0,0,8,0"
+                Orientation="Horizontal"
+                Spacing="6"
+                VerticalAlignment="Center">
+                <Button
+                    x:Name="HideWindowButton"
+                    Click="OnHideWindowClicked"
+                    Style="{StaticResource TitleBarButtonStyle}">
+                    <FontIcon FontFamily="Segoe Fluent Icons" FontSize="11" Glyph="&#xE921;" />
+                </Button>
+
+                <Button
+                    x:Name="CloseWindowButton"
+                    Click="OnCloseWindowClicked"
+                    Style="{StaticResource TitleBarButtonStyle}">
+                    <FontIcon FontFamily="Segoe Fluent Icons" FontSize="11" Glyph="&#xE8BB;" />
+                </Button>
+            </StackPanel>
+
             <Border
-                Grid.ColumnSpan="2"
+                Grid.ColumnSpan="3"
                 VerticalAlignment="Bottom"
                 BorderBrush="#14A1A1AA"
                 BorderThickness="0,0,0,1" />
@@ -248,13 +282,13 @@
 
         <Border
             Grid.Row="1"
-            Margin="0"
+            Margin="6,0,6,6"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Background="White"
-            BorderBrush="{StaticResource TransparentBrush}"
-            BorderThickness="0"
-            CornerRadius="0">
+            BorderBrush="#19D4D4D8"
+            BorderThickness="1"
+            CornerRadius="10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="168" />
@@ -266,7 +300,7 @@
                     Background="{StaticResource SidebarBackgroundBrush}"
                     BorderBrush="{StaticResource SidebarBorderBrush}"
                     BorderThickness="0,0,1,0"
-                    CornerRadius="0"
+                    CornerRadius="10,0,0,10"
                     Padding="12">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -407,7 +441,7 @@
                 <Border
                     Grid.Column="1"
                     Background="{StaticResource ContentBackgroundBrush}"
-                    CornerRadius="0">
+                    CornerRadius="0,10,10,0">
                     <ScrollViewer
                         HorizontalScrollBarVisibility="Disabled"
                         VerticalScrollBarVisibility="Auto"
