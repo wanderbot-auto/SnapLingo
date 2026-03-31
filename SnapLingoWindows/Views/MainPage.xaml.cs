@@ -81,12 +81,12 @@ public sealed partial class MainPage : Page
                 ApiKeyPasswordBox.Password = ViewModel.ApiKeyInput;
             }
 
-            ProviderStatusTextBlock.Text = ViewModel.ProviderStatusMessage ?? "Saved only in Windows local secure storage. Plain-text config files stay clean.";
-            HotkeyStatusTextBlock.Text = ViewModel.HotkeyStatusMessage ?? "Pick one of the stable preset combinations for the global hotkey.";
+            ApplyStatusText(ProviderStatusTextBlock, ViewModel.ProviderStatusMessage);
+            ApplyStatusText(HotkeyStatusTextBlock, ViewModel.HotkeyStatusMessage);
             OverviewProviderValueTextBlock.Text = ViewModel.SelectedProvider.DisplayName();
             OverviewHotkeyValueTextBlock.Text = ViewModel.SelectedShortcutPreset.DisplayName();
             OverviewWorkflowValueTextBlock.Text = ViewModel.Workflow.Phase == WorkflowPhase.Idle ? "Ready" : "Active";
-            OverviewStatusTextBlock.Text = ProviderStatusTextBlock.Text;
+            ApplyStatusText(OverviewStatusTextBlock, ViewModel.ProviderStatusMessage);
         }
         finally
         {
@@ -168,12 +168,16 @@ public sealed partial class MainPage : Page
         button.BorderBrush = isSelected
             ? (Brush)Resources["NavSelectedBorderBrush"]
             : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
-        button.Foreground = isSelected
-            ? (Brush)Resources["SidebarTextBrush"]
-            : (Brush)Resources["SidebarMutedBrush"];
         accent.Background = isSelected
             ? (Brush)Resources["NavSelectedAccentBrush"]
             : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+    }
+
+    private static void ApplyStatusText(TextBlock textBlock, string? message)
+    {
+        var hasMessage = !string.IsNullOrWhiteSpace(message);
+        textBlock.Text = hasMessage ? message : string.Empty;
+        textBlock.Visibility = hasMessage ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private sealed record ProviderChoice(ProviderKind Kind, string Label);

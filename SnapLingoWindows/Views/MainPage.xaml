@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    RequestedTheme="Light"
     mc:Ignorable="d">
     <Page.Resources>
         <SolidColorBrush x:Key="ShellBackgroundBrush" Color="#19191B" />
@@ -19,6 +20,7 @@
         <SolidColorBrush x:Key="NavSelectedAccentBrush" Color="#0F6CBD" />
         <SolidColorBrush x:Key="ContentBackgroundBrush" Color="#F3F3F3" />
         <SolidColorBrush x:Key="ContentBorderBrush" Color="#12000000" />
+        <SolidColorBrush x:Key="ContentPrimaryTextBrush" Color="#15171A" />
         <SolidColorBrush x:Key="ContentMutedBrush" Color="#666666" />
         <SolidColorBrush x:Key="ChipBackgroundBrush" Color="#11000000" />
         <SolidColorBrush x:Key="FieldBackgroundBrush" Color="#F7F7F7" />
@@ -34,12 +36,30 @@
         <Style x:Key="PanelTitleTextStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="20" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
         </Style>
 
         <Style x:Key="PanelSubtitleTextStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Foreground" Value="{StaticResource ContentMutedBrush}" />
+        </Style>
+
+        <Style x:Key="NavTitleTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource SidebarTextBrush}" />
+        </Style>
+
+        <Style x:Key="ValueTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
+        </Style>
+
+        <Style x:Key="SectionLabelTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource ContentPrimaryTextBrush}" />
         </Style>
 
         <Style x:Key="SettingsCardStyle" TargetType="Border">
@@ -151,11 +171,6 @@
                                             Text="Settings" />
                                     </StackPanel>
                                 </StackPanel>
-                                <TextBlock
-                                    FontSize="10"
-                                    Foreground="{StaticResource SidebarMutedBrush}"
-                                    Text="Translation workflow and provider setup."
-                                    TextWrapping="WrapWholeWords" />
                             </StackPanel>
                         </Border>
 
@@ -179,10 +194,7 @@
                                         Background="{StaticResource NavSelectedAccentBrush}"
                                         CornerRadius="999"
                                         VerticalAlignment="Center" />
-                                    <StackPanel Grid.Column="1" Spacing="1">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Overview" />
-                                        <TextBlock FontSize="10" Opacity="0.76" Text="Summary" />
-                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" x:Name="OverviewNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Overview" />
                                 </Grid>
                             </Button>
 
@@ -199,10 +211,7 @@
                                         Background="Transparent"
                                         CornerRadius="999"
                                         VerticalAlignment="Center" />
-                                    <StackPanel Grid.Column="1" Spacing="1">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Workflow" />
-                                        <TextBlock FontSize="10" Opacity="0.76" Text="Actions" />
-                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" x:Name="WorkflowNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Workflow" />
                                 </Grid>
                             </Button>
 
@@ -219,10 +228,7 @@
                                         Background="Transparent"
                                         CornerRadius="999"
                                         VerticalAlignment="Center" />
-                                    <StackPanel Grid.Column="1" Spacing="1">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Provider" />
-                                        <TextBlock FontSize="10" Opacity="0.76" Text="Key and service" />
-                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" x:Name="ProviderNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Provider" />
                                 </Grid>
                             </Button>
 
@@ -239,17 +245,9 @@
                                         Background="Transparent"
                                         CornerRadius="999"
                                         VerticalAlignment="Center" />
-                                    <StackPanel Grid.Column="1" Spacing="1">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Hotkey" />
-                                        <TextBlock FontSize="10" Opacity="0.76" Text="Trigger" />
-                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" x:Name="HotkeyNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Hotkey" />
                                 </Grid>
                             </Button>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="3" Margin="4,8,0,0" Spacing="2">
-                            <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Text="WINUI-LEANING" />
-                            <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Text="580 x 620" />
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -260,21 +258,7 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
                         <Grid Padding="12">
                             <StackPanel x:Name="OverviewPanel" Spacing="10">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Overview" />
-                                        <TextBlock
-                                            Style="{StaticResource PanelSubtitleTextStyle}"
-                                            Text="Core settings and quick actions." />
-                                    </StackPanel>
-                                    <Border
-                                        Grid.Column="1"
-                                        Background="{StaticResource ChipBackgroundBrush}"
-                                        CornerRadius="999"
-                                        Padding="8,4">
-                                        <TextBlock FontSize="10" Foreground="{StaticResource ContentMutedBrush}" Text="Default page" />
-                                    </Border>
-                                </Grid>
+                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Overview" />
 
                                 <Grid ColumnSpacing="8" RowSpacing="8">
                                     <Grid.ColumnDefinitions>
@@ -289,32 +273,32 @@
                                     <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource StatCardStyle}">
                                         <StackPanel Spacing="2">
                                             <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Provider" />
-                                            <TextBlock x:Name="OverviewProviderValueTextBlock" FontSize="13" FontWeight="SemiBold" Text="OpenAI" />
+                                            <TextBlock x:Name="OverviewProviderValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="OpenAI" />
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource StatCardStyle}">
                                         <StackPanel Spacing="2">
                                             <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Hotkey" />
-                                            <TextBlock x:Name="OverviewHotkeyValueTextBlock" FontSize="13" FontWeight="SemiBold" Text="Ctrl + Shift + 1" />
+                                            <TextBlock x:Name="OverviewHotkeyValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="Ctrl + Shift + 1" />
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource StatCardStyle}">
                                         <StackPanel Spacing="2">
                                             <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Storage" />
-                                            <TextBlock FontSize="13" FontWeight="SemiBold" Text="Secure local" />
+                                            <TextBlock Style="{StaticResource ValueTextStyle}" Text="Secure local" />
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StatCardStyle}">
                                         <StackPanel Spacing="2">
                                             <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Workflow" />
-                                            <TextBlock x:Name="OverviewWorkflowValueTextBlock" FontSize="13" FontWeight="SemiBold" Text="Selection + hotkey" />
+                                            <TextBlock x:Name="OverviewWorkflowValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="Selection + hotkey" />
                                         </StackPanel>
                                     </Border>
                                 </Grid>
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="8">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Quick actions" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Quick actions" />
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <Button x:Name="ShowPanelButton" Click="OnShowPanelClicked" Content="Show panel" />
                                             <Button x:Name="UseClipboardButton" Click="OnUseClipboardClicked" Content="Use clipboard" />
@@ -322,46 +306,28 @@
                                         <TextBlock
                                             x:Name="OverviewStatusTextBlock"
                                             Foreground="{StaticResource ContentMutedBrush}"
+                                            Visibility="Collapsed"
                                             TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
 
                             <StackPanel x:Name="WorkflowPanel" Spacing="10" Visibility="Collapsed">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Workflow" />
-                                        <TextBlock
-                                            Style="{StaticResource PanelSubtitleTextStyle}"
-                                            Text="How selection capture and quick actions behave." />
-                                    </StackPanel>
-                                    <Border
-                                        Grid.Column="1"
-                                        Background="{StaticResource ChipBackgroundBrush}"
-                                        CornerRadius="999"
-                                        Padding="8,4">
-                                        <TextBlock FontSize="10" Foreground="{StaticResource ContentMutedBrush}" Text="Actions" />
-                                    </Border>
-                                </Grid>
+                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Workflow" />
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="8">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Trigger summary" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Trigger summary" />
                                         <TextBlock
                                             x:Name="HotkeySummaryTextBlock"
-                                            FontSize="13"
-                                            FontWeight="SemiBold"
-                                            TextWrapping="WrapWholeWords" />
-                                        <TextBlock
-                                            Foreground="{StaticResource ContentMutedBrush}"
-                                            Text="Select text and use the global hotkey. Clipboard fallback continues automatically when direct capture is unavailable."
+                                            Style="{StaticResource ValueTextStyle}"
                                             TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </Border>
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="8">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Quick actions" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Quick actions" />
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <Button Click="OnShowPanelClicked" Content="Show panel" />
                                             <Button Click="OnUseClipboardClicked" Content="Use clipboard" />
@@ -371,27 +337,13 @@
                             </StackPanel>
 
                             <StackPanel x:Name="ProviderPanel" Spacing="10" Visibility="Collapsed">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Provider" />
-                                        <TextBlock
-                                            Style="{StaticResource PanelSubtitleTextStyle}"
-                                            Text="Service selection, secure API key storage, and status." />
-                                    </StackPanel>
-                                    <Border
-                                        Grid.Column="1"
-                                        Background="{StaticResource ChipBackgroundBrush}"
-                                        CornerRadius="999"
-                                        Padding="8,4">
-                                        <TextBlock FontSize="10" Foreground="{StaticResource ContentMutedBrush}" Text="Secure local" />
-                                    </Border>
-                                </Grid>
+                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Provider" />
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="8">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Provider" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Provider" />
                                         <ComboBox x:Name="ProviderComboBox" SelectionChanged="OnProviderChanged" />
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="API key" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="API key" />
                                         <PasswordBox x:Name="ApiKeyPasswordBox" />
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <Button Click="OnSaveKeyClicked" Content="Save key" />
@@ -400,35 +352,23 @@
                                         <TextBlock
                                             x:Name="ProviderStatusTextBlock"
                                             Foreground="{StaticResource ContentMutedBrush}"
+                                            Visibility="Collapsed"
                                             TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
 
                             <StackPanel x:Name="HotkeyPanel" Spacing="10" Visibility="Collapsed">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Hotkey" />
-                                        <TextBlock
-                                            Style="{StaticResource PanelSubtitleTextStyle}"
-                                            Text="Choose a stable trigger preset for the global shortcut." />
-                                    </StackPanel>
-                                    <Border
-                                        Grid.Column="1"
-                                        Background="{StaticResource ChipBackgroundBrush}"
-                                        CornerRadius="999"
-                                        Padding="8,4">
-                                        <TextBlock FontSize="10" Foreground="{StaticResource ContentMutedBrush}" Text="Global trigger" />
-                                    </Border>
-                                </Grid>
+                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Hotkey" />
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="8">
-                                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="Preset" />
+                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Preset" />
                                         <ComboBox x:Name="HotkeyComboBox" SelectionChanged="OnHotkeyChanged" />
                                         <TextBlock
                                             x:Name="HotkeyStatusTextBlock"
                                             Foreground="{StaticResource ContentMutedBrush}"
+                                            Visibility="Collapsed"
                                             TextWrapping="WrapWholeWords" />
                                     </StackPanel>
                                 </Border>
