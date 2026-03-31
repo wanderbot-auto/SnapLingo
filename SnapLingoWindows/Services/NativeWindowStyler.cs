@@ -9,7 +9,10 @@ public static class NativeWindowStyler
         UpdateStyle(
             hwnd,
             NativeMethods.GWL_STYLE,
-            style => style & ~NativeMethods.WS_THICKFRAME & ~NativeMethods.WS_MAXIMIZEBOX);
+            style => style
+                & ~NativeMethods.WS_CAPTION
+                & ~NativeMethods.WS_THICKFRAME
+                & ~NativeMethods.WS_MAXIMIZEBOX);
 
         UpdateStyle(
             hwnd,
@@ -32,6 +35,8 @@ public static class NativeWindowStyler
             throw new InvalidOperationException(
                 $"Failed to refresh window chrome. Win32 error: {Marshal.GetLastWin32Error()}");
         }
+
+        TryRemoveDwmBorder(hwnd);
     }
 
     private static void UpdateStyle(nint hwnd, int index, Func<uint, uint> transform)
@@ -63,5 +68,15 @@ public static class NativeWindowStyler
             throw new InvalidOperationException(
                 $"Failed to update window style index {index}. Win32 error: {writeError}");
         }
+    }
+
+    private static void TryRemoveDwmBorder(nint hwnd)
+    {
+        var color = NativeMethods.DWM_COLOR_NONE;
+        _ = NativeMethods.DwmSetWindowAttribute(
+            hwnd,
+            NativeMethods.DWMWA_BORDER_COLOR,
+            in color,
+            sizeof(uint));
     }
 }

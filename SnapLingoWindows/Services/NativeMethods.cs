@@ -17,6 +17,10 @@ public static partial class NativeMethods
     public const int SW_HIDE = 0;
     public const int SW_SHOWNORMAL = 1;
 
+    public const uint WS_BORDER = 0x00800000;
+    public const uint WS_DLGFRAME = 0x00400000;
+    public const uint WS_CAPTION = WS_BORDER | WS_DLGFRAME;
+    public const uint WS_SYSMENU = 0x00080000;
     public const uint WS_MAXIMIZEBOX = 0x00010000;
     public const uint WS_THICKFRAME = 0x00040000;
 
@@ -28,6 +32,9 @@ public static partial class NativeMethods
     public const uint SWP_NOZORDER = 0x0004;
     public const uint SWP_NOACTIVATE = 0x0010;
     public const uint SWP_FRAMECHANGED = 0x0020;
+
+    public const int DWMWA_BORDER_COLOR = 34;
+    public const uint DWM_COLOR_NONE = 0xFFFFFFFE;
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -77,6 +84,13 @@ public static partial class NativeMethods
         int cx,
         int cy,
         uint flags);
+
+    [LibraryImport("dwmapi.dll", SetLastError = true)]
+    public static partial int DwmSetWindowAttribute(
+        nint hwnd,
+        int attribute,
+        in uint value,
+        uint attributeSize);
 
     public static nint GetWindowLongPtr(nint hWnd, int index)
     {

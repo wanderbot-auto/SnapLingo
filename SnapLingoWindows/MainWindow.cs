@@ -1,7 +1,6 @@
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
 using WinRT.Interop;
-using Windows.UI;
 
 namespace SnapLingoWindows;
 
@@ -40,7 +39,6 @@ public sealed class MainWindow : Window
     private void ConfigureWindow()
     {
         appWindow.Resize(new Windows.Graphics.SizeInt32(680, 580));
-        ConfigureTitleBar();
         NativeWindowStyler.ApplySettingsShellStyle(hwnd);
     }
 
@@ -48,24 +46,6 @@ public sealed class MainWindow : Window
     {
         (Application.Current as App)?.ShowTranslationPanel();
         _ = viewModel.HandleHotkeyAsync();
-    }
-
-    private void ConfigureTitleBar()
-    {
-        if (!AppWindowTitleBar.IsCustomizationSupported())
-        {
-            return;
-        }
-
-        var titleBar = appWindow.TitleBar;
-        titleBar.ButtonBackgroundColor = Color.FromArgb(0, 0, 0, 0);
-        titleBar.ButtonInactiveBackgroundColor = Color.FromArgb(0, 0, 0, 0);
-        titleBar.ButtonForegroundColor = Color.FromArgb(255, 64, 64, 64);
-        titleBar.ButtonInactiveForegroundColor = Color.FromArgb(255, 140, 140, 140);
-        titleBar.ButtonHoverBackgroundColor = Color.FromArgb(20, 0, 0, 0);
-        titleBar.ButtonPressedBackgroundColor = Color.FromArgb(32, 0, 0, 0);
-        titleBar.ButtonHoverForegroundColor = Color.FromArgb(255, 23, 23, 23);
-        titleBar.ButtonPressedForegroundColor = Color.FromArgb(255, 23, 23, 23);
     }
 
     private void OnClosed(object sender, WindowEventArgs args)
