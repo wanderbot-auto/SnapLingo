@@ -13,9 +13,25 @@ public sealed class SecureSecretStore
             return string.Empty;
         }
 
-        var encrypted = File.ReadAllBytes(path);
-        var decrypted = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
-        return Encoding.UTF8.GetString(decrypted);
+        try
+        {
+            var encrypted = File.ReadAllBytes(path);
+            var decrypted = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
+            return Encoding.UTF8.GetString(decrypted);
+        }
+        catch (CryptographicException)
+        {
+            TryDeleteSecret(provider);
+            return string.Empty;
+        }
+        catch (IOException)
+        {
+            return string.Empty;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return string.Empty;
+        }
     }
 
     public void SaveSecret(string secret, ProviderKind provider)
@@ -26,10 +42,24 @@ public sealed class SecureSecretStore
 
     public void DeleteSecret(ProviderKind provider)
     {
+        TryDeleteSecret(provider);
+    }
+
+    private static void TryDeleteSecret(ProviderKind provider)
+    {
         var path = GetPath(provider);
-        if (File.Exists(path))
+        try
         {
-            File.Delete(path);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
         }
     }
 

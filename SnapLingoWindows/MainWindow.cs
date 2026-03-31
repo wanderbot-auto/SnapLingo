@@ -44,7 +44,8 @@ public sealed class MainWindow : Window
 
         if (appWindow.Presenter is OverlappedPresenter presenter)
         {
-            presenter.SetBorderAndTitleBar(false, true);
+            presenter.IsMaximizable = false;
+            presenter.IsResizable = false;
         }
     }
 
