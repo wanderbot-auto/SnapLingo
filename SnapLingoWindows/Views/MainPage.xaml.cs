@@ -11,10 +11,12 @@ public sealed partial class MainPage : Page
         Basic,
         Provider,
         Prompt,
+        Appearance,
     }
 
     private readonly IReadOnlyList<ProviderChoice> providerChoices;
     private readonly IReadOnlyList<ShortcutChoice> shortcutChoices;
+    private readonly IReadOnlyList<LanguageChoice> languageChoices;
     private bool suppressSelectionEvents;
     private bool hasInitialized;
 
@@ -30,6 +32,11 @@ public sealed partial class MainPage : Page
         shortcutChoices = Enum.GetValues<ShortcutPreset>()
             .Select(preset => new ShortcutChoice(preset, preset.DisplayName()))
             .ToList();
+        languageChoices =
+        [
+            new LanguageChoice(AppLanguage.English, "English"),
+            new LanguageChoice(AppLanguage.Chinese, "中文"),
+        ];
 
         InitializeComponent();
         ConfigureControls();
@@ -47,7 +54,9 @@ public sealed partial class MainPage : Page
         ProviderComboBox.ItemsSource = providerChoices;
 
         ModelComboBox.DisplayMemberPath = nameof(ProviderModelOption.Label);
-        PromptComboBox.DisplayMemberPath = nameof(PromptProfile.Name);
+        PromptComboBox.DisplayMemberPath = nameof(PromptChoice.Label);
+        LanguageComboBox.DisplayMemberPath = nameof(LanguageChoice.Label);
+        LanguageComboBox.ItemsSource = languageChoices;
 
         HotkeyComboBox.DisplayMemberPath = nameof(ShortcutChoice.Label);
         HotkeyComboBox.ItemsSource = shortcutChoices;
@@ -88,16 +97,18 @@ public sealed partial class MainPage : Page
 
         try
         {
+            RenderLocalizedText();
             ProviderComboBox.SelectedItem = providerChoices.FirstOrDefault(choice => choice.Kind == ViewModel.SelectedProvider);
             ModelComboBox.ItemsSource = ViewModel.AvailableModels;
             ModelComboBox.SelectedItem = ViewModel.AvailableModels
                 .FirstOrDefault(option => string.Equals(option.Id, ViewModel.SelectedModelId, StringComparison.OrdinalIgnoreCase));
             ModelComboBox.IsEnabled = ViewModel.CanSelectModel;
             ModelComboBox.PlaceholderText = ViewModel.IsLoadingModels
-                ? "Loading models..."
-                : "Save an API key to load models";
-            PromptComboBox.ItemsSource = ViewModel.AvailablePrompts;
-            PromptComboBox.SelectedItem = ViewModel.AvailablePrompts
+                ? ViewModel.Localizer.Get("loading_models")
+                : ViewModel.Localizer.Get("placeholder_load_models");
+            var promptChoices = BuildPromptChoices();
+            PromptComboBox.ItemsSource = promptChoices;
+            PromptComboBox.SelectedItem = promptChoices
                 .FirstOrDefault(prompt => string.Equals(prompt.Id, ViewModel.SelectedPromptId, StringComparison.OrdinalIgnoreCase));
             PromptNameTextBox.IsEnabled = ViewModel.CanEditSelectedPrompt;
             TranslatePromptTextBox.IsEnabled = ViewModel.CanEditSelectedPrompt;
@@ -105,6 +116,7 @@ public sealed partial class MainPage : Page
             SavePromptButton.IsEnabled = ViewModel.CanEditSelectedPrompt;
             DeletePromptButton.IsEnabled = ViewModel.CanDeleteSelectedPrompt;
             HotkeyComboBox.SelectedItem = shortcutChoices.FirstOrDefault(choice => choice.Preset == ViewModel.SelectedShortcutPreset);
+            LanguageComboBox.SelectedItem = languageChoices.FirstOrDefault(choice => choice.Language == ViewModel.SelectedLanguage);
 
             if (ApiKeyPasswordBox.Password != ViewModel.ApiKeyInput)
             {
@@ -131,13 +143,71 @@ public sealed partial class MainPage : Page
             ApplyStatusText(HotkeyStatusTextBlock, ViewModel.HotkeyStatusMessage);
             OverviewProviderValueTextBlock.Text = ViewModel.SelectedProvider.DisplayName();
             OverviewHotkeyValueTextBlock.Text = ViewModel.SelectedShortcutPreset.DisplayName();
-            OverviewWorkflowValueTextBlock.Text = ViewModel.Workflow.Phase == WorkflowPhase.Idle ? "Ready" : "Active";
             ApplyStatusText(OverviewStatusTextBlock, ViewModel.HotkeyStatusMessage ?? ViewModel.ProviderStatusMessage);
         }
         finally
         {
             suppressSelectionEvents = false;
         }
+    }
+
+    private void RenderLocalizedText()
+    {
+        SettingsTitleBarTextBlock.Text = ViewModel.Localizer.Get("window_settings_title");
+        SidebarAppNameTextBlock.Text = "SnapLingo";
+        SidebarSettingsTextBlock.Text = ViewModel.Localizer.Get("sidebar_settings_title");
+        SectionsLabelTextBlock.Text = ViewModel.Localizer.Get("sidebar_sections");
+        OverviewNavTextBlock.Text = ViewModel.Localizer.Get("nav_basic");
+        ProviderNavTextBlock.Text = ViewModel.Localizer.Get("nav_provider");
+        PromptNavTextBlock.Text = ViewModel.Localizer.Get("nav_prompt");
+        AppearanceNavTextBlock.Text = ViewModel.Localizer.Get("nav_appearance");
+
+        BasicTitleTextBlock.Text = ViewModel.Localizer.Get("basic_title");
+        BasicHintTextBlock.Text = ViewModel.Localizer.Get("basic_hint");
+        BasicProviderLabelTextBlock.Text = ViewModel.Localizer.Get("label_provider");
+        BasicHotkeyLabelTextBlock.Text = ViewModel.Localizer.Get("label_hotkey");
+        BasicStorageLabelTextBlock.Text = ViewModel.Localizer.Get("label_storage");
+        BasicWorkflowLabelTextBlock.Text = ViewModel.Localizer.Get("label_workflow");
+        StorageValueTextBlock.Text = ViewModel.Localizer.Get("storage_secure_local");
+        OverviewWorkflowValueTextBlock.Text = ViewModel.Workflow.Phase == WorkflowPhase.Idle
+            ? ViewModel.Localizer.Get("workflow_ready")
+            : ViewModel.Localizer.Get("workflow_active");
+        QuickActionsLabelTextBlock.Text = ViewModel.Localizer.Get("quick_actions");
+        ShowPanelButton.Content = ViewModel.Localizer.Get("button_show_panel");
+        UseClipboardButton.Content = ViewModel.Localizer.Get("button_use_clipboard");
+        HotkeySectionLabelTextBlock.Text = ViewModel.Localizer.Get("label_hotkey");
+        HotkeyHintTextBlock.Text = ViewModel.Localizer.Get("hotkey_hint");
+
+        ProviderTitleTextBlock.Text = ViewModel.Localizer.Get("provider_title");
+        ProviderHintTextBlock.Text = ViewModel.Localizer.Get("provider_hint");
+        ProviderFieldLabelTextBlock.Text = ViewModel.Localizer.Get("label_provider");
+        ModelFieldLabelTextBlock.Text = ViewModel.Localizer.Get("label_model");
+        ApiKeyFieldLabelTextBlock.Text = ViewModel.Localizer.Get("label_api_key");
+        SaveKeyButton.Content = ViewModel.Localizer.Get("button_save_key");
+        ClearKeyButton.Content = ViewModel.Localizer.Get("button_clear_key");
+
+        PromptTitleTextBlock.Text = ViewModel.Localizer.Get("prompt_title");
+        PromptHintTextBlock.Text = ViewModel.Localizer.Get("prompt_hint");
+        PromptProfileLabelTextBlock.Text = ViewModel.Localizer.Get("prompt_profile");
+        CreatePromptButton.Content = ViewModel.Localizer.Get("button_new");
+        SavePromptButton.Content = ViewModel.Localizer.Get("button_save");
+        DeletePromptButton.Content = ViewModel.Localizer.Get("button_delete");
+        PromptNameLabelTextBlock.Text = ViewModel.Localizer.Get("label_name");
+        TranslatePromptLabelTextBlock.Text = ViewModel.Localizer.Get("label_translate_prompt");
+        PolishPromptLabelTextBlock.Text = ViewModel.Localizer.Get("label_polish_prompt");
+
+        AppearanceTitleTextBlock.Text = ViewModel.Localizer.Get("appearance_title");
+        AppearanceHintTextBlock.Text = ViewModel.Localizer.Get("appearance_hint");
+        LanguageLabelTextBlock.Text = ViewModel.Localizer.Get("label_language");
+    }
+
+    private IReadOnlyList<PromptChoice> BuildPromptChoices()
+    {
+        return ViewModel.AvailablePrompts
+            .Select(prompt => new PromptChoice(
+                prompt.Id,
+                prompt.IsBuiltIn ? ViewModel.Localizer.Get("prompt_default_name") : prompt.Name))
+            .ToList();
     }
 
     private void OnNavigationClicked(object sender, RoutedEventArgs e)
@@ -194,7 +264,7 @@ public sealed partial class MainPage : Page
 
     private void OnPromptChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (suppressSelectionEvents || PromptComboBox.SelectedItem is not PromptProfile prompt)
+        if (suppressSelectionEvents || PromptComboBox.SelectedItem is not PromptChoice prompt)
         {
             return;
         }
@@ -247,6 +317,16 @@ public sealed partial class MainPage : Page
         ViewModel.DeleteSelectedPrompt();
     }
 
+    private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (suppressSelectionEvents || LanguageComboBox.SelectedItem is not LanguageChoice choice)
+        {
+            return;
+        }
+
+        ViewModel.UpdateLanguage(choice.Language);
+    }
+
     private async void OnSaveKeyClicked(object sender, RoutedEventArgs e)
     {
         await ViewModel.SaveApiKeyAsync(ApiKeyPasswordBox.Password);
@@ -263,10 +343,12 @@ public sealed partial class MainPage : Page
         OverviewPanel.Visibility = section == SettingsSection.Basic ? Visibility.Visible : Visibility.Collapsed;
         ProviderPanel.Visibility = section == SettingsSection.Provider ? Visibility.Visible : Visibility.Collapsed;
         PromptPanel.Visibility = section == SettingsSection.Prompt ? Visibility.Visible : Visibility.Collapsed;
+        AppearancePanel.Visibility = section == SettingsSection.Appearance ? Visibility.Visible : Visibility.Collapsed;
 
         ApplyNavigationState(OverviewNavButton, OverviewNavAccent, section == SettingsSection.Basic);
         ApplyNavigationState(ProviderNavButton, ProviderNavAccent, section == SettingsSection.Provider);
         ApplyNavigationState(PromptNavButton, PromptNavAccent, section == SettingsSection.Prompt);
+        ApplyNavigationState(AppearanceNavButton, AppearanceNavAccent, section == SettingsSection.Appearance);
     }
 
     private void ApplyNavigationState(Button button, Border accent, bool isSelected)
@@ -291,4 +373,6 @@ public sealed partial class MainPage : Page
 
     private sealed record ProviderChoice(ProviderKind Kind, string Label);
     private sealed record ShortcutChoice(ShortcutPreset Preset, string Label);
+    private sealed record PromptChoice(string Id, string Label);
+    private sealed record LanguageChoice(AppLanguage Language, string Label);
 }

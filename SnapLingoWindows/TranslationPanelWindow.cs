@@ -18,7 +18,7 @@ public sealed class TranslationPanelWindow : Window
     {
         this.viewModel = viewModel;
         Content = new TranslationPanelPage(viewModel);
-        Title = "SnapLingo Panel";
+        Title = viewModel.Localizer.Get("window_panel_title");
         SystemBackdrop = new MicaBackdrop();
 
         hwnd = WindowNative.GetWindowHandle(this);
@@ -26,6 +26,7 @@ public sealed class TranslationPanelWindow : Window
 
         ConfigureWindow();
         viewModel.HideRequested += OnHideRequested;
+        viewModel.PropertyChanged += OnViewModelPropertyChanged;
         Closed += OnClosed;
     }
 
@@ -88,6 +89,15 @@ public sealed class TranslationPanelWindow : Window
     {
         isClosed = true;
         viewModel.HideRequested -= OnHideRequested;
+        viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         Closed -= OnClosed;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.SelectedLanguage))
+        {
+            Title = viewModel.Localizer.Get("window_panel_title");
+        }
     }
 }

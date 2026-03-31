@@ -4,16 +4,38 @@ namespace SnapLingoWindows.Stores;
 
 public sealed class WorkflowStateStore : BindableBase
 {
+    private enum WorkflowTextState
+    {
+        Idle,
+        Capturing,
+        ClipboardFallback,
+        Translating,
+        PartialTranslation,
+        Polishing,
+        Ready,
+        Error,
+    }
+
+    private readonly LocalizationService localizer;
     private WorkflowPhase phase = WorkflowPhase.Idle;
     private TranslationMode selectedMode = TranslationMode.Translate;
-    private string modeSourceLabel = "Auto";
-    private string primaryTitle = "Ready";
+    private string modeSourceLabel = string.Empty;
+    private string modeSourceKey = "source_auto";
+    private string primaryTitle = string.Empty;
     private string? primaryText;
     private string? originalPreview;
     private string? secondaryStatus;
     private bool canCopy;
     private bool isCopied;
     private bool canRetry;
+    private WorkflowTextState textState = WorkflowTextState.Idle;
+
+    public WorkflowStateStore(LocalizationService localizer)
+    {
+        this.localizer = localizer;
+        this.localizer.LanguageChanged += OnLanguageChanged;
+        ApplyLocalizedState();
+    }
 
     public WorkflowPhase Phase
     {
@@ -89,42 +111,42 @@ public sealed class WorkflowStateStore : BindableBase
     public void ResetForNewSession()
     {
         Phase = WorkflowPhase.Capturing;
-        PrimaryTitle = "Capturing Selection";
+        textState = WorkflowTextState.Capturing;
         PrimaryText = null;
         OriginalPreview = null;
-        SecondaryStatus = "Waiting for selected text or a clipboard fallback.";
         CanCopy = false;
         CanRetry = false;
         IsCopied = false;
+        ApplyLocalizedState();
     }
 
     public void ResetForIdle()
     {
         Phase = WorkflowPhase.Idle;
-        PrimaryTitle = "Ready";
+        textState = WorkflowTextState.Idle;
         PrimaryText = null;
         OriginalPreview = null;
-        SecondaryStatus = "Use the global hotkey or trigger the workflow from this window.";
         CanCopy = false;
         CanRetry = false;
         IsCopied = false;
-        ModeSourceLabel = "Auto";
+        modeSourceKey = "source_auto";
+        ApplyLocalizedState();
     }
 
     public void PresentClipboardFallback()
     {
         Phase = WorkflowPhase.WaitingForClipboard;
-        PrimaryTitle = "Press Copy To Continue";
-        PrimaryText = "Windows preview currently uses clipboard fallback for selection capture.";
-        SecondaryStatus = "Press Ctrl+C in the current app. SnapLingo will continue automatically as soon as the clipboard changes.";
+        textState = WorkflowTextState.ClipboardFallback;
+        PrimaryText = localizer.Get("state_clipboard_primary");
         CanCopy = false;
         CanRetry = true;
+        ApplyLocalizedState();
     }
 
-    public void BeginProcessing(string text, TranslationMode mode, string sourceLabel)
+    public void BeginProcessing(string text, TranslationMode mode, string sourceLabelKey)
     {
         SelectedMode = mode;
-        ModeSourceLabel = sourceLabel;
+        modeSourceKey = sourceLabelKey;
         OriginalPreview = text.ReplaceLineEndings(" ").Trim();
         CanRetry = true;
         IsCopied = false;
@@ -132,51 +154,98 @@ public sealed class WorkflowStateStore : BindableBase
         if (mode == TranslationMode.Translate)
         {
             Phase = WorkflowPhase.LoadingTranslation;
-            PrimaryTitle = "Quick Translation";
+            textState = WorkflowTextState.Translating;
             PrimaryText = null;
-            SecondaryStatus = "Generating a send-ready translation.";
             CanCopy = false;
+            ApplyLocalizedState();
             return;
         }
 
         Phase = WorkflowPhase.LoadingPolish;
-        PrimaryTitle = "Polished Version";
+        textState = WorkflowTextState.Polishing;
         PrimaryText = null;
-        SecondaryStatus = "Polishing your English.";
         CanCopy = false;
+        ApplyLocalizedState();
     }
 
     public void ShowPartialTranslation(string text)
     {
         Phase = WorkflowPhase.Partial;
-        PrimaryTitle = "Quick Translation";
+        textState = WorkflowTextState.PartialTranslation;
         PrimaryText = text;
-        SecondaryStatus = "Optimizing the result.";
         CanCopy = true;
+        ApplyLocalizedState();
     }
 
-    public void ShowFinalResult(string title, string text)
+    public void ShowFinalResult(string text)
     {
         Phase = WorkflowPhase.Ready;
-        PrimaryTitle = title;
+        textState = WorkflowTextState.Ready;
         PrimaryText = text;
-        SecondaryStatus = null;
         CanCopy = true;
+        ApplyLocalizedState();
     }
 
     public void ShowError(string message)
     {
         Phase = WorkflowPhase.Error;
-        PrimaryTitle = "Could Not Finish";
+        textState = WorkflowTextState.Error;
         PrimaryText = message;
-        SecondaryStatus = "Retry the flow or switch modes.";
         CanCopy = false;
         CanRetry = true;
+        ApplyLocalizedState();
     }
 
     public void ShowCopiedFeedback()
     {
         IsCopied = true;
-        SecondaryStatus = "Copied";
+        SecondaryStatus = localizer.Get("state_copied_status");
+    }
+
+    private void ApplyLocalizedState()
+    {
+        ModeSourceLabel = localizer.Get(modeSourceKey);
+
+        switch (textState)
+        {
+            case WorkflowTextState.Idle:
+                PrimaryTitle = localizer.Get("state_ready_title");
+                SecondaryStatus = localizer.Get("state_ready_status");
+                break;
+            case WorkflowTextState.Capturing:
+                PrimaryTitle = localizer.Get("state_capturing_title");
+                SecondaryStatus = localizer.Get("state_capturing_status");
+                break;
+            case WorkflowTextState.ClipboardFallback:
+                PrimaryTitle = localizer.Get("state_clipboard_title");
+                SecondaryStatus = localizer.Get("state_clipboard_status");
+                PrimaryText = localizer.Get("state_clipboard_primary");
+                break;
+            case WorkflowTextState.Translating:
+                PrimaryTitle = localizer.Get("state_translate_title");
+                SecondaryStatus = localizer.Get("state_translate_status");
+                break;
+            case WorkflowTextState.PartialTranslation:
+                PrimaryTitle = localizer.Get("state_translate_title");
+                SecondaryStatus = localizer.Get("state_partial_status");
+                break;
+            case WorkflowTextState.Polishing:
+                PrimaryTitle = localizer.Get("state_polish_title");
+                SecondaryStatus = localizer.Get("state_polish_status");
+                break;
+            case WorkflowTextState.Ready:
+                PrimaryTitle = localizer.Get("state_polish_title");
+                SecondaryStatus = IsCopied ? localizer.Get("state_copied_status") : null;
+                break;
+            case WorkflowTextState.Error:
+                PrimaryTitle = localizer.Get("state_error_title");
+                SecondaryStatus = localizer.Get("state_error_status");
+                break;
+        }
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        ApplyLocalizedState();
     }
 }

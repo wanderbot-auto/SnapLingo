@@ -14,6 +14,7 @@ public sealed partial class TranslationPanelPage : Page
         ViewModel = viewModel;
         InitializeComponent();
         ViewModel.Workflow.PropertyChanged += OnWorkflowChanged;
+        ViewModel.PropertyChanged += OnViewModelChanged;
         Unloaded += OnUnloaded;
         Render();
     }
@@ -26,7 +27,16 @@ public sealed partial class TranslationPanelPage : Page
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         ViewModel.Workflow.PropertyChanged -= OnWorkflowChanged;
+        ViewModel.PropertyChanged -= OnViewModelChanged;
         Unloaded -= OnUnloaded;
+    }
+
+    private void OnViewModelChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.SelectedLanguage))
+        {
+            Render();
+        }
     }
 
     private void Render()
@@ -56,8 +66,15 @@ public sealed partial class TranslationPanelPage : Page
             OriginalPreviewTextBox.Text = ViewModel.Workflow.OriginalPreview ?? string.Empty;
 
             CopyButton.IsEnabled = ViewModel.Workflow.CanCopy;
-            CopyButton.Content = ViewModel.Workflow.IsCopied ? "Copied" : "Copy";
+            CopyButton.Content = ViewModel.Workflow.IsCopied
+                ? ViewModel.Localizer.Get("button_copied")
+                : ViewModel.Localizer.Get("button_copy");
             RetryButton.IsEnabled = ViewModel.Workflow.CanRetry;
+            RetryButton.Content = ViewModel.Localizer.Get("button_retry");
+            TranslateModeRadioButton.Content = ViewModel.Localizer.Get("mode_translate");
+            PolishModeRadioButton.Content = ViewModel.Localizer.Get("mode_polish");
+            ClipboardPromptTextBlock.Text = ViewModel.Localizer.Get("clipboard_prompt");
+            OriginalTextTitleTextBlock.Text = ViewModel.Localizer.Get("original_text");
 
             TranslateModeRadioButton.IsChecked = ViewModel.Workflow.SelectedMode == TranslationMode.Translate;
             PolishModeRadioButton.IsChecked = ViewModel.Workflow.SelectedMode == TranslationMode.Polish;

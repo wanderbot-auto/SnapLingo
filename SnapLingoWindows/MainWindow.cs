@@ -17,17 +17,18 @@ public sealed class MainWindow : Window
         this.viewModel = viewModel;
         var page = new MainPage(viewModel);
         Content = page;
-        Title = "SnapLingo Settings";
+        Title = viewModel.Localizer.Get("window_settings_title");
         SystemBackdrop = new MicaBackdrop();
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(page.TitleBarElement);
 
         hwnd = WindowNative.GetWindowHandle(this);
         appWindow = AppWindow.GetFromWindowId(Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd));
-        hotkeyService = new GlobalHotkeyService(hwnd, OnGlobalHotkeyPressed);
+        hotkeyService = new GlobalHotkeyService(hwnd, viewModel.Localizer, OnGlobalHotkeyPressed);
 
         ConfigureWindow();
         ApplyHotkeyPreset(viewModel.SelectedShortcutPreset);
+        viewModel.PropertyChanged += OnViewModelPropertyChanged;
         Closed += OnClosed;
     }
 
@@ -74,7 +75,17 @@ public sealed class MainWindow : Window
 
     private void OnClosed(object sender, WindowEventArgs args)
     {
+        viewModel.PropertyChanged -= OnViewModelPropertyChanged;
         hotkeyService.Dispose();
         Closed -= OnClosed;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.SelectedLanguage))
+        {
+            Title = viewModel.Localizer.Get("window_settings_title");
+            ApplyHotkeyPreset(viewModel.SelectedShortcutPreset);
+        }
     }
 }

@@ -169,6 +169,7 @@
                         Background="{StaticResource PrimaryAccentBrush}"
                         CornerRadius="4" />
                     <TextBlock
+                        x:Name="SettingsTitleBarTextBlock"
                         FontSize="12"
                         FontWeight="SemiBold"
                         Foreground="{StaticResource SidebarTextBrush}"
@@ -213,9 +214,11 @@
                                     </Border>
                                     <StackPanel Spacing="1">
                                         <TextBlock
+                                            x:Name="SidebarAppNameTextBlock"
                                             Style="{StaticResource SidebarLabelTextStyle}"
                                             Text="SnapLingo" />
                                         <TextBlock
+                                            x:Name="SidebarSettingsTextBlock"
                                             FontSize="16"
                                             FontWeight="SemiBold"
                                             Foreground="{StaticResource SidebarTextBrush}"
@@ -226,6 +229,7 @@
                         </Border>
 
                         <TextBlock
+                            x:Name="SectionsLabelTextBlock"
                             Grid.Row="1"
                             Margin="4,10,0,6"
                             Style="{StaticResource SidebarLabelTextStyle}"
@@ -282,6 +286,23 @@
                                     <TextBlock Grid.Column="1" x:Name="PromptNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Prompt" />
                                 </Grid>
                             </Button>
+
+                            <Button
+                                x:Name="AppearanceNavButton"
+                                Click="OnNavigationClicked"
+                                Style="{StaticResource SidebarNavButtonStyle}"
+                                Tag="Appearance">
+                                <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="8">
+                                    <Border
+                                        x:Name="AppearanceNavAccent"
+                                        Width="4"
+                                        Height="20"
+                                        Background="Transparent"
+                                        CornerRadius="999"
+                                        VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" x:Name="AppearanceNavTextBlock" Style="{StaticResource NavTitleTextStyle}" Text="Appearance" />
+                                </Grid>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -292,8 +313,9 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
                         <Grid Padding="12">
                             <StackPanel x:Name="OverviewPanel" Spacing="10">
-                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Basic" />
+                                <TextBlock x:Name="BasicTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Basic" />
                                 <TextBlock
+                                    x:Name="BasicHintTextBlock"
                                     Style="{StaticResource SectionHintTextStyle}"
                                     Text="Manage launch behavior and the global hotkey without leaving the main configuration flow." />
 
@@ -309,25 +331,25 @@
 
                                     <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource StatCardStyle}">
                                         <StackPanel Spacing="2">
-                                            <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Provider" />
+                                            <TextBlock x:Name="BasicProviderLabelTextBlock" Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Provider" />
                                             <TextBlock x:Name="OverviewProviderValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="OpenAI" />
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource StatCardStyle}">
                                         <StackPanel Spacing="2">
-                                            <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Hotkey" />
+                                            <TextBlock x:Name="BasicHotkeyLabelTextBlock" Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Hotkey" />
                                             <TextBlock x:Name="OverviewHotkeyValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="Ctrl + Shift + 1" />
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource StatCardStyle}">
                                         <StackPanel Spacing="2">
-                                            <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Storage" />
-                                            <TextBlock Style="{StaticResource ValueTextStyle}" Text="Secure local" />
+                                            <TextBlock x:Name="BasicStorageLabelTextBlock" Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Storage" />
+                                            <TextBlock x:Name="StorageValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="Secure local" />
                                         </StackPanel>
                                     </Border>
                                     <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StatCardStyle}">
                                         <StackPanel Spacing="2">
-                                            <TextBlock Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Workflow" />
+                                            <TextBlock x:Name="BasicWorkflowLabelTextBlock" Style="{StaticResource SidebarLabelTextStyle}" Foreground="{StaticResource ContentMutedBrush}" Text="Workflow" />
                                             <TextBlock x:Name="OverviewWorkflowValueTextBlock" Style="{StaticResource ValueTextStyle}" Text="Selection + hotkey" />
                                         </StackPanel>
                                     </Border>
@@ -335,7 +357,7 @@
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="10">
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Quick actions" />
+                                        <TextBlock x:Name="QuickActionsLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Quick actions" />
                                         <Grid ColumnSpacing="8">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
@@ -354,8 +376,9 @@
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="10">
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Hotkey" />
+                                        <TextBlock x:Name="HotkeySectionLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Hotkey" />
                                         <TextBlock
+                                            x:Name="HotkeyHintTextBlock"
                                             Style="{StaticResource SectionHintTextStyle}"
                                             Text="Choose the shortcut that opens the translation panel from anywhere in Windows." />
                                         <ComboBox x:Name="HotkeyComboBox" SelectionChanged="OnHotkeyChanged" Style="{StaticResource FormComboBoxStyle}" />
@@ -369,30 +392,31 @@
                             </StackPanel>
 
                             <StackPanel x:Name="ProviderPanel" Spacing="10" Visibility="Collapsed">
-                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Provider" />
+                                <TextBlock x:Name="ProviderTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Provider" />
                                 <TextBlock
+                                    x:Name="ProviderHintTextBlock"
                                     Style="{StaticResource SectionHintTextStyle}"
                                     Text="Connect a provider, pick the active model, and refresh the list from its API after saving your key." />
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="10">
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Provider" />
+                                        <TextBlock x:Name="ProviderFieldLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Provider" />
                                         <ComboBox x:Name="ProviderComboBox" SelectionChanged="OnProviderChanged" Style="{StaticResource FormComboBoxStyle}" />
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Model" />
+                                        <TextBlock x:Name="ModelFieldLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Model" />
                                         <ComboBox
                                             x:Name="ModelComboBox"
                                             PlaceholderText="Save an API key to load models"
                                             SelectionChanged="OnModelChanged"
                                             Style="{StaticResource FormComboBoxStyle}" />
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="API key" />
+                                        <TextBlock x:Name="ApiKeyFieldLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="API key" />
                                         <PasswordBox x:Name="ApiKeyPasswordBox" Style="{StaticResource FormPasswordBoxStyle}" />
                                         <Grid ColumnSpacing="8">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <Button Grid.Column="0" Click="OnSaveKeyClicked" Content="Save key" Style="{StaticResource PrimaryActionButtonStyle}" />
-                                            <Button Grid.Column="1" Click="OnClearKeyClicked" Content="Clear key" Style="{StaticResource SecondaryActionButtonStyle}" />
+                                            <Button x:Name="SaveKeyButton" Grid.Column="0" Click="OnSaveKeyClicked" Content="Save key" Style="{StaticResource PrimaryActionButtonStyle}" />
+                                            <Button x:Name="ClearKeyButton" Grid.Column="1" Click="OnClearKeyClicked" Content="Clear key" Style="{StaticResource SecondaryActionButtonStyle}" />
                                         </Grid>
                                         <TextBlock
                                             x:Name="ProviderStatusTextBlock"
@@ -404,14 +428,15 @@
                             </StackPanel>
 
                             <StackPanel x:Name="PromptPanel" Spacing="10" Visibility="Collapsed">
-                                <TextBlock Style="{StaticResource PanelTitleTextStyle}" Text="Prompt" />
+                                <TextBlock x:Name="PromptTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Prompt" />
                                 <TextBlock
+                                    x:Name="PromptHintTextBlock"
                                     Style="{StaticResource SectionHintTextStyle}"
                                     Text="Switch between prompt profiles or create your own prompt set for translate and polish actions." />
 
                                 <Border Style="{StaticResource SettingsCardStyle}">
                                     <StackPanel Spacing="10">
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Prompt profile" />
+                                        <TextBlock x:Name="PromptProfileLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Prompt profile" />
                                         <ComboBox x:Name="PromptComboBox" SelectionChanged="OnPromptChanged" Style="{StaticResource FormComboBoxStyle}" />
                                         <Grid ColumnSpacing="8">
                                             <Grid.ColumnDefinitions>
@@ -423,9 +448,9 @@
                                             <Button x:Name="SavePromptButton" Grid.Column="1" Click="OnSavePromptClicked" Content="Save" Style="{StaticResource PrimaryActionButtonStyle}" />
                                             <Button x:Name="DeletePromptButton" Grid.Column="2" Click="OnDeletePromptClicked" Content="Delete" Style="{StaticResource SecondaryActionButtonStyle}" />
                                         </Grid>
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Name" />
+                                        <TextBlock x:Name="PromptNameLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Name" />
                                         <TextBox x:Name="PromptNameTextBox" TextChanged="OnPromptNameChanged" Style="{StaticResource FormTextBoxStyle}" />
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Translate prompt" />
+                                        <TextBlock x:Name="TranslatePromptLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Translate prompt" />
                                         <TextBox
                                             x:Name="TranslatePromptTextBox"
                                             AcceptsReturn="True"
@@ -433,7 +458,7 @@
                                             TextChanged="OnTranslatePromptChanged"
                                             Style="{StaticResource FormTextBoxStyle}"
                                             TextWrapping="Wrap" />
-                                        <TextBlock Style="{StaticResource SectionLabelTextStyle}" Text="Polish prompt" />
+                                        <TextBlock x:Name="PolishPromptLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Polish prompt" />
                                         <TextBox
                                             x:Name="PolishPromptTextBox"
                                             AcceptsReturn="True"
@@ -446,6 +471,21 @@
                                             Foreground="{StaticResource ContentMutedBrush}"
                                             Visibility="Collapsed"
                                             TextWrapping="WrapWholeWords" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel x:Name="AppearancePanel" Spacing="10" Visibility="Collapsed">
+                                <TextBlock x:Name="AppearanceTitleTextBlock" Style="{StaticResource PanelTitleTextStyle}" Text="Appearance" />
+                                <TextBlock
+                                    x:Name="AppearanceHintTextBlock"
+                                    Style="{StaticResource SectionHintTextStyle}"
+                                    Text="Choose the interface language. Changes apply immediately without restarting SnapLingo." />
+
+                                <Border Style="{StaticResource SettingsCardStyle}">
+                                    <StackPanel Spacing="10">
+                                        <TextBlock x:Name="LanguageLabelTextBlock" Style="{StaticResource SectionLabelTextStyle}" Text="Language" />
+                                        <ComboBox x:Name="LanguageComboBox" SelectionChanged="OnLanguageChanged" Style="{StaticResource FormComboBoxStyle}" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

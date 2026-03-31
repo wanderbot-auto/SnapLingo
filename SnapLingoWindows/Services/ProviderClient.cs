@@ -21,18 +21,18 @@ public sealed class ProviderException : Exception
 
 public static class ProviderValidation
 {
-    public static ProviderOutput Validate(ProviderOutput output, string input, TranslationMode mode)
+    public static ProviderOutput Validate(ProviderOutput output, string input, TranslationMode mode, LocalizationService localizer)
     {
         var normalized = output.Text.Trim();
         if (string.IsNullOrWhiteSpace(normalized))
         {
-            throw new ProviderException("The provider returned an empty result.");
+            throw new ProviderException(localizer.Get("error_provider_empty_result"));
         }
 
         if (mode == TranslationMode.Translate &&
             string.Equals(normalized, input.Trim(), StringComparison.OrdinalIgnoreCase))
         {
-            throw new ProviderException("The provider returned a result SnapLingo cannot trust.");
+            throw new ProviderException(localizer.Get("error_provider_untrusted_result"));
         }
 
         return new ProviderOutput(normalized);
@@ -43,13 +43,15 @@ internal abstract class ProviderClientBase : IProviderClient
 {
     private readonly ProviderPreset preset;
     private readonly PromptProfile promptProfile;
+    private readonly LocalizationService localizer;
     private readonly SecureSecretStore secretStore;
     private readonly HttpClient httpClient;
 
-    protected ProviderClientBase(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
+    protected ProviderClientBase(ProviderPreset preset, PromptProfile promptProfile, LocalizationService localizer, SecureSecretStore secretStore, HttpClient httpClient)
     {
         this.preset = preset;
         this.promptProfile = promptProfile;
+        this.localizer = localizer;
         this.secretStore = secretStore;
         this.httpClient = httpClient;
     }
@@ -59,13 +61,14 @@ internal abstract class ProviderClientBase : IProviderClient
 
     protected ProviderPreset Preset => preset;
     protected PromptProfile PromptProfile => promptProfile;
+    protected LocalizationService Localizer => localizer;
 
     protected string LoadApiKey()
     {
         var key = secretStore.LoadSecret(preset.Kind);
         if (string.IsNullOrWhiteSpace(key))
         {
-            throw new ProviderException("Add an API key in Settings to use translation.");
+            throw new ProviderException(localizer.Get("error_add_api_key"));
         }
 
         return key.Trim();
@@ -78,10 +81,10 @@ internal abstract class ProviderClientBase : IProviderClient
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new ProviderException($"The provider request failed with HTTP {(int)response.StatusCode}.");
+            throw new ProviderException(localizer.Format("error_provider_http", (int)response.StatusCode));
         }
 
-        return JsonNode.Parse(body) ?? throw new ProviderException("The provider response was malformed.");
+        return JsonNode.Parse(body) ?? throw new ProviderException(localizer.Get("error_provider_malformed"));
     }
 
     protected static StringContent JsonContent(object body)
@@ -106,21 +109,21 @@ internal abstract class ProviderClientBase : IProviderClient
 
 internal sealed class OpenAIResponsesProvider : ProviderClientBase
 {
-    public OpenAIResponsesProvider(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
-        : base(preset, promptProfile, secretStore, httpClient)
+    public OpenAIResponsesProvider(ProviderPreset preset, PromptProfile promptProfile, LocalizationService localizer, SecureSecretStore secretStore, HttpClient httpClient)
+        : base(preset, promptProfile, localizer, secretStore, httpClient)
     {
     }
 
     public override async Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
     {
         var output = await RequestAsync(PromptProfile.TranslatePrompt, text, cancellationToken);
-        return ProviderValidation.Validate(output, text, TranslationMode.Translate);
+        return ProviderValidation.Validate(output, text, TranslationMode.Translate, Localizer);
     }
 
     public override async Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
     {
         var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
-        return ProviderValidation.Validate(output, text, TranslationMode.Polish);
+        return ProviderValidation.Validate(output, text, TranslationMode.Polish, Localizer);
     }
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
@@ -158,27 +161,27 @@ internal sealed class OpenAIResponsesProvider : ProviderClientBase
             }
         }
 
-        throw new ProviderException("The provider response was malformed.");
+        throw new ProviderException(Localizer.Get("error_provider_malformed"));
     }
 }
 
 internal sealed class OpenAIChatProvider : ProviderClientBase
 {
-    public OpenAIChatProvider(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
-        : base(preset, promptProfile, secretStore, httpClient)
+    public OpenAIChatProvider(ProviderPreset preset, PromptProfile promptProfile, LocalizationService localizer, SecureSecretStore secretStore, HttpClient httpClient)
+        : base(preset, promptProfile, localizer, secretStore, httpClient)
     {
     }
 
     public override async Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
     {
         var output = await RequestAsync(PromptProfile.TranslatePrompt, text, cancellationToken);
-        return ProviderValidation.Validate(output, text, TranslationMode.Translate);
+        return ProviderValidation.Validate(output, text, TranslationMode.Translate, Localizer);
     }
 
     public override async Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
     {
         var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
-        return ProviderValidation.Validate(output, text, TranslationMode.Polish);
+        return ProviderValidation.Validate(output, text, TranslationMode.Polish, Localizer);
     }
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
@@ -201,7 +204,7 @@ internal sealed class OpenAIChatProvider : ProviderClientBase
         var message = root["choices"]?[0]?["message"];
         if (message is null)
         {
-            throw new ProviderException("The provider response was malformed.");
+            throw new ProviderException(Localizer.Get("error_provider_malformed"));
         }
 
         if (message["content"] is JsonValue value &&
@@ -220,27 +223,27 @@ internal sealed class OpenAIChatProvider : ProviderClientBase
             }
         }
 
-        throw new ProviderException("The provider response was malformed.");
+        throw new ProviderException(Localizer.Get("error_provider_malformed"));
     }
 }
 
 internal sealed class AnthropicMessagesProvider : ProviderClientBase
 {
-    public AnthropicMessagesProvider(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
-        : base(preset, promptProfile, secretStore, httpClient)
+    public AnthropicMessagesProvider(ProviderPreset preset, PromptProfile promptProfile, LocalizationService localizer, SecureSecretStore secretStore, HttpClient httpClient)
+        : base(preset, promptProfile, localizer, secretStore, httpClient)
     {
     }
 
     public override async Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
     {
         var output = await RequestAsync(PromptProfile.TranslatePrompt, text, cancellationToken);
-        return ProviderValidation.Validate(output, text, TranslationMode.Translate);
+        return ProviderValidation.Validate(output, text, TranslationMode.Translate, Localizer);
     }
 
     public override async Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
     {
         var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
-        return ProviderValidation.Validate(output, text, TranslationMode.Polish);
+        return ProviderValidation.Validate(output, text, TranslationMode.Polish, Localizer);
     }
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
@@ -264,7 +267,7 @@ internal sealed class AnthropicMessagesProvider : ProviderClientBase
         var root = await SendAsync(request, cancellationToken);
         if (root["content"] is not JsonArray contentArray)
         {
-            throw new ProviderException("The provider response was malformed.");
+            throw new ProviderException(Localizer.Get("error_provider_malformed"));
         }
 
         var combined = string.Join(
@@ -277,7 +280,7 @@ internal sealed class AnthropicMessagesProvider : ProviderClientBase
 
         if (string.IsNullOrWhiteSpace(combined))
         {
-            throw new ProviderException("The provider response was malformed.");
+            throw new ProviderException(Localizer.Get("error_provider_malformed"));
         }
 
         return new ProviderOutput(combined);
@@ -286,21 +289,21 @@ internal sealed class AnthropicMessagesProvider : ProviderClientBase
 
 internal sealed class GeminiGenerateContentProvider : ProviderClientBase
 {
-    public GeminiGenerateContentProvider(ProviderPreset preset, PromptProfile promptProfile, SecureSecretStore secretStore, HttpClient httpClient)
-        : base(preset, promptProfile, secretStore, httpClient)
+    public GeminiGenerateContentProvider(ProviderPreset preset, PromptProfile promptProfile, LocalizationService localizer, SecureSecretStore secretStore, HttpClient httpClient)
+        : base(preset, promptProfile, localizer, secretStore, httpClient)
     {
     }
 
     public override async Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
     {
         var output = await RequestAsync(PromptProfile.TranslatePrompt, text, cancellationToken);
-        return ProviderValidation.Validate(output, text, TranslationMode.Translate);
+        return ProviderValidation.Validate(output, text, TranslationMode.Translate, Localizer);
     }
 
     public override async Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
     {
         var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
-        return ProviderValidation.Validate(output, text, TranslationMode.Polish);
+        return ProviderValidation.Validate(output, text, TranslationMode.Polish, Localizer);
     }
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
@@ -332,6 +335,6 @@ internal sealed class GeminiGenerateContentProvider : ProviderClientBase
             return new ProviderOutput(combined);
         }
 
-        throw new ProviderException("The provider response was malformed.");
+        throw new ProviderException(Localizer.Get("error_provider_malformed"));
     }
 }

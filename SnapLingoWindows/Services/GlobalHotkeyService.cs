@@ -7,14 +7,16 @@ public sealed class GlobalHotkeyService : IDisposable
     private const int HotkeyId = 0x534C;
 
     private readonly nint hwnd;
+    private readonly LocalizationService localizer;
     private readonly Action onHotkeyPressed;
     private readonly WindowProcedure windowProcedure;
     private nint previousWindowProcedure;
     private bool isRegistered;
 
-    public GlobalHotkeyService(nint hwnd, Action onHotkeyPressed)
+    public GlobalHotkeyService(nint hwnd, LocalizationService localizer, Action onHotkeyPressed)
     {
         this.hwnd = hwnd;
+        this.localizer = localizer;
         this.onHotkeyPressed = onHotkeyPressed;
         windowProcedure = WindowProc;
         previousWindowProcedure = NativeMethods.SetWindowLongPtr(
@@ -32,11 +34,11 @@ public sealed class GlobalHotkeyService : IDisposable
         if (!NativeMethods.RegisterHotKey(hwnd, HotkeyId, registration.Modifiers, registration.VirtualKey))
         {
             var errorCode = Marshal.GetLastWin32Error();
-            return $"Could not register {preset.DisplayName()}. Windows returned {errorCode}. Try a different preset.";
+            return localizer.Format("error_hotkey_register", preset.DisplayName(), errorCode);
         }
 
         isRegistered = true;
-        return $"Hotkey set to {preset.DisplayName()}.";
+        return localizer.Format("status_hotkey_set", preset.DisplayName());
     }
 
     public void Dispose()

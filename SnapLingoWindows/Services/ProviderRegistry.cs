@@ -6,13 +6,15 @@ namespace SnapLingoWindows.Services;
 public sealed class ProviderRegistry
 {
     private readonly SecureSecretStore secretStore;
+    private readonly LocalizationService localizer;
     private readonly HttpClient httpClient;
     private readonly Dictionary<ProviderKind, string> selectedModels = new();
     private PromptProfile selectedPrompt = PromptProfile.CreateDefault();
 
-    public ProviderRegistry(SecureSecretStore secretStore, HttpClient? httpClient = null)
+    public ProviderRegistry(SecureSecretStore secretStore, LocalizationService localizer, HttpClient? httpClient = null)
     {
         this.secretStore = secretStore;
+        this.localizer = localizer;
         this.httpClient = httpClient ?? new HttpClient();
     }
 
@@ -26,10 +28,10 @@ public sealed class ProviderRegistry
 
         return preset.Style switch
         {
-            ProviderProtocolStyle.OpenAIResponses => new OpenAIResponsesProvider(preset, ResolvePrompt(), secretStore, httpClient),
-            ProviderProtocolStyle.OpenAIChatCompletions => new OpenAIChatProvider(preset, ResolvePrompt(), secretStore, httpClient),
-            ProviderProtocolStyle.AnthropicMessages => new AnthropicMessagesProvider(preset, ResolvePrompt(), secretStore, httpClient),
-            ProviderProtocolStyle.GeminiGenerateContent => new GeminiGenerateContentProvider(preset, ResolvePrompt(), secretStore, httpClient),
+            ProviderProtocolStyle.OpenAIResponses => new OpenAIResponsesProvider(preset, ResolvePrompt(), localizer, secretStore, httpClient),
+            ProviderProtocolStyle.OpenAIChatCompletions => new OpenAIChatProvider(preset, ResolvePrompt(), localizer, secretStore, httpClient),
+            ProviderProtocolStyle.AnthropicMessages => new AnthropicMessagesProvider(preset, ResolvePrompt(), localizer, secretStore, httpClient),
+            ProviderProtocolStyle.GeminiGenerateContent => new GeminiGenerateContentProvider(preset, ResolvePrompt(), localizer, secretStore, httpClient),
             _ => throw new InvalidOperationException($"Unsupported provider style: {preset.Style}"),
         };
     }
@@ -40,7 +42,7 @@ public sealed class ProviderRegistry
         var apiKey = LoadKey(provider).Trim();
         if (string.IsNullOrWhiteSpace(apiKey))
         {
-            throw new ProviderException("Save an API key first, then SnapLingo can load models automatically.");
+            throw new ProviderException(localizer.Get("error_save_key_first_models"));
         }
 
         using var request = CreateModelsRequest(preset, apiKey);
@@ -52,7 +54,7 @@ public sealed class ProviderRegistry
             throw new ProviderException(BuildModelsRequestErrorMessage(provider, (int)response.StatusCode));
         }
 
-        var root = JsonNode.Parse(body) ?? throw new ProviderException("The provider model list response was malformed.");
+        var root = JsonNode.Parse(body) ?? throw new ProviderException(localizer.Get("error_models_malformed"));
 
         var models = provider switch
         {
@@ -63,12 +65,12 @@ public sealed class ProviderRegistry
             ProviderKind.AlibabaBailian => ParseOpenAIModels(root),
             ProviderKind.Anthropic => ParseAnthropicModels(root),
             ProviderKind.Gemini => ParseGeminiModels(root),
-            _ => throw new ProviderException("SnapLingo does not know how to list models for this provider yet."),
+            _ => throw new ProviderException(localizer.Format("error_fetch_models_http", provider.DisplayName(), (int)response.StatusCode)),
         };
 
         if (models.Count == 0)
         {
-            throw new ProviderException($"No usable text models were returned by {provider.DisplayName()}.");
+            throw new ProviderException(localizer.Format("error_fetch_models_none", provider.DisplayName()));
         }
 
         var defaultModelId = ResolveDefaultModelId(models, preset.Model);
@@ -134,7 +136,7 @@ public sealed class ProviderRegistry
 
     private PromptProfile ResolvePrompt() => selectedPrompt ?? PromptProfile.CreateDefault();
 
-    private static HttpRequestMessage CreateModelsRequest(ProviderPreset preset, string apiKey)
+    private HttpRequestMessage CreateModelsRequest(ProviderPreset preset, string apiKey)
     {
         return preset.Kind switch
         {
@@ -145,10 +147,8 @@ public sealed class ProviderRegistry
             ProviderKind.AlibabaBailian => CreateAlibabaBailianModelsRequest(preset, apiKey),
             ProviderKind.Anthropic => CreateAnthropicModelsRequest(preset, apiKey),
             ProviderKind.Gemini => CreateGeminiModelsRequest(preset, apiKey),
-            ProviderKind.VolcengineArk => throw new ProviderException(
-                "Volcengine Ark does not expose model listing through the runtime API key used by SnapLingo. Its official model-list APIs are control-plane APIs that use HMAC-signed credentials."
-            ),
-            _ => throw new ProviderException("SnapLingo does not know how to list models for this provider yet."),
+            ProviderKind.VolcengineArk => throw new ProviderException(localizer.Get("error_fetch_models_ark")),
+            _ => throw new ProviderException(localizer.Format("error_fetch_models_http", preset.Kind.DisplayName(), 0)),
         };
     }
 
@@ -212,19 +212,19 @@ public sealed class ProviderRegistry
         return models;
     }
 
-    private static string BuildModelsRequestErrorMessage(ProviderKind provider, int statusCode)
+    private string BuildModelsRequestErrorMessage(ProviderKind provider, int statusCode)
     {
         if (provider == ProviderKind.VolcengineArk)
         {
-            return "Volcengine Ark does not expose model listing through the runtime API key used by SnapLingo. Its official model-list APIs are control-plane APIs that use HMAC-signed credentials.";
+            return localizer.Get("error_fetch_models_ark");
         }
 
         if (statusCode is 404 or 405)
         {
-            return $"{provider.DisplayName()} did not expose a model-list endpoint for this API key or base URL. SnapLingo kept the single preset model instead.";
+            return localizer.Format("error_fetch_models_endpoint", provider.DisplayName());
         }
 
-        return $"Could not load models from {provider.DisplayName()}. HTTP {statusCode}.";
+        return localizer.Format("error_fetch_models_http", provider.DisplayName(), statusCode);
     }
 
     private static IReadOnlyList<ProviderModelOption> ParseAnthropicModels(JsonNode root)
@@ -302,11 +302,11 @@ public sealed class ProviderRegistry
         return models;
     }
 
-    private static string ResolveDefaultModelId(IReadOnlyList<ProviderModelOption> models, string presetModelId)
+    private string ResolveDefaultModelId(IReadOnlyList<ProviderModelOption> models, string presetModelId)
     {
         if (models.Count == 0)
         {
-            throw new ProviderException("No models were available.");
+            throw new ProviderException(localizer.Get("error_models_malformed"));
         }
 
         if (models.Any(model => model.CreatedAt.HasValue))

@@ -5,17 +5,20 @@ public sealed class WorkflowOrchestrator
     private readonly WorkflowStateStore store;
     private readonly ISelectionCaptureService captureService;
     private readonly ProviderRegistry providerRegistry;
+    private readonly LocalizationService localizer;
     private CancellationTokenSource? activeCts;
     private string? currentInput;
 
     public WorkflowOrchestrator(
         WorkflowStateStore store,
         ISelectionCaptureService captureService,
-        ProviderRegistry providerRegistry)
+        ProviderRegistry providerRegistry,
+        LocalizationService localizer)
     {
         this.store = store;
         this.captureService = captureService;
         this.providerRegistry = providerRegistry;
+        this.localizer = localizer;
     }
 
     public async Task HandleHotkeyAsync()
@@ -31,7 +34,7 @@ public sealed class WorkflowOrchestrator
         switch (captureOutcome)
         {
             case SelectionCaptureOutcome.Text text:
-                await ProcessAsync(text.Value, "Auto", cancellationToken);
+                await ProcessAsync(text.Value, "source_auto", cancellationToken);
                 break;
 
             case SelectionCaptureOutcome.RequiresClipboardFallback fallback:
@@ -39,11 +42,11 @@ public sealed class WorkflowOrchestrator
                 var clipboardText = await captureService.WaitForClipboardChangeAsync(fallback.ChangeCount, cancellationToken);
                 if (!string.IsNullOrWhiteSpace(clipboardText))
                 {
-                    await ProcessAsync(clipboardText, "Clipboard", cancellationToken);
+                    await ProcessAsync(clipboardText, "source_clipboard", cancellationToken);
                     return;
                 }
 
-                store.ShowError("SnapLingo never received copied text. Press the hotkey again or use the current clipboard.");
+                store.ShowError(localizer.Get("error_no_copied_text"));
                 break;
         }
     }
@@ -70,26 +73,26 @@ public sealed class WorkflowOrchestrator
         var text = await captureService.ReadClipboardTextAsync();
         if (string.IsNullOrWhiteSpace(text))
         {
-            store.ShowError("The clipboard does not contain text yet. Copy some text first and try again.");
+            store.ShowError(localizer.Get("error_empty_clipboard"));
             return;
         }
 
         CancelActiveWork();
         activeCts = new CancellationTokenSource();
-        await ProcessAsync(text, "Clipboard", activeCts.Token);
+        await ProcessAsync(text, "source_clipboard", activeCts.Token);
     }
 
-    private async Task ProcessAsync(string text, string sourceLabel, CancellationToken cancellationToken)
+    private async Task ProcessAsync(string text, string sourceLabelKey, CancellationToken cancellationToken)
     {
         currentInput = text;
         var mode = ModeDetector.Detect(text);
-        store.BeginProcessing(text, mode, sourceLabel);
-        await RunProviderPipelineAsync(text, mode, sourceLabel, cancellationToken);
+        store.BeginProcessing(text, mode, sourceLabelKey);
+        await RunProviderPipelineAsync(text, mode, sourceLabelKey, cancellationToken);
     }
 
-    private async Task RunProviderPipelineAsync(string text, TranslationMode selectedMode, string sourceLabel, CancellationToken cancellationToken)
+    private async Task RunProviderPipelineAsync(string text, TranslationMode selectedMode, string sourceLabelKey, CancellationToken cancellationToken)
     {
-        store.BeginProcessing(text, selectedMode, sourceLabel);
+        store.BeginProcessing(text, selectedMode, sourceLabelKey);
         var provider = providerRegistry.CurrentClient();
 
         try
@@ -103,13 +106,13 @@ public sealed class WorkflowOrchestrator
 
                     var polishedFromTranslation = await provider.PolishAsync(translation.Text, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
-                    store.ShowFinalResult("Polished Version", polishedFromTranslation.Text);
+                    store.ShowFinalResult(polishedFromTranslation.Text);
                     break;
 
                 case TranslationMode.Polish:
                     var polished = await provider.PolishAsync(text, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
-                    store.ShowFinalResult("Polished Version", polished.Text);
+                    store.ShowFinalResult(polished.Text);
                     break;
             }
         }

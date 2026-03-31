@@ -7,10 +7,12 @@ namespace SnapLingoWindows.ViewModels;
 public sealed class MainViewModel : BindableBase
 {
     private readonly JsonSettingsStore settingsStore;
+    private readonly LocalizationService localizer;
     private readonly ProviderRegistry providerRegistry;
     private readonly WorkflowOrchestrator orchestrator;
     private readonly AppSettingsDocument settingsDocument;
 
+    private AppLanguage selectedLanguage;
     private ProviderKind selectedProvider;
     private ShortcutPreset selectedShortcutPreset;
     private string apiKeyInput = string.Empty;
@@ -41,8 +43,15 @@ public sealed class MainViewModel : BindableBase
             selectedShortcutPreset = ShortcutPresetExtensions.DefaultPreset;
         }
 
+        if (!Enum.TryParse(settingsDocument.SelectedLanguage, out selectedLanguage))
+        {
+            selectedLanguage = AppLanguage.English;
+        }
+
+        localizer = new LocalizationService(selectedLanguage);
+        localizer.LanguageChanged += OnLanguageChanged;
         var secretStore = new SecureSecretStore();
-        providerRegistry = new ProviderRegistry(secretStore)
+        providerRegistry = new ProviderRegistry(secretStore, localizer)
         {
             SelectedProvider = selectedProvider,
         };
@@ -50,9 +59,9 @@ public sealed class MainViewModel : BindableBase
         selectedPromptId = ResolveSavedPromptId();
         ApplySelectedPrompt(selectedPromptId, saveSettings: false, announceSelection: false);
         RestoreSelectedModels();
-        Workflow = new WorkflowStateStore();
+        Workflow = new WorkflowStateStore(localizer);
         Workflow.ResetForIdle();
-        orchestrator = new WorkflowOrchestrator(Workflow, new ClipboardSelectionCaptureService(), providerRegistry);
+        orchestrator = new WorkflowOrchestrator(Workflow, new ClipboardSelectionCaptureService(), providerRegistry, localizer);
         apiKeyInput = providerRegistry.LoadKey(selectedProvider);
         selectedModelId = ResolveSavedModel(selectedProvider);
         availableModels = BuildFallbackModels(selectedProvider, selectedModelId);
@@ -61,6 +70,13 @@ public sealed class MainViewModel : BindableBase
     public event EventHandler? HideRequested;
 
     public WorkflowStateStore Workflow { get; }
+    public LocalizationService Localizer => localizer;
+
+    public AppLanguage SelectedLanguage
+    {
+        get => selectedLanguage;
+        private set => SetProperty(ref selectedLanguage, value);
+    }
 
     public ProviderKind SelectedProvider
     {
@@ -220,7 +236,7 @@ public sealed class MainViewModel : BindableBase
         ApiKeyInput = providerRegistry.LoadKey(provider);
         SelectedModelId = ResolveSavedModel(provider);
         AvailableModels = BuildFallbackModels(provider, SelectedModelId);
-        ProviderStatusMessage = $"Switched to {provider.DisplayName()}.";
+        ProviderStatusMessage = localizer.Format("status_switched_provider", provider.DisplayName());
         SaveSettings();
         await RefreshModelsAsync(preferLatest: false, updateStatusWhenMissingKey: false);
     }
@@ -228,6 +244,13 @@ public sealed class MainViewModel : BindableBase
     public void UpdateShortcutPreset(ShortcutPreset preset)
     {
         SelectedShortcutPreset = preset;
+        SaveSettings();
+    }
+
+    public void UpdateLanguage(AppLanguage language)
+    {
+        localizer.SetLanguage(language);
+        SelectedLanguage = language;
         SaveSettings();
     }
 
@@ -242,7 +265,7 @@ public sealed class MainViewModel : BindableBase
 
         providerRegistry.SaveKey(trimmed, SelectedProvider);
         ApiKeyInput = trimmed;
-        ProviderStatusMessage = $"Saved {SelectedProvider.DisplayName()} API key. Loading models...";
+        ProviderStatusMessage = localizer.Format("status_saved_key_loading", SelectedProvider.DisplayName());
         await RefreshModelsAsync(preferLatest: true, updateStatusWhenMissingKey: true);
     }
 
@@ -251,7 +274,7 @@ public sealed class MainViewModel : BindableBase
         providerRegistry.DeleteKey(SelectedProvider);
         ApiKeyInput = string.Empty;
         AvailableModels = BuildFallbackModels(SelectedProvider, SelectedModelId);
-        ProviderStatusMessage = $"Removed {SelectedProvider.DisplayName()} API key from secure local storage.";
+        ProviderStatusMessage = localizer.Format("status_removed_key", SelectedProvider.DisplayName());
     }
 
     public void UpdateSelectedModel(string modelId)
@@ -262,7 +285,7 @@ public sealed class MainViewModel : BindableBase
         }
 
         ApplySelectedModel(SelectedProvider, modelId, saveSettings: true);
-        ProviderStatusMessage = $"Using model {modelId}.";
+        ProviderStatusMessage = localizer.Format("status_using_model", modelId);
     }
 
     public void UpdateSelectedPrompt(string promptId)
@@ -297,14 +320,14 @@ public sealed class MainViewModel : BindableBase
 
         AvailablePrompts = AvailablePrompts.Concat([prompt]).ToList();
         ApplySelectedPrompt(prompt.Id, saveSettings: true, announceSelection: false);
-        PromptStatusMessage = $"Created prompt {prompt.Name}.";
+        PromptStatusMessage = localizer.Format("status_created_prompt", prompt.Name);
     }
 
     public void SavePrompt()
     {
         if (SelectedPromptProfile.IsBuiltIn)
         {
-            PromptStatusMessage = "Default prompt is read-only.";
+            PromptStatusMessage = localizer.Get("status_default_prompt_readonly");
             return;
         }
 
@@ -316,7 +339,7 @@ public sealed class MainViewModel : BindableBase
             string.IsNullOrWhiteSpace(translatePrompt) ||
             string.IsNullOrWhiteSpace(polishPrompt))
         {
-            PromptStatusMessage = "Name, translate prompt, and polish prompt are required.";
+            PromptStatusMessage = localizer.Get("status_prompt_fields_required");
             return;
         }
 
@@ -332,14 +355,14 @@ public sealed class MainViewModel : BindableBase
             .ToList();
 
         ApplySelectedPrompt(updatedPrompt.Id, saveSettings: true, announceSelection: false);
-        PromptStatusMessage = $"Saved prompt {updatedPrompt.Name}.";
+        PromptStatusMessage = localizer.Format("status_saved_prompt", updatedPrompt.Name);
     }
 
     public void DeleteSelectedPrompt()
     {
         if (SelectedPromptProfile.IsBuiltIn)
         {
-            PromptStatusMessage = "Default prompt cannot be deleted.";
+            PromptStatusMessage = localizer.Get("status_default_prompt_undeletable");
             return;
         }
 
@@ -349,7 +372,7 @@ public sealed class MainViewModel : BindableBase
             .ToList();
 
         ApplySelectedPrompt(PromptProfile.DefaultId, saveSettings: true, announceSelection: false);
-        PromptStatusMessage = $"Deleted prompt {deletedPromptName}.";
+        PromptStatusMessage = localizer.Format("status_deleted_prompt", deletedPromptName);
     }
 
     public void SetHotkeyStatusMessage(string message)
@@ -364,7 +387,7 @@ public sealed class MainViewModel : BindableBase
             AvailableModels = BuildFallbackModels(SelectedProvider, SelectedModelId);
             if (updateStatusWhenMissingKey)
             {
-                ProviderStatusMessage = "Save an API key first, then SnapLingo can load models automatically.";
+                ProviderStatusMessage = localizer.Get("status_save_key_first");
             }
             return;
         }
@@ -381,7 +404,7 @@ public sealed class MainViewModel : BindableBase
                 : ResolvePreferredModel(catalog);
 
             ApplySelectedModel(SelectedProvider, nextModelId, saveSettings: true);
-            ProviderStatusMessage = $"Loaded {catalog.Models.Count} models for {SelectedProvider.DisplayName()}.";
+            ProviderStatusMessage = localizer.Format("status_loaded_models", catalog.Models.Count, SelectedProvider.DisplayName());
         }
         catch (ProviderException error)
         {
@@ -476,7 +499,7 @@ public sealed class MainViewModel : BindableBase
             ?? AvailablePrompts.First(prompt => string.Equals(prompt.Id, PromptProfile.DefaultId, StringComparison.OrdinalIgnoreCase));
 
         SelectedPromptId = selectedPrompt.Id;
-        PromptEditorName = selectedPrompt.Name;
+        PromptEditorName = GetPromptDisplayName(selectedPrompt);
         PromptEditorTranslate = selectedPrompt.TranslatePrompt;
         PromptEditorPolish = selectedPrompt.PolishPrompt;
         providerRegistry.SetSelectedPrompt(selectedPrompt);
@@ -487,7 +510,7 @@ public sealed class MainViewModel : BindableBase
 
         if (announceSelection)
         {
-            PromptStatusMessage = $"Using prompt {selectedPrompt.Name}.";
+            PromptStatusMessage = localizer.Format("status_using_prompt", GetPromptDisplayName(selectedPrompt));
         }
 
         if (saveSettings)
@@ -538,7 +561,7 @@ public sealed class MainViewModel : BindableBase
 
     private string GeneratePromptName()
     {
-        const string baseName = "Custom Prompt";
+        var baseName = localizer.CurrentLanguage == AppLanguage.Chinese ? "自定义提示词" : "Custom Prompt";
         var usedNames = AvailablePrompts
             .Select(prompt => prompt.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -559,6 +582,7 @@ public sealed class MainViewModel : BindableBase
 
     private void SaveSettings()
     {
+        settingsDocument.SelectedLanguage = SelectedLanguage.ToString();
         settingsDocument.SelectedProvider = SelectedProvider.ToString();
         settingsDocument.SelectedShortcutPreset = SelectedShortcutPreset.ToString();
         settingsDocument.SelectedPromptId = SelectedPromptId;
@@ -566,5 +590,21 @@ public sealed class MainViewModel : BindableBase
             .Where(prompt => !prompt.IsBuiltIn)
             .ToList();
         settingsStore.Save(settingsDocument);
+    }
+
+    private string GetPromptDisplayName(PromptProfile prompt)
+    {
+        return prompt.IsBuiltIn ? localizer.Get("prompt_default_name") : prompt.Name;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        providerRegistry.SetSelectedPrompt(SelectedPromptProfile);
+        PromptEditorName = GetPromptDisplayName(SelectedPromptProfile);
+        ProviderStatusMessage = null;
+        PromptStatusMessage = null;
+        HotkeyStatusMessage = null;
+        OnPropertyChanged(nameof(SelectedLanguage));
+        OnPropertyChanged(nameof(SelectedPromptProfile));
     }
 }

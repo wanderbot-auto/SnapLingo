@@ -50,13 +50,14 @@
 
             <Border x:Name="ClipboardPromptBorder" Style="{StaticResource SectionCardStyle}">
                 <TextBlock
+                    x:Name="ClipboardPromptTextBlock"
                     Text="Direct capture is not ready on Windows. Press Ctrl+C to continue."
                     TextWrapping="Wrap" />
             </Border>
 
             <Border x:Name="OriginalPreviewBorder" Style="{StaticResource SectionCardStyle}">
                 <StackPanel Spacing="10">
-                    <TextBlock Style="{StaticResource SectionTitleTextStyle}" Text="Original Text" />
+                    <TextBlock x:Name="OriginalTextTitleTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Original Text" />
                     <TextBox
                         x:Name="OriginalPreviewTextBox"
                         AcceptsReturn="True"
