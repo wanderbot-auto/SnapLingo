@@ -61,12 +61,18 @@ public sealed class MainViewModel : BindableBase
         RestoreSelectedModels();
         Workflow = new WorkflowStateStore(localizer);
         Workflow.ResetForIdle();
-        orchestrator = new WorkflowOrchestrator(Workflow, new ClipboardSelectionCaptureService(), providerRegistry, localizer);
+        orchestrator = new WorkflowOrchestrator(
+            Workflow,
+            new ClipboardSelectionCaptureService(),
+            providerRegistry,
+            localizer,
+            () => ShowRequested?.Invoke(this, EventArgs.Empty));
         apiKeyInput = providerRegistry.LoadKey(selectedProvider);
         selectedModelId = ResolveSavedModel(selectedProvider);
         availableModels = BuildFallbackModels(selectedProvider, selectedModelId);
     }
 
+    public event EventHandler? ShowRequested;
     public event EventHandler? HideRequested;
 
     public WorkflowStateStore Workflow { get; }

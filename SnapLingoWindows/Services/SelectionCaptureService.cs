@@ -6,6 +6,7 @@ namespace SnapLingoWindows.Services;
 public interface ISelectionCaptureService
 {
     Task<SelectionCaptureOutcome> CaptureSelectionAsync(CancellationToken cancellationToken);
+    Task<string?> TryCaptureSelectionTextAsync(CancellationToken cancellationToken, bool allowSimulatedCopyFallback);
     Task<string?> WaitForClipboardChangeAsync(uint afterChangeCount, CancellationToken cancellationToken);
     Task<string?> ReadClipboardTextAsync();
 }
@@ -21,6 +22,24 @@ public sealed class ClipboardSelectionCaptureService : ISelectionCaptureService
         }
 
         return new SelectionCaptureOutcome.RequiresClipboardFallback(NativeMethods.GetClipboardSequenceNumber());
+    }
+
+    public async Task<string?> TryCaptureSelectionTextAsync(CancellationToken cancellationToken, bool allowSimulatedCopyFallback)
+    {
+        var directSelection = await TryCaptureDirectSelectionAsync(cancellationToken);
+        if (!string.IsNullOrWhiteSpace(directSelection))
+        {
+            return directSelection.Trim();
+        }
+
+        if (!allowSimulatedCopyFallback || !CanTargetForegroundSelection())
+        {
+            return null;
+        }
+
+        var changeCount = NativeMethods.GetClipboardSequenceNumber();
+        SimulateCopyShortcut();
+        return await WaitForClipboardChangeAsync(changeCount, cancellationToken);
     }
 
     public async Task<string?> WaitForClipboardChangeAsync(uint afterChangeCount, CancellationToken cancellationToken)
@@ -110,6 +129,26 @@ public sealed class ClipboardSelectionCaptureService : ISelectionCaptureService
 
             return null;
         }, cancellationToken);
+    }
+
+    private static bool CanTargetForegroundSelection()
+    {
+        var foregroundWindow = NativeMethods.GetForegroundWindow();
+        if (foregroundWindow == 0)
+        {
+            return false;
+        }
+
+        NativeMethods.GetWindowThreadProcessId(foregroundWindow, out var processId);
+        return processId != 0 && processId != Environment.ProcessId;
+    }
+
+    private static void SimulateCopyShortcut()
+    {
+        NativeMethods.keybd_event(NativeMethods.VK_CONTROL, 0, 0, 0);
+        NativeMethods.keybd_event(NativeMethods.VK_C, 0, 0, 0);
+        NativeMethods.keybd_event(NativeMethods.VK_C, 0, NativeMethods.KEYEVENTF_KEYUP, 0);
+        NativeMethods.keybd_event(NativeMethods.VK_CONTROL, 0, NativeMethods.KEYEVENTF_KEYUP, 0);
     }
 
     private static IEnumerable<AutomationElement> EnumerateFocusableChain(AutomationElement start)

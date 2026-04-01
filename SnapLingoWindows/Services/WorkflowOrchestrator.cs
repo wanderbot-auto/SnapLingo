@@ -6,6 +6,7 @@ public sealed class WorkflowOrchestrator
     private readonly ISelectionCaptureService captureService;
     private readonly ProviderRegistry providerRegistry;
     private readonly LocalizationService localizer;
+    private readonly Action requestPanelPresentation;
     private CancellationTokenSource? activeCts;
     private string? currentInput;
 
@@ -13,12 +14,14 @@ public sealed class WorkflowOrchestrator
         WorkflowStateStore store,
         ISelectionCaptureService captureService,
         ProviderRegistry providerRegistry,
-        LocalizationService localizer)
+        LocalizationService localizer,
+        Action requestPanelPresentation)
     {
         this.store = store;
         this.captureService = captureService;
         this.providerRegistry = providerRegistry;
         this.localizer = localizer;
+        this.requestPanelPresentation = requestPanelPresentation;
     }
 
     public async Task HandleHotkeyAsync()
@@ -28,27 +31,34 @@ public sealed class WorkflowOrchestrator
         var cancellationToken = activeCts.Token;
 
         store.ResetForNewSession();
+        var capturedText = await captureService.TryCaptureSelectionTextAsync(cancellationToken, allowSimulatedCopyFallback: true);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (!string.IsNullOrWhiteSpace(capturedText))
+        {
+            requestPanelPresentation();
+            await ProcessAsync(capturedText, "source_auto", cancellationToken);
+            return;
+        }
+
         var captureOutcome = await captureService.CaptureSelectionAsync(cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
 
-        switch (captureOutcome)
+        if (captureOutcome is not SelectionCaptureOutcome.RequiresClipboardFallback fallback)
         {
-            case SelectionCaptureOutcome.Text text:
-                await ProcessAsync(text.Value, "source_auto", cancellationToken);
-                break;
-
-            case SelectionCaptureOutcome.RequiresClipboardFallback fallback:
-                store.PresentClipboardFallback();
-                var clipboardText = await captureService.WaitForClipboardChangeAsync(fallback.ChangeCount, cancellationToken);
-                if (!string.IsNullOrWhiteSpace(clipboardText))
-                {
-                    await ProcessAsync(clipboardText, "source_clipboard", cancellationToken);
-                    return;
-                }
-
-                store.ShowError(localizer.Get("error_no_copied_text"));
-                break;
+            return;
         }
+
+        store.PresentClipboardFallback();
+        requestPanelPresentation();
+        var clipboardText = await captureService.WaitForClipboardChangeAsync(fallback.ChangeCount, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(clipboardText))
+        {
+            await ProcessAsync(clipboardText, "source_clipboard", cancellationToken);
+            return;
+        }
+
+        store.ShowError(localizer.Get("error_no_copied_text"));
     }
 
     public async Task HandleCapturedSelectionAsync(string text, string sourceLabelKey = "source_auto")
@@ -60,6 +70,7 @@ public sealed class WorkflowOrchestrator
 
         CancelActiveWork();
         activeCts = new CancellationTokenSource();
+        requestPanelPresentation();
         await ProcessAsync(text.Trim(), sourceLabelKey, activeCts.Token);
     }
 

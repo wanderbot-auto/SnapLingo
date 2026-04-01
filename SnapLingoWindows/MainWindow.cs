@@ -38,7 +38,20 @@ public sealed class MainWindow : Window
 
     public void HideWindow()
     {
+        if (appWindow.Presenter is OverlappedPresenter presenter)
+        {
+            presenter.Minimize();
+            return;
+        }
+
         NativeMethods.ShowWindow(hwnd, NativeMethods.SW_HIDE);
+    }
+
+    public void ShowWindow()
+    {
+        Activate();
+        NativeMethods.ShowWindow(hwnd, NativeMethods.SW_SHOWNORMAL);
+        NativeMethods.SetForegroundWindow(hwnd);
     }
 
     private void ConfigureWindow()
@@ -49,7 +62,6 @@ public sealed class MainWindow : Window
 
     private void OnGlobalHotkeyPressed()
     {
-        (Application.Current as App)?.ShowTranslationPanel();
         _ = viewModel.HandleHotkeyAsync();
     }
 

@@ -19,6 +19,7 @@ public partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         ViewModel = new MainViewModel();
+        ViewModel.ShowRequested += OnShowRequested;
         SettingsWindow = new MainWindow(ViewModel);
         SettingsWindow.Activate();
         autoSelectionMonitor = new AutoSelectionMonitorService(
@@ -62,13 +63,18 @@ public partial class App : Application
     {
         autoSelectionMonitor?.Dispose();
         autoSelectionMonitor = null;
+        ViewModel.ShowRequested -= OnShowRequested;
         Exit();
     }
 
     private async Task OnAutoSelectionDetectedAsync(string text)
     {
-        ShowTranslationPanel();
         await ViewModel.HandleDetectedSelectionAsync(text);
+    }
+
+    private void OnShowRequested(object? sender, EventArgs e)
+    {
+        ShowTranslationPanel();
     }
 
     private void EnsureTranslationWindow()

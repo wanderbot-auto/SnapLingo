@@ -13,6 +13,10 @@ public static partial class NativeMethods
     public const uint MOD_CONTROL = 0x0002;
     public const uint MOD_SHIFT = 0x0004;
     public const uint MOD_NOREPEAT = 0x4000;
+    public const int VK_LBUTTON = 0x01;
+    public const byte VK_CONTROL = 0x11;
+    public const byte VK_C = 0x43;
+    public const uint KEYEVENTF_KEYUP = 0x0002;
 
     public const int SW_HIDE = 0;
     public const int SW_SHOWNORMAL = 1;
@@ -60,6 +64,18 @@ public static partial class NativeMethods
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool ShowWindow(nint hWnd, int command);
+
+    [LibraryImport("user32.dll")]
+    public static partial short GetAsyncKeyState(int virtualKey);
+
+    [LibraryImport("user32.dll")]
+    public static partial nint GetForegroundWindow();
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    public static partial uint GetWindowThreadProcessId(nint hWnd, out uint processId);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    public static partial void keybd_event(byte virtualKey, byte scanCode, uint flags, nuint extraInfo);
 
     [LibraryImport("user32.dll", EntryPoint = "CallWindowProcW")]
     public static partial nint CallWindowProc(nint previousWindowProc, nint hWnd, uint message, nuint wParam, nint lParam);
