@@ -1,28 +1,39 @@
 # SnapLingo
 
-SnapLingo is a macOS menu bar translation utility for fast selection-to-copy workflows.
+SnapLingo is a desktop translation utility for fast selection-to-copy workflows. This repository currently contains two desktop clients:
 
-## V1 scope
+- `Sources/SnapLingo`: a macOS menu bar app built with SwiftPM and SwiftUI
+- `SnapLingoWindows`: a Windows desktop client built with WinUI 3 and .NET
 
-- Global hotkey with `Command + Option + Space`
-- Accessibility-based selection capture
-- Explicit clipboard fallback when selection capture fails
-- Translate or polish mode with auto-detection
-- Progressive reveal for Chinese input: quick translation first, polished version second
-- Copy-first workflow
+## Current Scope
+
+- Global hotkey entry point on both desktop clients
+- Direct selection capture with explicit clipboard fallback
+- `Translate` and `Polish` modes with automatic default mode detection
+- Progressive reveal for Chinese input: quick translation first, polished result second
+- Copy-first workflow with retry support
 - Multi-provider adapter support for `OpenAI`, `Anthropic`, `Google Gemini`, `Zhipu GLM`, `Kimi`, `MiniMax`, `Alibaba Bailian`, and `Volcengine Ark`
-- Provider-specific API keys stored in macOS Keychain
+- Secure per-provider API key storage on each platform
 
-## Not in v1
+## Current Non-Goals
 
 - Replace selection
 - Undo
 - Context-aware modes
 - History and memory
 - Tone tweak controls
-- Windows support
+- Mobile, web, or Linux clients
 
-## Build
+## Repository Layout
+
+- `Sources/SnapLingo`: macOS app source
+- `Tests/SnapLingoTests`: Swift/XCTest coverage for shared macOS logic and provider presets
+- `SnapLingoWindows`: WinUI 3 Windows client
+- `docs`: product notes, QA plans, and UI exploration artifacts
+
+## macOS Build
+
+Create local cache directories before running SwiftPM:
 
 ```bash
 mkdir -p .codex-home .cache/clang/ModuleCache
@@ -31,13 +42,22 @@ env HOME="$PWD/.codex-home" \
   swift build
 ```
 
-## Test
+## macOS Test
 
 ```bash
 mkdir -p .codex-home .cache/clang/ModuleCache
 env HOME="$PWD/.codex-home" \
   CLANG_MODULE_CACHE_PATH="$PWD/.cache/clang/ModuleCache" \
   swift test
+```
+
+## macOS Run
+
+```bash
+mkdir -p .codex-home .cache/clang/ModuleCache
+env HOME="$PWD/.codex-home" \
+  CLANG_MODULE_CACHE_PATH="$PWD/.cache/clang/ModuleCache" \
+  swift run
 ```
 
 ## Windows Client
@@ -85,4 +105,5 @@ Useful options:
 - `Anthropic` uses the native Messages API.
 - `Gemini` uses the native `generateContent` API.
 - `Zhipu GLM`, `Kimi`, `MiniMax`, `Alibaba Bailian`, and `Volcengine Ark` use curated OpenAI-compatible chat presets.
-- API keys are stored only in macOS Keychain and are never written to plain-text config files.
+- API keys are stored in platform-native secure storage:
+  macOS uses Keychain via `CredentialStore`, and Windows uses DPAPI-encrypted files via `SecureSecretStore`.
