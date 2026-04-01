@@ -177,6 +177,16 @@ public sealed class WorkflowStateStore : BindableBase
         ApplyLocalizedState();
     }
 
+    public void ShowPartialTranslationFallback(string status)
+    {
+        Phase = WorkflowPhase.Partial;
+        textState = WorkflowTextState.PartialTranslation;
+        PrimaryTitle = localizer.Get("state_translate_title");
+        SecondaryStatus = status;
+        CanCopy = true;
+        CanRetry = true;
+    }
+
     public void ShowFinalResult(string text)
     {
         Phase = WorkflowPhase.Ready;

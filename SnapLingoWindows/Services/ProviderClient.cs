@@ -41,6 +41,12 @@ public static class ProviderValidation
 
 internal abstract class ProviderClientBase : IProviderClient
 {
+    private static readonly TimeSpan[] RetryDelays =
+    [
+        TimeSpan.FromMilliseconds(350),
+        TimeSpan.FromMilliseconds(900),
+    ];
+
     private readonly ProviderPreset preset;
     private readonly PromptProfile promptProfile;
     private readonly LocalizationService localizer;
@@ -74,17 +80,33 @@ internal abstract class ProviderClientBase : IProviderClient
         return key.Trim();
     }
 
-    protected async Task<JsonNode> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected async Task<JsonNode> SendAsync(Func<HttpRequestMessage> requestFactory, CancellationToken cancellationToken)
     {
-        using var response = await httpClient.SendAsync(request, cancellationToken);
-        var body = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
+        for (var attempt = 0; ; attempt++)
         {
-            throw new ProviderException(localizer.Format("error_provider_http", (int)response.StatusCode));
-        }
+            using var request = requestFactory();
+            using var response = await httpClient.SendAsync(request, cancellationToken);
+            var body = await response.Content.ReadAsStringAsync(cancellationToken);
 
-        return JsonNode.Parse(body) ?? throw new ProviderException(localizer.Get("error_provider_malformed"));
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonNode.Parse(body) ?? throw new ProviderException(localizer.Get("error_provider_malformed"));
+            }
+
+            var statusCode = (int)response.StatusCode;
+            if (IsTransientStatus(statusCode) && attempt < RetryDelays.Length)
+            {
+                await Task.Delay(RetryDelays[attempt], cancellationToken);
+                continue;
+            }
+
+            if (statusCode == 529)
+            {
+                throw new ProviderException(localizer.Get("error_provider_busy"));
+            }
+
+            throw new ProviderException(localizer.Format("error_provider_http", statusCode));
+        }
     }
 
     protected static StringContent JsonContent(object body)
@@ -104,6 +126,11 @@ internal abstract class ProviderClientBase : IProviderClient
             parts.Select(part => part?["text"]?.GetValue<string>())
                 .Where(text => !string.IsNullOrWhiteSpace(text))
         ).Trim();
+    }
+
+    private static bool IsTransientStatus(int statusCode)
+    {
+        return statusCode is 429 or 500 or 502 or 503 or 504 or 529;
     }
 }
 
@@ -128,18 +155,22 @@ internal sealed class OpenAIResponsesProvider : ProviderClientBase
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/responses")
+        HttpRequestMessage CreateRequest()
         {
-            Content = JsonContent(new
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/responses")
             {
-                model = Preset.Model,
-                instructions,
-                input = text,
-            }),
-        };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", LoadApiKey());
+                Content = JsonContent(new
+                {
+                    model = Preset.Model,
+                    instructions,
+                    input = text,
+                }),
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", LoadApiKey());
+            return request;
+        }
 
-        var root = await SendAsync(request, cancellationToken);
+        var root = await SendAsync(CreateRequest, cancellationToken);
 
         if (root["output_text"]?.GetValue<string>() is string outputText &&
             !string.IsNullOrWhiteSpace(outputText))
@@ -186,21 +217,25 @@ internal sealed class OpenAIChatProvider : ProviderClientBase
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/chat/completions")
+        HttpRequestMessage CreateRequest()
         {
-            Content = JsonContent(new
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/chat/completions")
             {
-                model = Preset.Model,
-                messages = new object[]
+                Content = JsonContent(new
                 {
-                    new { role = "system", content = instructions },
-                    new { role = "user", content = text },
-                },
-            }),
-        };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", LoadApiKey());
+                    model = Preset.Model,
+                    messages = new object[]
+                    {
+                        new { role = "system", content = instructions },
+                        new { role = "user", content = text },
+                    },
+                }),
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", LoadApiKey());
+            return request;
+        }
 
-        var root = await SendAsync(request, cancellationToken);
+        var root = await SendAsync(CreateRequest, cancellationToken);
         var message = root["choices"]?[0]?["message"];
         if (message is null)
         {
@@ -248,23 +283,27 @@ internal sealed class AnthropicMessagesProvider : ProviderClientBase
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/messages")
+        HttpRequestMessage CreateRequest()
         {
-            Content = JsonContent(new
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/messages")
             {
-                model = Preset.Model,
-                max_tokens = 1024,
-                system = instructions,
-                messages = new object[]
+                Content = JsonContent(new
                 {
-                    new { role = "user", content = text },
-                },
-            }),
-        };
-        request.Headers.Add("x-api-key", LoadApiKey());
-        request.Headers.Add("anthropic-version", "2023-06-01");
+                    model = Preset.Model,
+                    max_tokens = 1024,
+                    system = instructions,
+                    messages = new object[]
+                    {
+                        new { role = "user", content = text },
+                    },
+                }),
+            };
+            request.Headers.Add("x-api-key", LoadApiKey());
+            request.Headers.Add("anthropic-version", "2023-06-01");
+            return request;
+        }
 
-        var root = await SendAsync(request, cancellationToken);
+        var root = await SendAsync(CreateRequest, cancellationToken);
         if (root["content"] is not JsonArray contentArray)
         {
             throw new ProviderException(Localizer.Get("error_provider_malformed"));
@@ -308,26 +347,30 @@ internal sealed class GeminiGenerateContentProvider : ProviderClientBase
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/{Preset.Model}:generateContent")
+        HttpRequestMessage CreateRequest()
         {
-            Content = JsonContent(new
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/{Preset.Model}:generateContent")
             {
-                contents = new object[]
+                Content = JsonContent(new
                 {
-                    new
+                    contents = new object[]
                     {
-                        role = "user",
-                        parts = new object[]
+                        new
                         {
-                            new { text = $"{instructions}\n\nUser text:\n{text}" },
+                            role = "user",
+                            parts = new object[]
+                            {
+                                new { text = $"{instructions}\n\nUser text:\n{text}" },
+                            },
                         },
                     },
-                },
-            }),
-        };
-        request.Headers.Add("x-goog-api-key", LoadApiKey());
+                }),
+            };
+            request.Headers.Add("x-goog-api-key", LoadApiKey());
+            return request;
+        }
 
-        var root = await SendAsync(request, cancellationToken);
+        var root = await SendAsync(CreateRequest, cancellationToken);
         var parts = root["candidates"]?[0]?["content"]?["parts"] as JsonArray;
         var combined = JoinTextParts(parts);
         if (!string.IsNullOrWhiteSpace(combined))

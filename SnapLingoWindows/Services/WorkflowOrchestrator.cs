@@ -126,10 +126,20 @@ public sealed class WorkflowOrchestrator
                     var translation = await provider.TranslateAsync(text, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
                     store.ShowPartialTranslation(translation.Text);
-
-                    var polishedFromTranslation = await provider.PolishAsync(translation.Text, cancellationToken);
-                    cancellationToken.ThrowIfCancellationRequested();
-                    store.ShowFinalResult(polishedFromTranslation.Text);
+                    try
+                    {
+                        var polishedFromTranslation = await provider.PolishAsync(translation.Text, cancellationToken);
+                        cancellationToken.ThrowIfCancellationRequested();
+                        store.ShowFinalResult(polishedFromTranslation.Text);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception)
+                    {
+                        store.ShowPartialTranslationFallback(localizer.Get("state_partial_kept_status"));
+                    }
                     break;
 
                 case TranslationMode.Polish:
