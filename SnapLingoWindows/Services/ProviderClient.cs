@@ -11,12 +11,23 @@ public interface IProviderClient
     Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken);
 }
 
-public sealed class ProviderException : Exception
+public class ProviderException : Exception
 {
     public ProviderException(string message)
         : base(message)
     {
     }
+}
+
+public sealed class ProviderHttpException : ProviderException
+{
+    public ProviderHttpException(int statusCode, string message)
+        : base(message)
+    {
+        StatusCode = statusCode;
+    }
+
+    public int StatusCode { get; }
 }
 
 public static class ProviderValidation
@@ -102,10 +113,10 @@ internal abstract class ProviderClientBase : IProviderClient
 
             if (statusCode == 529)
             {
-                throw new ProviderException(localizer.Get("error_provider_busy"));
+                throw new ProviderHttpException(statusCode, localizer.Get("error_provider_busy"));
             }
 
-            throw new ProviderException(localizer.Format("error_provider_http", statusCode));
+            throw new ProviderHttpException(statusCode, localizer.Format("error_provider_http", statusCode));
         }
     }
 
@@ -217,13 +228,23 @@ internal sealed class OpenAIChatProvider : ProviderClientBase
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
     {
+        return await RequestWithModelAsync(instructions, text, Preset.Model, allowMiniMaxFallback: true, cancellationToken);
+    }
+
+    private async Task<ProviderOutput> RequestWithModelAsync(
+        string instructions,
+        string text,
+        string modelId,
+        bool allowMiniMaxFallback,
+        CancellationToken cancellationToken)
+    {
         HttpRequestMessage CreateRequest()
         {
             var request = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/chat/completions")
             {
                 Content = JsonContent(new
                 {
-                    model = Preset.Model,
+                    model = modelId,
                     messages = new object[]
                     {
                         new { role = "system", content = instructions },
@@ -235,7 +256,36 @@ internal sealed class OpenAIChatProvider : ProviderClientBase
             return request;
         }
 
-        var root = await SendAsync(CreateRequest, cancellationToken);
+        JsonNode root;
+        try
+        {
+            root = await SendAsync(CreateRequest, cancellationToken);
+        }
+        catch (ProviderHttpException error) when (
+            allowMiniMaxFallback &&
+            error.StatusCode == 529 &&
+            Preset.Kind == ProviderKind.MiniMax &&
+            string.Equals(modelId, "MiniMax-M2.7", StringComparison.OrdinalIgnoreCase))
+        {
+            root = await SendAsync(() =>
+            {
+                var fallbackRequest = new HttpRequestMessage(HttpMethod.Post, $"{Preset.BaseUrl}/chat/completions")
+                {
+                    Content = JsonContent(new
+                    {
+                        model = "MiniMax-M2.5",
+                        messages = new object[]
+                        {
+                            new { role = "system", content = instructions },
+                            new { role = "user", content = text },
+                        },
+                    }),
+                };
+                fallbackRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", LoadApiKey());
+                return fallbackRequest;
+            }, cancellationToken);
+        }
+
         var message = root["choices"]?[0]?["message"];
         if (message is null)
         {
