@@ -51,6 +51,18 @@ public sealed class WorkflowOrchestrator
         }
     }
 
+    public async Task HandleCapturedSelectionAsync(string text, string sourceLabelKey = "source_auto")
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        CancelActiveWork();
+        activeCts = new CancellationTokenSource();
+        await ProcessAsync(text.Trim(), sourceLabelKey, activeCts.Token);
+    }
+
     public async Task RetryAsync()
     {
         await HandleHotkeyAsync();

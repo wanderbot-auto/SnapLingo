@@ -77,6 +77,11 @@ public sealed class ClipboardSelectionCaptureService : ISelectionCaptureService
                     return (string?)null;
                 }
 
+                if (focusedElement.Current.ProcessId == Environment.ProcessId)
+                {
+                    return null;
+                }
+
                 foreach (var element in EnumerateFocusableChain(focusedElement))
                 {
                     cancellationToken.ThrowIfCancellationRequested();

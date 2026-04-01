@@ -197,6 +197,11 @@ public sealed class MainViewModel : BindableBase
         await orchestrator.HandleHotkeyAsync();
     }
 
+    public async Task HandleDetectedSelectionAsync(string text)
+    {
+        await orchestrator.HandleCapturedSelectionAsync(text);
+    }
+
     public async Task RetryCurrentFlowAsync()
     {
         await orchestrator.RetryAsync();

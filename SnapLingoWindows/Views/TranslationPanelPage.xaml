@@ -5,72 +5,460 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    RequestedTheme="Light"
     mc:Ignorable="d">
-    <Grid Padding="20">
-        <StackPanel Spacing="16">
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <RadioButton x:Name="TranslateModeRadioButton" Checked="OnTranslateModeChecked" Content="Translate" GroupName="Modes" />
-                <RadioButton x:Name="PolishModeRadioButton" Checked="OnPolishModeChecked" Content="Polish" GroupName="Modes" />
-            </StackPanel>
+    <Page.Resources>
+        <SolidColorBrush x:Key="PanelSurfaceBrush" Color="#E6FFFFFF" />
+        <SolidColorBrush x:Key="PanelBorderBrush" Color="#80E5E5E5" />
+        <SolidColorBrush x:Key="PanelHeaderBrush" Color="#66FFFFFF" />
+        <SolidColorBrush x:Key="PanelHeaderBorderBrush" Color="#80F5F5F5" />
+        <SolidColorBrush x:Key="PanelSectionBrush" Color="#80FFFFFF" />
+        <SolidColorBrush x:Key="PanelSectionBorderBrush" Color="#80E5E5E5" />
+        <SolidColorBrush x:Key="PanelControlBrush" Color="#66FAFAFA" />
+        <SolidColorBrush x:Key="PanelControlBorderBrush" Color="#80ECECEC" />
+        <SolidColorBrush x:Key="PanelModeRailBrush" Color="#CCF5F5F5" />
+        <SolidColorBrush x:Key="PanelModeRailBorderBrush" Color="#66E5E5E5" />
+        <SolidColorBrush x:Key="PanelSelectedModeBrush" Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="PanelSelectedBorderBrush" Color="#FFE5E5E5" />
+        <SolidColorBrush x:Key="PanelAccentBrush" Color="#155DFC" />
+        <SolidColorBrush x:Key="PanelAccentSurfaceBrush" Color="#80EFF6FF" />
+        <SolidColorBrush x:Key="PanelAccentBorderBrush" Color="#80DBEAFE" />
+        <SolidColorBrush x:Key="PanelPrimaryTextBrush" Color="#262626" />
+        <SolidColorBrush x:Key="PanelSecondaryTextBrush" Color="#404040" />
+        <SolidColorBrush x:Key="PanelMutedTextBrush" Color="#737373" />
+        <SolidColorBrush x:Key="PanelDisabledTextBrush" Color="#66737373" />
+        <SolidColorBrush x:Key="PanelHairlineBrush" Color="#FFE5E5E5" />
+        <SolidColorBrush x:Key="PanelCopyButtonBrush" Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="PanelTransparentBrush" Color="#00000000" />
 
-            <Border Style="{StaticResource SectionCardStyle}">
-                <StackPanel Spacing="14">
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+        <LinearGradientBrush x:Key="PanelTopGlowBrush" StartPoint="0.5,0" EndPoint="0.5,1">
+            <GradientStop Color="#4DDBEAFE" Offset="0" />
+            <GradientStop Color="#00FFFFFF" Offset="1" />
+        </LinearGradientBrush>
 
-                        <TextBlock
-                            x:Name="PrimaryTitleTextBlock"
-                            Style="{StaticResource SectionTitleTextStyle}"
-                            VerticalAlignment="Center" />
+        <SvgImageSource x:Key="PanelDragIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-drag.svg" />
+        <SvgImageSource x:Key="PanelArrowRightIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-arrow-right.svg" />
+        <SvgImageSource x:Key="TranslateModeInactiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-translate.svg" />
+        <SvgImageSource x:Key="TranslateModeActiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-translate-active.svg" />
+        <SvgImageSource x:Key="PolishModeInactiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-polish-inactive.svg" />
+        <SvgImageSource x:Key="PolishModeActiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-polish.svg" />
+        <SvgImageSource x:Key="PanelCopyIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-copy.svg" />
 
-                        <Border
-                            Grid.Column="1"
-                            Background="{ThemeResource AccentFillColorSecondaryBrush}"
-                            CornerRadius="999"
-                            Padding="10,4">
-                            <TextBlock x:Name="ModeSourceTextBlock" FontWeight="SemiBold" />
-                        </Border>
-                    </Grid>
+        <Style x:Key="PlainGlyphButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PanelTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource PanelTransparentBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="MinWidth" Value="30" />
+            <Setter Property="MinHeight" Value="30" />
+        </Style>
 
-                    <ProgressRing x:Name="BusyProgressRing" Height="28" IsActive="False" Width="28" />
+        <Style x:Key="ModeButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PanelTransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource PanelTransparentBrush}" />
+            <Setter Property="BorderThickness" Value="0.8" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="MinWidth" Value="88" />
+            <Setter Property="MinHeight" Value="34" />
+        </Style>
+    </Page.Resources>
 
-                    <TextBox
-                        x:Name="PrimaryTextTextBox"
-                        AcceptsReturn="True"
-                        IsReadOnly="True"
-                        MinHeight="180"
-                        Style="{StaticResource FlatReadOnlyTextBoxStyle}" />
+    <Grid Background="Transparent">
+        <Border
+            x:Name="PanelCardBorder"
+            Background="{StaticResource PanelSurfaceBrush}"
+            BorderBrush="{StaticResource PanelBorderBrush}"
+            BorderThickness="0.8"
+            CornerRadius="16">
+            <Grid>
+                <Rectangle
+                    Height="180"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top"
+                    Fill="{StaticResource PanelTopGlowBrush}" />
 
-                    <TextBlock x:Name="SecondaryStatusTextBlock" Opacity="0.78" TextWrapping="Wrap" />
-                </StackPanel>
-            </Border>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-            <Border x:Name="ClipboardPromptBorder" Style="{StaticResource SectionCardStyle}">
-                <TextBlock
-                    x:Name="ClipboardPromptTextBlock"
-                    Text="Direct capture is not ready on Windows. Press Ctrl+C to continue."
-                    TextWrapping="Wrap" />
-            </Border>
+                    <Border
+                        Grid.Row="0"
+                        Background="{StaticResource PanelHeaderBrush}"
+                        BorderBrush="{StaticResource PanelHeaderBorderBrush}"
+                        BorderThickness="0,0,0,0.8"
+                        CornerRadius="16,16,0,0">
+                        <Grid
+                            x:Name="HeaderDragRegion"
+                            Padding="12,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-            <Border x:Name="OriginalPreviewBorder" Style="{StaticResource SectionCardStyle}">
-                <StackPanel Spacing="10">
-                    <TextBlock x:Name="OriginalTextTitleTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Original Text" />
-                    <TextBox
-                        x:Name="OriginalPreviewTextBox"
-                        AcceptsReturn="True"
-                        IsReadOnly="True"
-                        MinHeight="88"
-                        Style="{StaticResource FlatReadOnlyTextBoxStyle}" />
-                </StackPanel>
-            </Border>
+                            <Image
+                                Grid.Column="0"
+                                Width="14"
+                                Height="14"
+                                VerticalAlignment="Center"
+                                Source="{StaticResource PanelDragIcon}" />
 
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button x:Name="CopyButton" Click="OnCopyClicked" Content="Copy" />
-                <Button x:Name="RetryButton" Click="OnRetryClicked" Content="Retry" />
-            </StackPanel>
-        </StackPanel>
+                            <StackPanel
+                                Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    x:Name="SourceLanguageTextBlock"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    CharacterSpacing="25"
+                                    Foreground="{StaticResource PanelMutedTextBrush}"
+                                    Text="Auto-Detect" />
+
+                                <Image
+                                    Width="12"
+                                    Height="12"
+                                    VerticalAlignment="Center"
+                                    Source="{StaticResource PanelArrowRightIcon}" />
+
+                                <Border
+                                    x:Name="TargetLanguagePill"
+                                    Padding="8,3"
+                                    Background="{StaticResource PanelAccentSurfaceBrush}"
+                                    BorderBrush="{StaticResource PanelAccentBorderBrush}"
+                                    BorderThickness="0.8"
+                                    CornerRadius="999">
+                                    <TextBlock
+                                        x:Name="TargetLanguageTextBlock"
+                                        FontSize="12"
+                                        FontWeight="SemiBold"
+                                        CharacterSpacing="25"
+                                        Foreground="{StaticResource PanelAccentBrush}"
+                                        Text="English" />
+                                </Border>
+                            </StackPanel>
+
+                            <Button
+                                x:Name="CloseButton"
+                                Grid.Column="2"
+                                Width="28"
+                                Height="28"
+                                Click="OnCloseClicked"
+                                Style="{StaticResource PlainGlyphButtonStyle}">
+                                <Viewbox Width="14" Height="14">
+                                    <FontIcon
+                                        Foreground="{StaticResource PanelMutedTextBrush}"
+                                        FontFamily="Segoe Fluent Icons"
+                                        Glyph="&#xE8BB;" />
+                                </Viewbox>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <Border
+                        Grid.Row="1"
+                        Margin="14,12,14,0"
+                        Padding="12,10"
+                        Background="{StaticResource PanelSectionBrush}"
+                        BorderBrush="{StaticResource PanelSectionBorderBrush}"
+                        BorderThickness="0.8"
+                        CornerRadius="12">
+                        <StackPanel Spacing="6">
+                            <TextBlock
+                                x:Name="OriginalSectionLabelTextBlock"
+                                FontSize="11"
+                                FontWeight="SemiBold"
+                                CharacterSpacing="20"
+                                Foreground="{StaticResource PanelMutedTextBrush}"
+                                Text="Original" />
+
+                            <TextBlock
+                                x:Name="OriginalPreviewTextBlock"
+                                FontSize="13"
+                                Foreground="{StaticResource PanelSecondaryTextBrush}"
+                                LineHeight="20"
+                                LineStackingStrategy="BlockLineHeight"
+                                MaxLines="4"
+                                TextWrapping="WrapWholeWords"
+                                Text="Select text anywhere in Windows and SnapLingo will open automatically." />
+                        </StackPanel>
+                    </Border>
+
+                    <Border
+                        Grid.Row="2"
+                        Margin="14,10,14,0"
+                        Padding="12,10"
+                        Background="{StaticResource PanelControlBrush}"
+                        BorderBrush="{StaticResource PanelControlBorderBrush}"
+                        BorderThickness="0.8"
+                        CornerRadius="12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border
+                                Grid.Column="0"
+                                Background="{StaticResource PanelModeRailBrush}"
+                                BorderBrush="{StaticResource PanelModeRailBorderBrush}"
+                                BorderThickness="0.8"
+                                CornerRadius="10">
+                                <Grid Margin="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button
+                                        x:Name="TranslateModeButton"
+                                        Grid.Column="0"
+                                        Click="OnTranslateModeClicked"
+                                        Style="{StaticResource ModeButtonStyle}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <Image
+                                                x:Name="TranslateModeImage"
+                                                Width="14"
+                                                Height="14"
+                                                VerticalAlignment="Center"
+                                                Source="{StaticResource TranslateModeInactiveIcon}" />
+                                            <TextBlock
+                                                x:Name="TranslateModeLabelTextBlock"
+                                                VerticalAlignment="Center"
+                                                FontSize="13"
+                                                FontWeight="SemiBold"
+                                                Foreground="{StaticResource PanelMutedTextBrush}"
+                                                Text="Translate" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button
+                                        x:Name="PolishModeButton"
+                                        Grid.Column="1"
+                                        Click="OnPolishModeClicked"
+                                        Style="{StaticResource ModeButtonStyle}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <Image
+                                                x:Name="PolishModeImage"
+                                                Width="14"
+                                                Height="14"
+                                                VerticalAlignment="Center"
+                                                Source="{StaticResource PolishModeActiveIcon}" />
+                                            <TextBlock
+                                                x:Name="PolishModeLabelTextBlock"
+                                                VerticalAlignment="Center"
+                                                FontSize="13"
+                                                FontWeight="SemiBold"
+                                                Foreground="{StaticResource PanelAccentBrush}"
+                                                Text="Polish" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <Border
+                                Grid.Column="1"
+                                Margin="12,0,12,0"
+                                Padding="10,6"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                Background="{StaticResource PanelSelectedModeBrush}"
+                                BorderBrush="{StaticResource PanelSelectedBorderBrush}"
+                                BorderThickness="0.8"
+                                CornerRadius="10">
+                                <TextBlock
+                                    x:Name="ActiveModelTextBlock"
+                                    FontSize="12"
+                                    FontWeight="Medium"
+                                    Foreground="{StaticResource PanelMutedTextBrush}"
+                                    Text="Model" />
+                            </Border>
+
+                            <StackPanel
+                                Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                VerticalAlignment="Center">
+                                <Button
+                                    x:Name="RetryButton"
+                                    MinWidth="66"
+                                    Height="32"
+                                    Padding="12,0"
+                                    Background="{StaticResource PanelCopyButtonBrush}"
+                                    BorderBrush="{StaticResource PanelHairlineBrush}"
+                                    BorderThickness="0.8"
+                                    CornerRadius="8"
+                                    Click="OnRetryClicked">
+                                    <TextBlock
+                                        x:Name="RetryButtonTextBlock"
+                                        VerticalAlignment="Center"
+                                        FontSize="12"
+                                        FontWeight="SemiBold"
+                                        Foreground="{StaticResource PanelSecondaryTextBrush}"
+                                        Text="Retry" />
+                                </Button>
+
+                                <Button
+                                    x:Name="CopyButton"
+                                    MinWidth="80"
+                                    Height="32"
+                                    Padding="12,0"
+                                    Background="{StaticResource PanelCopyButtonBrush}"
+                                    BorderBrush="{StaticResource PanelHairlineBrush}"
+                                    BorderThickness="0.8"
+                                    CornerRadius="8"
+                                    Click="OnCopyClicked">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <Image
+                                            Width="14"
+                                            Height="14"
+                                            VerticalAlignment="Center"
+                                            Source="{StaticResource PanelCopyIcon}" />
+                                        <TextBlock
+                                            x:Name="CopyButtonTextBlock"
+                                            VerticalAlignment="Center"
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{StaticResource PanelSecondaryTextBrush}"
+                                            Text="Copy" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border
+                        Grid.Row="3"
+                        Margin="14,10,14,14"
+                        Padding="14,12"
+                        Background="{StaticResource PanelSectionBrush}"
+                        BorderBrush="{StaticResource PanelSectionBorderBrush}"
+                        BorderThickness="0.8"
+                        CornerRadius="12">
+                        <ScrollViewer
+                            x:Name="ProcessedContentScrollViewer"
+                            VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Disabled"
+                            VerticalScrollMode="Auto">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    x:Name="ProcessedTitleTextBlock"
+                                    Grid.Row="0"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"
+                                    CharacterSpacing="20"
+                                    Foreground="{StaticResource PanelMutedTextBrush}"
+                                    Text="Result" />
+
+                                <StackPanel
+                                    x:Name="PlaceholderPanel"
+                                    Grid.Row="1"
+                                    Margin="0,10,0,0"
+                                    Orientation="Horizontal"
+                                    Spacing="10"
+                                    VerticalAlignment="Top">
+                                    <ProgressRing
+                                        x:Name="BusyProgressRing"
+                                        Width="18"
+                                        Height="18"
+                                        IsActive="False"
+                                        Visibility="Collapsed" />
+                                    <TextBlock
+                                        x:Name="PlaceholderTextBlock"
+                                        VerticalAlignment="Center"
+                                        FontSize="13"
+                                        FontWeight="Medium"
+                                        Foreground="{StaticResource PanelMutedTextBrush}"
+                                        Text="Ready for the next selection." />
+                                </StackPanel>
+
+                                <TextBlock
+                                    x:Name="PrimaryTextBlock"
+                                    Grid.Row="1"
+                                    Margin="0,10,0,0"
+                                    FontSize="15"
+                                    Foreground="{StaticResource PanelPrimaryTextBrush}"
+                                    LineHeight="24"
+                                    LineStackingStrategy="BlockLineHeight"
+                                    TextWrapping="WrapWholeWords"
+                                    Visibility="Collapsed" />
+
+                                <TextBlock
+                                    x:Name="SecondaryStatusTextBlock"
+                                    Grid.Row="2"
+                                    Margin="0,8,0,0"
+                                    FontSize="11"
+                                    FontWeight="Medium"
+                                    Foreground="{StaticResource PanelMutedTextBrush}"
+                                    TextWrapping="WrapWholeWords"
+                                    Visibility="Collapsed" />
+
+                                <Border
+                                    x:Name="StatusBannerBorder"
+                                    Grid.Row="3"
+                                    Margin="0,12,0,0"
+                                    Padding="10,8"
+                                    Background="{StaticResource PanelControlBrush}"
+                                    BorderBrush="{StaticResource PanelHairlineBrush}"
+                                    BorderThickness="0.8"
+                                    CornerRadius="8"
+                                    Visibility="Collapsed">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                                            x:Name="StatusBannerTextBlock"
+                                            VerticalAlignment="Center"
+                                            FontSize="11"
+                                            FontWeight="Medium"
+                                            Foreground="{StaticResource PanelMutedTextBrush}"
+                                            TextWrapping="WrapWholeWords" />
+
+                                        <Button
+                                            x:Name="StatusBannerButton"
+                                            Grid.Column="1"
+                                            Margin="10,0,0,0"
+                                            MinHeight="28"
+                                            Padding="10,6"
+                                            Background="{StaticResource PanelCopyButtonBrush}"
+                                            BorderBrush="{StaticResource PanelHairlineBrush}"
+                                            BorderThickness="0.8"
+                                            CornerRadius="8"
+                                            Click="OnStatusBannerButtonClicked">
+                                            <TextBlock
+                                                x:Name="StatusBannerButtonTextBlock"
+                                                FontSize="11"
+                                                FontWeight="SemiBold"
+                                                Foreground="{StaticResource PanelSecondaryTextBrush}"
+                                                Text="Retry" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
