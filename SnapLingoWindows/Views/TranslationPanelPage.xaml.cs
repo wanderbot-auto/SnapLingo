@@ -1,7 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Foundation;
 
 namespace SnapLingoWindows.Views;
@@ -9,6 +8,10 @@ namespace SnapLingoWindows.Views;
 public sealed partial class TranslationPanelPage : Page
 {
     private readonly Action<double> requestPanelHeightUpdate;
+    private CancellationTokenSource? streamingCts;
+    private string streamingTargetText = string.Empty;
+    private string displayedPrimaryText = string.Empty;
+    private WorkflowPhase displayedPhase = WorkflowPhase.Idle;
 
     public TranslationPanelPage(MainViewModel viewModel, Action<double> requestPanelHeightUpdate)
     {
@@ -30,9 +33,9 @@ public sealed partial class TranslationPanelPage : Page
 
     public double MeasurePreferredHeight()
     {
-        var measureWidth = PanelCardBorder.ActualWidth > 0 ? PanelCardBorder.ActualWidth : 500;
+        var measureWidth = PanelCardBorder.ActualWidth > 0 ? PanelCardBorder.ActualWidth : 520;
         PanelCardBorder.Measure(new Size(measureWidth, double.PositiveInfinity));
-        return PanelCardBorder.DesiredSize.Height + 32;
+        return PanelCardBorder.DesiredSize.Height + 24;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -57,6 +60,7 @@ public sealed partial class TranslationPanelPage : Page
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
+        CancelStreaming();
         ViewModel.Workflow.PropertyChanged -= OnWorkflowChanged;
         ViewModel.PropertyChanged -= OnViewModelChanged;
         Loaded -= OnLoaded;
@@ -67,16 +71,11 @@ public sealed partial class TranslationPanelPage : Page
     private void Render()
     {
         OriginalSectionLabelTextBlock.Text = IsChinese ? "原文" : "Original";
-        TranslateModeLabelTextBlock.Text = ResolveModeLabel(TranslationMode.Translate);
-        PolishModeLabelTextBlock.Text = ResolveModeLabel(TranslationMode.Polish);
-        RetryButtonTextBlock.Text = ResolveRetryLabel();
-        CopyButtonTextBlock.Text = ResolveCopyLabel(ViewModel.Workflow.IsCopied);
         StatusBannerButtonTextBlock.Text = ResolveRetryLabel();
-        ActiveModelTextBlock.Text = FormatModelDisplayName(ViewModel.SelectedModelId);
 
         UpdateHeader();
-        UpdateOriginalContent();
         UpdateModeVisualState();
+        UpdateOriginalContent();
         UpdateContent();
         UpdateControls();
         QueueHeightUpdate();
@@ -88,13 +87,6 @@ public sealed partial class TranslationPanelPage : Page
         TargetLanguageTextBlock.Text = ResolveTargetLanguageLabel();
     }
 
-    private void UpdateOriginalContent()
-    {
-        OriginalPreviewTextBlock.Text = !string.IsNullOrWhiteSpace(ViewModel.Workflow.OriginalPreview)
-            ? ViewModel.Workflow.OriginalPreview!
-            : ResolveOriginalContentHint();
-    }
-
     private void UpdateModeVisualState()
     {
         var isTranslate = ViewModel.Workflow.SelectedMode == TranslationMode.Translate;
@@ -102,64 +94,69 @@ public sealed partial class TranslationPanelPage : Page
         var unselectedBackground = LookupBrush("PanelTransparentBrush");
         var selectedBorder = LookupBrush("PanelSelectedBorderBrush");
         var unselectedBorder = LookupBrush("PanelTransparentBrush");
-        var selectedForeground = LookupBrush("PanelAccentBrush");
-        var unselectedForeground = LookupBrush("PanelMutedTextBrush");
 
         ApplyModeState(
             TranslateModeButton,
-            TranslateModeLabelTextBlock,
             TranslateModeImage,
             isSelected: isTranslate,
             selectedBackground,
             unselectedBackground,
             selectedBorder,
             unselectedBorder,
-            selectedForeground,
-            unselectedForeground,
             selectedImageKey: "TranslateModeActiveIcon",
             unselectedImageKey: "TranslateModeInactiveIcon");
 
         ApplyModeState(
             PolishModeButton,
-            PolishModeLabelTextBlock,
             PolishModeImage,
             isSelected: !isTranslate,
             selectedBackground,
             unselectedBackground,
             selectedBorder,
             unselectedBorder,
-            selectedForeground,
-            unselectedForeground,
             selectedImageKey: "PolishModeActiveIcon",
             unselectedImageKey: "PolishModeInactiveIcon");
     }
 
     private void ApplyModeState(
         Button button,
-        TextBlock label,
         Image image,
         bool isSelected,
         Brush selectedBackground,
         Brush unselectedBackground,
         Brush selectedBorder,
         Brush unselectedBorder,
-        Brush selectedForeground,
-        Brush unselectedForeground,
         string selectedImageKey,
         string unselectedImageKey)
     {
         button.Background = isSelected ? selectedBackground : unselectedBackground;
         button.BorderBrush = isSelected ? selectedBorder : unselectedBorder;
-        label.Foreground = isSelected ? selectedForeground : unselectedForeground;
         image.Source = LookupImageSource(isSelected ? selectedImageKey : unselectedImageKey);
+    }
+
+    private void UpdateOriginalContent()
+    {
+        OriginalPreviewTextBlock.Text = !string.IsNullOrWhiteSpace(ViewModel.Workflow.OriginalPreview)
+            ? ViewModel.Workflow.OriginalPreview!
+            : ResolveOriginalContentHint();
     }
 
     private void UpdateContent()
     {
-        var displayText = ViewModel.Workflow.PrimaryText ?? string.Empty;
-        var shouldUsePlaceholder = string.IsNullOrWhiteSpace(displayText) || ViewModel.Workflow.IsBusy;
+        var rawText = ViewModel.Workflow.PrimaryText ?? string.Empty;
+        var shouldUsePlaceholder = string.IsNullOrWhiteSpace(rawText) || ViewModel.Workflow.IsBusy;
 
         ProcessedTitleTextBlock.Text = ViewModel.Workflow.PrimaryTitle;
+
+        if (shouldUsePlaceholder)
+        {
+            CancelStreaming();
+            displayedPrimaryText = string.Empty;
+        }
+        else
+        {
+            EnsureStreamingState(rawText);
+        }
 
         PlaceholderPanel.Visibility = shouldUsePlaceholder ? Visibility.Visible : Visibility.Collapsed;
         BusyProgressRing.IsActive = ViewModel.Workflow.IsBusy;
@@ -167,7 +164,7 @@ public sealed partial class TranslationPanelPage : Page
         PlaceholderTextBlock.Text = ResolvePlaceholderText();
 
         PrimaryTextBlock.Visibility = shouldUsePlaceholder ? Visibility.Collapsed : Visibility.Visible;
-        PrimaryTextBlock.Text = shouldUsePlaceholder ? string.Empty : displayText;
+        PrimaryTextBlock.Text = shouldUsePlaceholder ? string.Empty : displayedPrimaryText;
 
         var secondaryStatus = ResolveSecondaryStatusText(shouldUsePlaceholder);
         SecondaryStatusTextBlock.Text = secondaryStatus;
@@ -203,6 +200,79 @@ public sealed partial class TranslationPanelPage : Page
 
         CopyButton.IsEnabled = ViewModel.Workflow.CanCopy;
         CopyButton.Opacity = ViewModel.Workflow.CanCopy ? 1 : 0.72;
+        CopyGlyphIcon.Glyph = ViewModel.Workflow.IsCopied ? "\uE73E" : "\uE8C8";
+        ActiveModelTextBlock.Text = FormatModelDisplayName(ViewModel.SelectedModelId);
+    }
+
+    private void EnsureStreamingState(string rawText)
+    {
+        if (!ShouldAnimate(rawText))
+        {
+            CancelStreaming();
+            streamingTargetText = rawText;
+            displayedPrimaryText = rawText;
+            displayedPhase = ViewModel.Workflow.Phase;
+            return;
+        }
+
+        if (rawText == streamingTargetText && displayedPhase == ViewModel.Workflow.Phase)
+        {
+            return;
+        }
+
+        StartStreaming(rawText, ViewModel.Workflow.Phase);
+    }
+
+    private bool ShouldAnimate(string text)
+    {
+        return !string.IsNullOrWhiteSpace(text) &&
+               ViewModel.Workflow.Phase is WorkflowPhase.Partial or WorkflowPhase.Ready;
+    }
+
+    private void StartStreaming(string text, WorkflowPhase phase)
+    {
+        CancelStreaming();
+        streamingCts = new CancellationTokenSource();
+        streamingTargetText = text;
+        displayedPhase = phase;
+        displayedPrimaryText = string.Empty;
+        PrimaryTextBlock.Text = string.Empty;
+        _ = StreamTextAsync(text, streamingCts.Token);
+    }
+
+    private async Task StreamTextAsync(string text, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var chunkSize = text.Length switch
+            {
+                > 640 => 14,
+                > 320 => 10,
+                > 160 => 6,
+                _ => 3,
+            };
+
+            var delay = text.Length > 240 ? 10 : 16;
+
+            for (var index = chunkSize; index < text.Length + chunkSize; index += chunkSize)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                displayedPrimaryText = text[..Math.Min(index, text.Length)];
+                PrimaryTextBlock.Text = displayedPrimaryText;
+                QueueHeightUpdate();
+                await Task.Delay(delay, cancellationToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private void CancelStreaming()
+    {
+        streamingCts?.Cancel();
+        streamingCts?.Dispose();
+        streamingCts = null;
     }
 
     private string ResolveOriginalContentHint()
@@ -267,26 +337,9 @@ public sealed partial class TranslationPanelPage : Page
             : "The workflow did not finish. Retry it, or select the text again.";
     }
 
-    private string ResolveModeLabel(TranslationMode mode)
-    {
-        return mode == TranslationMode.Translate
-            ? (IsChinese ? "翻译" : "Translate")
-            : (IsChinese ? "润色" : "Polish");
-    }
-
-    private string ResolveCopyLabel(bool copied)
-    {
-        if (copied)
-        {
-            return IsChinese ? "已复制" : "Copied";
-        }
-
-        return IsChinese ? "复制" : "Copy";
-    }
-
     private string ResolveRetryLabel() => IsChinese ? "重试" : "Retry";
 
-    private string ResolveSourceLanguageLabel() => IsChinese ? "自动检测" : "Auto-Detect";
+    private string ResolveSourceLanguageLabel() => IsChinese ? "自动识别" : "Auto-Detect";
 
     private string ResolveTargetLanguageLabel() => IsChinese ? "英文" : "English";
 

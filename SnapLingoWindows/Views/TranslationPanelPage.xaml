@@ -42,16 +42,25 @@
         <SvgImageSource x:Key="TranslateModeActiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-translate-active.svg" />
         <SvgImageSource x:Key="PolishModeInactiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-polish-inactive.svg" />
         <SvgImageSource x:Key="PolishModeActiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-polish.svg" />
-        <SvgImageSource x:Key="PanelCopyIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-copy.svg" />
 
         <Style x:Key="PlainGlyphButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource PanelTransparentBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource PanelTransparentBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="6" />
-            <Setter Property="MinWidth" Value="30" />
-            <Setter Property="MinHeight" Value="30" />
+            <Setter Property="Padding" Value="4" />
+            <Setter Property="MinWidth" Value="24" />
+            <Setter Property="MinHeight" Value="24" />
+        </Style>
+
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PanelCopyButtonBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource PanelHairlineBrush}" />
+            <Setter Property="BorderThickness" Value="0.8" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
         </Style>
 
         <Style x:Key="ModeButtonStyle" TargetType="Button">
@@ -59,9 +68,9 @@
             <Setter Property="BorderBrush" Value="{StaticResource PanelTransparentBrush}" />
             <Setter Property="BorderThickness" Value="0.8" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="12,6" />
-            <Setter Property="MinWidth" Value="88" />
-            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Width" Value="34" />
+            <Setter Property="Height" Value="34" />
         </Style>
     </Page.Resources>
 
@@ -74,7 +83,7 @@
             CornerRadius="16">
             <Grid>
                 <Rectangle
-                    Height="180"
+                    Height="148"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Top"
                     Fill="{StaticResource PanelTopGlowBrush}" />
@@ -84,7 +93,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
                     <Border
@@ -95,7 +104,7 @@
                         CornerRadius="16,16,0,0">
                         <Grid
                             x:Name="HeaderDragRegion"
-                            Padding="12,10">
+                            Padding="10,7">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
@@ -104,56 +113,68 @@
 
                             <Image
                                 Grid.Column="0"
-                                Width="14"
-                                Height="14"
+                                Width="12"
+                                Height="12"
                                 VerticalAlignment="Center"
                                 Source="{StaticResource PanelDragIcon}" />
 
-                            <StackPanel
+                            <Grid
                                 Grid.Column="1"
-                                Orientation="Horizontal"
-                                Spacing="8"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
                                 <TextBlock
                                     x:Name="SourceLanguageTextBlock"
-                                    FontSize="12"
+                                    Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    FontSize="11"
                                     FontWeight="SemiBold"
-                                    CharacterSpacing="25"
+                                    CharacterSpacing="18"
                                     Foreground="{StaticResource PanelMutedTextBrush}"
                                     Text="Auto-Detect" />
 
                                 <Image
-                                    Width="12"
-                                    Height="12"
+                                    Grid.Column="1"
+                                    Width="10"
+                                    Height="10"
+                                    Margin="8,0"
                                     VerticalAlignment="Center"
                                     Source="{StaticResource PanelArrowRightIcon}" />
 
                                 <Border
                                     x:Name="TargetLanguagePill"
-                                    Padding="8,3"
+                                    Grid.Column="2"
+                                    MinHeight="22"
+                                    Padding="8,2"
+                                    VerticalAlignment="Center"
                                     Background="{StaticResource PanelAccentSurfaceBrush}"
                                     BorderBrush="{StaticResource PanelAccentBorderBrush}"
                                     BorderThickness="0.8"
                                     CornerRadius="999">
                                     <TextBlock
                                         x:Name="TargetLanguageTextBlock"
-                                        FontSize="12"
+                                        VerticalAlignment="Center"
+                                        FontSize="11"
                                         FontWeight="SemiBold"
-                                        CharacterSpacing="25"
+                                        CharacterSpacing="18"
                                         Foreground="{StaticResource PanelAccentBrush}"
                                         Text="English" />
                                 </Border>
-                            </StackPanel>
+                            </Grid>
 
                             <Button
                                 x:Name="CloseButton"
                                 Grid.Column="2"
-                                Width="28"
-                                Height="28"
+                                Width="24"
+                                Height="24"
                                 Click="OnCloseClicked"
                                 Style="{StaticResource PlainGlyphButtonStyle}">
-                                <Viewbox Width="14" Height="14">
+                                <Viewbox Width="12" Height="12">
                                     <FontIcon
                                         Foreground="{StaticResource PanelMutedTextBrush}"
                                         FontFamily="Segoe Fluent Icons"
@@ -165,28 +186,28 @@
 
                     <Border
                         Grid.Row="1"
-                        Margin="14,12,14,0"
-                        Padding="12,10"
+                        Margin="12,10,12,0"
+                        Padding="10,8"
                         Background="{StaticResource PanelSectionBrush}"
                         BorderBrush="{StaticResource PanelSectionBorderBrush}"
                         BorderThickness="0.8"
                         CornerRadius="12">
-                        <StackPanel Spacing="6">
+                        <StackPanel Spacing="5">
                             <TextBlock
                                 x:Name="OriginalSectionLabelTextBlock"
-                                FontSize="11"
+                                FontSize="10"
                                 FontWeight="SemiBold"
-                                CharacterSpacing="20"
+                                CharacterSpacing="18"
                                 Foreground="{StaticResource PanelMutedTextBrush}"
                                 Text="Original" />
 
                             <TextBlock
                                 x:Name="OriginalPreviewTextBlock"
-                                FontSize="13"
+                                FontSize="12.5"
                                 Foreground="{StaticResource PanelSecondaryTextBrush}"
-                                LineHeight="20"
+                                LineHeight="18"
                                 LineStackingStrategy="BlockLineHeight"
-                                MaxLines="4"
+                                MaxLines="3"
                                 TextWrapping="WrapWholeWords"
                                 Text="Select text anywhere in Windows and SnapLingo will open automatically." />
                         </StackPanel>
@@ -194,8 +215,8 @@
 
                     <Border
                         Grid.Row="2"
-                        Margin="14,10,14,0"
-                        Padding="12,10"
+                        Margin="12,8,12,0"
+                        Padding="8"
                         Background="{StaticResource PanelControlBrush}"
                         BorderBrush="{StaticResource PanelControlBorderBrush}"
                         BorderThickness="0.8"
@@ -215,61 +236,44 @@
                                 CornerRadius="10">
                                 <Grid Margin="2">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <Button
                                         x:Name="TranslateModeButton"
                                         Grid.Column="0"
                                         Click="OnTranslateModeClicked"
-                                        Style="{StaticResource ModeButtonStyle}">
-                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                            <Image
-                                                x:Name="TranslateModeImage"
-                                                Width="14"
-                                                Height="14"
-                                                VerticalAlignment="Center"
-                                                Source="{StaticResource TranslateModeInactiveIcon}" />
-                                            <TextBlock
-                                                x:Name="TranslateModeLabelTextBlock"
-                                                VerticalAlignment="Center"
-                                                FontSize="13"
-                                                FontWeight="SemiBold"
-                                                Foreground="{StaticResource PanelMutedTextBrush}"
-                                                Text="Translate" />
-                                        </StackPanel>
+                                        Style="{StaticResource ModeButtonStyle}"
+                                        ToolTipService.ToolTip="Translate">
+                                        <Image
+                                            x:Name="TranslateModeImage"
+                                            Width="15"
+                                            Height="15"
+                                            VerticalAlignment="Center"
+                                            Source="{StaticResource TranslateModeInactiveIcon}" />
                                     </Button>
 
                                     <Button
                                         x:Name="PolishModeButton"
                                         Grid.Column="1"
                                         Click="OnPolishModeClicked"
-                                        Style="{StaticResource ModeButtonStyle}">
-                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                            <Image
-                                                x:Name="PolishModeImage"
-                                                Width="14"
-                                                Height="14"
-                                                VerticalAlignment="Center"
-                                                Source="{StaticResource PolishModeActiveIcon}" />
-                                            <TextBlock
-                                                x:Name="PolishModeLabelTextBlock"
-                                                VerticalAlignment="Center"
-                                                FontSize="13"
-                                                FontWeight="SemiBold"
-                                                Foreground="{StaticResource PanelAccentBrush}"
-                                                Text="Polish" />
-                                        </StackPanel>
+                                        Style="{StaticResource ModeButtonStyle}"
+                                        ToolTipService.ToolTip="Polish">
+                                        <Image
+                                            x:Name="PolishModeImage"
+                                            Width="15"
+                                            Height="15"
+                                            VerticalAlignment="Center"
+                                            Source="{StaticResource PolishModeActiveIcon}" />
                                     </Button>
                                 </Grid>
                             </Border>
 
                             <Border
                                 Grid.Column="1"
-                                Margin="12,0,12,0"
-                                Padding="10,6"
-                                HorizontalAlignment="Stretch"
+                                Margin="8,0"
+                                Padding="8,5"
                                 VerticalAlignment="Center"
                                 Background="{StaticResource PanelSelectedModeBrush}"
                                 BorderBrush="{StaticResource PanelSelectedBorderBrush}"
@@ -277,60 +281,44 @@
                                 CornerRadius="10">
                                 <TextBlock
                                     x:Name="ActiveModelTextBlock"
-                                    FontSize="12"
+                                    FontSize="11"
                                     FontWeight="Medium"
                                     Foreground="{StaticResource PanelMutedTextBrush}"
+                                    TextTrimming="CharacterEllipsis"
                                     Text="Model" />
                             </Border>
 
                             <StackPanel
                                 Grid.Column="2"
                                 Orientation="Horizontal"
-                                Spacing="8"
+                                Spacing="6"
                                 VerticalAlignment="Center">
                                 <Button
                                     x:Name="RetryButton"
-                                    MinWidth="66"
-                                    Height="32"
-                                    Padding="12,0"
-                                    Background="{StaticResource PanelCopyButtonBrush}"
-                                    BorderBrush="{StaticResource PanelHairlineBrush}"
-                                    BorderThickness="0.8"
-                                    CornerRadius="8"
-                                    Click="OnRetryClicked">
-                                    <TextBlock
-                                        x:Name="RetryButtonTextBlock"
-                                        VerticalAlignment="Center"
-                                        FontSize="12"
-                                        FontWeight="SemiBold"
-                                        Foreground="{StaticResource PanelSecondaryTextBrush}"
-                                        Text="Retry" />
+                                    Click="OnRetryClicked"
+                                    Style="{StaticResource IconButtonStyle}"
+                                    ToolTipService.ToolTip="Retry">
+                                    <Viewbox Width="14" Height="14">
+                                        <FontIcon
+                                            x:Name="RetryGlyphIcon"
+                                            Foreground="{StaticResource PanelSecondaryTextBrush}"
+                                            FontFamily="Segoe Fluent Icons"
+                                            Glyph="&#xE72C;" />
+                                    </Viewbox>
                                 </Button>
 
                                 <Button
                                     x:Name="CopyButton"
-                                    MinWidth="80"
-                                    Height="32"
-                                    Padding="12,0"
-                                    Background="{StaticResource PanelCopyButtonBrush}"
-                                    BorderBrush="{StaticResource PanelHairlineBrush}"
-                                    BorderThickness="0.8"
-                                    CornerRadius="8"
-                                    Click="OnCopyClicked">
-                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                        <Image
-                                            Width="14"
-                                            Height="14"
-                                            VerticalAlignment="Center"
-                                            Source="{StaticResource PanelCopyIcon}" />
-                                        <TextBlock
-                                            x:Name="CopyButtonTextBlock"
-                                            VerticalAlignment="Center"
-                                            FontSize="13"
-                                            FontWeight="SemiBold"
+                                    Click="OnCopyClicked"
+                                    Style="{StaticResource IconButtonStyle}"
+                                    ToolTipService.ToolTip="Copy">
+                                    <Viewbox Width="14" Height="14">
+                                        <FontIcon
+                                            x:Name="CopyGlyphIcon"
                                             Foreground="{StaticResource PanelSecondaryTextBrush}"
-                                            Text="Copy" />
-                                    </StackPanel>
+                                            FontFamily="Segoe Fluent Icons"
+                                            Glyph="&#xE8C8;" />
+                                    </Viewbox>
                                 </Button>
                             </StackPanel>
                         </Grid>
@@ -338,20 +326,22 @@
 
                     <Border
                         Grid.Row="3"
-                        Margin="14,10,14,14"
-                        Padding="14,12"
+                        Margin="12,8,12,12"
+                        Padding="12,10"
                         Background="{StaticResource PanelSectionBrush}"
                         BorderBrush="{StaticResource PanelSectionBorderBrush}"
                         BorderThickness="0.8"
-                        CornerRadius="12">
+                        CornerRadius="12"
+                        MinHeight="160">
                         <ScrollViewer
                             x:Name="ProcessedContentScrollViewer"
+                            VerticalAlignment="Stretch"
                             VerticalScrollBarVisibility="Auto"
                             HorizontalScrollBarVisibility="Disabled"
-                            VerticalScrollMode="Auto">
+                            VerticalScrollMode="Enabled"
+                            ZoomMode="Disabled">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -361,9 +351,9 @@
                                 <TextBlock
                                     x:Name="ProcessedTitleTextBlock"
                                     Grid.Row="0"
-                                    FontSize="12"
+                                    FontSize="10"
                                     FontWeight="SemiBold"
-                                    CharacterSpacing="20"
+                                    CharacterSpacing="18"
                                     Foreground="{StaticResource PanelMutedTextBrush}"
                                     Text="Result" />
 
@@ -372,18 +362,18 @@
                                     Grid.Row="1"
                                     Margin="0,10,0,0"
                                     Orientation="Horizontal"
-                                    Spacing="10"
+                                    Spacing="8"
                                     VerticalAlignment="Top">
                                     <ProgressRing
                                         x:Name="BusyProgressRing"
-                                        Width="18"
-                                        Height="18"
+                                        Width="16"
+                                        Height="16"
                                         IsActive="False"
                                         Visibility="Collapsed" />
                                     <TextBlock
                                         x:Name="PlaceholderTextBlock"
                                         VerticalAlignment="Center"
-                                        FontSize="13"
+                                        FontSize="12.5"
                                         FontWeight="Medium"
                                         Foreground="{StaticResource PanelMutedTextBrush}"
                                         Text="Ready for the next selection." />
@@ -393,9 +383,9 @@
                                     x:Name="PrimaryTextBlock"
                                     Grid.Row="1"
                                     Margin="0,10,0,0"
-                                    FontSize="15"
+                                    FontSize="14.5"
                                     Foreground="{StaticResource PanelPrimaryTextBrush}"
-                                    LineHeight="24"
+                                    LineHeight="22"
                                     LineStackingStrategy="BlockLineHeight"
                                     TextWrapping="WrapWholeWords"
                                     Visibility="Collapsed" />
@@ -438,8 +428,8 @@
                                             x:Name="StatusBannerButton"
                                             Grid.Column="1"
                                             Margin="10,0,0,0"
-                                            MinHeight="28"
-                                            Padding="10,6"
+                                            MinHeight="26"
+                                            Padding="8,4"
                                             Background="{StaticResource PanelCopyButtonBrush}"
                                             BorderBrush="{StaticResource PanelHairlineBrush}"
                                             BorderThickness="0.8"

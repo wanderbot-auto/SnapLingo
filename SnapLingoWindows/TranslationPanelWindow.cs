@@ -8,8 +8,8 @@ namespace SnapLingoWindows;
 public sealed class TranslationPanelWindow : Window
 {
     private const int PanelWidth = 520;
-    private const int MinPanelHeight = 300;
-    private const int MaxPanelHeight = 760;
+    private const int MinPanelHeight = 320;
+    private const int MaxPanelHeight = 620;
 
     private readonly MainViewModel viewModel;
     private readonly TranslationPanelPage page;
@@ -54,7 +54,7 @@ public sealed class TranslationPanelWindow : Window
 
     private void ConfigureWindow()
     {
-        appWindow.Resize(new Windows.Graphics.SizeInt32(PanelWidth, 360));
+        appWindow.Resize(new Windows.Graphics.SizeInt32(PanelWidth, 340));
         NativeWindowStyler.ApplySettingsShellStyle(hwnd);
 
         if (appWindow.Presenter is OverlappedPresenter presenter)
