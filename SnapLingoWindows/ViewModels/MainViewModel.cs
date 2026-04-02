@@ -36,6 +36,7 @@ public sealed class MainViewModel : BindableBase
         PromptProfiles = new PromptProfilesViewModel(localizer, providerRegistry, settingsDocument, SaveSettings);
         AppearanceSettings = new AppearanceSettingsViewModel(localizer, settingsDocument, SaveSettings, selectedLanguage);
         HotkeySettings = new HotkeySettingsViewModel(settingsDocument, SaveSettings, selectedShortcutPreset);
+        AutoSelectionSettings = new AutoSelectionSettingsViewModel(localizer, settingsDocument, SaveSettings);
         WorkflowPanel = new WorkflowPanelViewModel(
             localizer,
             new ClipboardSelectionCaptureService(),
@@ -62,6 +63,8 @@ public sealed class MainViewModel : BindableBase
     public AppearanceSettingsViewModel AppearanceSettings { get; }
 
     public HotkeySettingsViewModel HotkeySettings { get; }
+
+    public AutoSelectionSettingsViewModel AutoSelectionSettings { get; }
 
     public WorkflowPanelViewModel WorkflowPanel { get; }
 
@@ -107,9 +110,9 @@ public sealed class MainViewModel : BindableBase
         await WorkflowPanel.HandleCapturedSelectionAsync(text);
     }
 
-    public async Task HandleSelectionLauncherAsync(string? text)
+    public async Task HandleSelectionLauncherAsync(string? text, TranslationMode mode)
     {
-        await WorkflowPanel.HandleSelectionLauncherAsync(text);
+        await WorkflowPanel.HandleSelectionLauncherAsync(text, mode);
     }
 
     public async Task RetryCurrentFlowAsync()

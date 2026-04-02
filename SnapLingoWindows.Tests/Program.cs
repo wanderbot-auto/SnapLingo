@@ -10,6 +10,7 @@ var tests = new (string Name, Func<Task> Run)[]
     ("Workflow orchestrator retry path replays capture flow", WorkflowRetryReplaysCaptureFlowAsync),
     ("Workflow orchestrator cancels in-flight work before new input", WorkflowCancelsInflightWorkAsync),
     ("Selection activation gate suppresses empty and duplicate text", SelectionActivationGateSuppressesEmptyAndDuplicateAsync),
+    ("Selection activation gate clears pending debounce when selection becomes too short", SelectionActivationGateClearsPendingWhenSelectionShrinksAsync),
 };
 
 var failures = new List<string>();
@@ -171,23 +172,70 @@ static async Task WorkflowCancelsInflightWorkAsync()
 
 static Task SelectionActivationGateSuppressesEmptyAndDuplicateAsync()
 {
-    var gate = new SelectionActivationGate(TimeSpan.FromSeconds(5));
+    var gate = new SelectionActivationGate(
+        duplicateSuppressWindow: TimeSpan.FromSeconds(5),
+        debounceWindow: TimeSpan.FromMilliseconds(250));
     var now = DateTimeOffset.Parse("2026-04-01T12:00:00Z");
 
     AssertEx.Null(gate.TryCreateRequest(new SelectionSnapshot("   "), 10, 20, now), "Empty text should never trigger auto-selection activation.");
+    AssertEx.Null(gate.TryCreateRequest(new SelectionSnapshot("one two three"), 10, 20, now), "Selections shorter than four words should be ignored.");
 
-    var first = gate.TryCreateRequest(new SelectionSnapshot("hello"), 10, 20, now);
-    AssertEx.NotNull(first, "Non-empty text should produce an activation request.");
-    AssertEx.Equal(10, first!.AnchorX);
-    AssertEx.Equal(20, first.AnchorY);
+    var firstCandidate = gate.TryCreateRequest(new SelectionSnapshot("one two three four"), 10, 20, now);
+    AssertEx.Null(firstCandidate, "The first qualifying observation should start the debounce window.");
+    AssertEx.True(gate.HasPendingCandidate("one two three four"), "A qualifying selection should remain pending during debounce.");
 
-    var duplicate = gate.TryCreateRequest(new SelectionSnapshot("hello"), 30, 40, now.AddSeconds(1));
+    var debounced = gate.TryCreateRequest(new SelectionSnapshot("one two three four", 55, 66), 30, 40, now.AddMilliseconds(300));
+    AssertEx.NotNull(debounced, "A stable selection should trigger after the debounce window.");
+    AssertEx.Equal(55, debounced!.AnchorX);
+    AssertEx.Equal(66, debounced.AnchorY);
+
+    var duplicate = gate.TryCreateRequest(new SelectionSnapshot("one two three four"), 30, 40, now.AddSeconds(1));
     AssertEx.Null(duplicate, "Duplicate text inside the suppress window should be ignored.");
 
-    var later = gate.TryCreateRequest(new SelectionSnapshot("hello", 55, 66), 30, 40, now.AddSeconds(6));
+    var laterCandidate = gate.TryCreateRequest(new SelectionSnapshot("one two three four", 77, 88), 30, 40, now.AddSeconds(6));
+    AssertEx.Null(laterCandidate, "After the suppress window expires the selection should debounce again.");
+
+    var later = gate.TryCreateRequest(new SelectionSnapshot("one two three four", 77, 88), 30, 40, now.AddSeconds(6).AddMilliseconds(300));
     AssertEx.NotNull(later, "The suppress window should expire.");
-    AssertEx.Equal(55, later!.AnchorX);
-    AssertEx.Equal(66, later.AnchorY);
+    AssertEx.Equal(77, later!.AnchorX);
+    AssertEx.Equal(88, later.AnchorY);
+
+    return Task.CompletedTask;
+}
+
+static Task SelectionActivationGateClearsPendingWhenSelectionShrinksAsync()
+{
+    var gate = new SelectionActivationGate(
+        duplicateSuppressWindow: TimeSpan.FromSeconds(5),
+        debounceWindow: TimeSpan.FromMilliseconds(250));
+    var now = DateTimeOffset.Parse("2026-04-01T12:30:00Z");
+
+    AssertEx.Null(
+        gate.TryCreateRequest(new SelectionSnapshot("alpha beta gamma delta"), 10, 20, now),
+        "The first qualifying selection should enter debounce.");
+    AssertEx.True(
+        gate.HasPendingCandidate("alpha beta gamma delta"),
+        "The qualifying selection should remain pending before debounce completes.");
+
+    AssertEx.Null(
+        gate.TryCreateRequest(new SelectionSnapshot("alpha beta gamma"), 10, 20, now.AddMilliseconds(120)),
+        "Dropping below the minimum word count should not trigger activation.");
+    AssertEx.False(
+        gate.HasPendingCandidate("alpha beta gamma delta"),
+        "A short replacement selection should clear the pending debounce candidate.");
+
+    AssertEx.Null(
+        gate.TryCreateRequest(new SelectionSnapshot("alpha beta gamma delta"), 30, 40, now.AddMilliseconds(220)),
+        "Returning to a qualifying selection should restart the debounce window.");
+
+    var triggered = gate.TryCreateRequest(
+        new SelectionSnapshot("alpha beta gamma delta", 30, 40),
+        30,
+        40,
+        now.AddMilliseconds(520));
+    AssertEx.NotNull(triggered, "The restarted debounce window should eventually allow activation.");
+    AssertEx.Equal(30, triggered!.AnchorX);
+    AssertEx.Equal(40, triggered.AnchorY);
 
     return Task.CompletedTask;
 }
@@ -234,6 +282,14 @@ static class AssertEx
     public static void True(bool condition, string message)
     {
         if (!condition)
+        {
+            throw new InvalidOperationException(message);
+        }
+    }
+
+    public static void False(bool condition, string message)
+    {
+        if (condition)
         {
             throw new InvalidOperationException(message);
         }
@@ -287,11 +343,17 @@ sealed class FakeProviderClient : IProviderClient
     public Func<string, CancellationToken, Task<ProviderOutput>> PolishAsyncImpl { get; set; }
         = (text, _) => Task.FromResult(new ProviderOutput(text));
 
+    public Func<string, CancellationToken, Task<ProviderOutput>> ContinueAsyncImpl { get; set; }
+        = (text, _) => Task.FromResult(new ProviderOutput(text));
+
     public Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken)
         => TranslateAsyncImpl(text, cancellationToken);
 
     public Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken)
         => PolishAsyncImpl(text, cancellationToken);
+
+    public Task<ProviderOutput> ContinueAsync(string text, CancellationToken cancellationToken)
+        => ContinueAsyncImpl(text, cancellationToken);
 }
 
 sealed class FakeSelectionCaptureService : ISelectionCaptureService

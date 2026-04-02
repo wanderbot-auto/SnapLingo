@@ -119,6 +119,10 @@ public sealed partial class MainPage : Page
 
         AdvancedTitleTextBlock.Text = ViewModel.Localizer.Get("advanced_title");
         AdvancedHintTextBlock.Text = ViewModel.Localizer.Get("advanced_hint");
+        AutoSelectionTitleTextBlock.Text = ViewModel.Localizer.Get("auto_selection_title");
+        AutoSelectionHintTextBlock.Text = ViewModel.Localizer.Get("auto_selection_hint");
+        AutoSelectionDebounceLabelTextBlock.Text = ViewModel.Localizer.Get("label_auto_selection_debounce");
+        AutoSelectionMinimumWordsLabelTextBlock.Text = ViewModel.Localizer.Get("label_auto_selection_min_words");
         AdvancedProviderLabelTextBlock.Text = ViewModel.Localizer.Get("label_provider");
         AdvancedModelLabelTextBlock.Text = ViewModel.Localizer.Get("label_model");
         AdvancedStorageLabelTextBlock.Text = ViewModel.Localizer.Get("label_storage");

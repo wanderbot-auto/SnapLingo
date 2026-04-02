@@ -40,6 +40,8 @@ public sealed class AppSettingsDocument
     public string SelectedShortcutPreset { get; set; } = ShortcutPreset.ControlAltSpace.ToString();
     public Dictionary<string, string> SelectedModels { get; set; } = new(StringComparer.Ordinal);
     public string SelectedLanguage { get; set; } = AppLanguage.English.ToString();
+    public int AutoSelectionDebounceMilliseconds { get; set; } = SelectionActivationSettings.DefaultDebounceMilliseconds;
+    public int AutoSelectionMinimumWordCount { get; set; } = SelectionActivationSettings.DefaultMinimumWordCount;
     public string SelectedPromptId { get; set; } = PromptProfile.DefaultId;
     public List<PromptProfile> PromptProfiles { get; set; } = [];
 }

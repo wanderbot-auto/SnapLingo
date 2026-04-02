@@ -708,6 +708,34 @@
                                         Visibility="Collapsed" />
                                 </StackPanel>
 
+                                <Border Style="{StaticResource SurfaceCardStyle}">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock x:Name="AutoSelectionTitleTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Auto selection" />
+                                        <TextBlock
+                                            x:Name="AutoSelectionHintTextBlock"
+                                            Style="{StaticResource SectionHintTextStyle}"
+                                            Text="Tune how long SnapLingo waits for selected text to settle, and how much text must be selected before the launcher appears." />
+                                        <TextBlock x:Name="AutoSelectionDebounceLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Selection debounce" />
+                                        <ComboBox
+                                            x:Name="AutoSelectionDebounceComboBox"
+                                            DisplayMemberPath="Label"
+                                            ItemsSource="{x:Bind ViewModel.AutoSelectionSettings.DebounceChoices, Mode=OneWay}"
+                                            SelectedItem="{x:Bind ViewModel.AutoSelectionSettings.SelectedDebounceChoice, Mode=TwoWay}"
+                                            Style="{StaticResource FormComboBoxStyle}" />
+                                        <TextBlock x:Name="AutoSelectionMinimumWordsLabelTextBlock" Style="{StaticResource SectionTitleTextStyle}" Text="Minimum words" />
+                                        <ComboBox
+                                            x:Name="AutoSelectionMinimumWordsComboBox"
+                                            DisplayMemberPath="Label"
+                                            ItemsSource="{x:Bind ViewModel.AutoSelectionSettings.MinimumWordChoices, Mode=OneWay}"
+                                            SelectedItem="{x:Bind ViewModel.AutoSelectionSettings.SelectedMinimumWordChoice, Mode=TwoWay}"
+                                            Style="{StaticResource FormComboBoxStyle}" />
+                                        <TextBlock
+                                            x:Name="AutoSelectionSummaryTextBlock"
+                                            Style="{StaticResource SectionHintTextStyle}"
+                                            Text="{x:Bind ViewModel.AutoSelectionSettings.BehaviorSummaryText, Mode=OneWay}" />
+                                    </StackPanel>
+                                </Border>
+
                                 <Grid ColumnSpacing="10" RowSpacing="10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />

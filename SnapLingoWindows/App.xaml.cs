@@ -6,7 +6,11 @@ namespace SnapLingoWindows;
 
 public partial class App : Application
 {
+    private static readonly TimeSpan LauncherSelectionRetryDelay = TimeSpan.FromMilliseconds(120);
+    private const int LauncherSelectionRetryCount = 16;
+
     private AutoSelectionMonitorService? autoSelectionMonitor;
+    private ClipboardSelectionCaptureService selectionCaptureService = null!;
     private SelectionActivationRequest? pendingSelection;
 
     public MainViewModel ViewModel { get; private set; } = null!;
@@ -25,10 +29,12 @@ public partial class App : Application
         ViewModel.ShowRequested += OnShowRequested;
         SettingsWindow = new MainWindow(ViewModel);
         SettingsWindow.Activate();
+        selectionCaptureService = new ClipboardSelectionCaptureService();
         autoSelectionMonitor = new AutoSelectionMonitorService(
             DispatcherQueue.GetForCurrentThread()!,
-            new ClipboardSelectionCaptureService(),
-            OnAutoSelectionDetectedAsync);
+            selectionCaptureService,
+            OnAutoSelectionDetectedAsync,
+            () => ViewModel.AutoSelectionSettings.CurrentBehaviorSettings);
         autoSelectionMonitor.Start();
         DispatcherQueue.GetForCurrentThread()?.TryEnqueue(PreloadTranslationWindow);
         DispatcherQueue.GetForCurrentThread()?.TryEnqueue(PreloadSelectionLauncher);
@@ -82,12 +88,12 @@ public partial class App : Application
 
     private Task OnAutoSelectionDetectedAsync(SelectionActivationRequest request)
     {
+        pendingSelection = request;
         if (string.IsNullOrWhiteSpace(request.Text))
         {
-            return Task.CompletedTask;
+            _ = HydratePendingSelectionAsync();
         }
 
-        pendingSelection = request;
         HideTranslationPanel();
         ShowSelectionLauncher(request);
         return Task.CompletedTask;
@@ -122,7 +128,7 @@ public partial class App : Application
     {
         if (SelectionLauncher is null || SelectionLauncher.IsClosed)
         {
-            SelectionLauncher = new SelectionLauncherWindow(OnSelectionLauncherInvoked, OnSelectionLauncherDismissed);
+            SelectionLauncher = new SelectionLauncherWindow(ViewModel.Localizer, OnSelectionLauncherInvoked, OnSelectionLauncherDismissed);
         }
     }
 
@@ -136,7 +142,7 @@ public partial class App : Application
         }
         catch (COMException)
         {
-            SelectionLauncher = new SelectionLauncherWindow(OnSelectionLauncherInvoked, OnSelectionLauncherDismissed);
+            SelectionLauncher = new SelectionLauncherWindow(ViewModel.Localizer, OnSelectionLauncherInvoked, OnSelectionLauncherDismissed);
             SelectionLauncher.Present(request);
         }
     }
@@ -163,7 +169,7 @@ public partial class App : Application
         }
     }
 
-    private async void OnSelectionLauncherInvoked()
+    private async void OnSelectionLauncherInvoked(TranslationMode mode)
     {
         if (pendingSelection is null)
         {
@@ -171,15 +177,70 @@ public partial class App : Application
             return;
         }
 
-        var request = pendingSelection;
+        var request = await ResolvePendingSelectionAsync();
         pendingSelection = null;
         HideSelectionLauncher();
-        await ViewModel.HandleSelectionLauncherAsync(request.Text);
+        await ViewModel.HandleSelectionLauncherAsync(request.Text, mode);
     }
 
     private void OnSelectionLauncherDismissed()
     {
         pendingSelection = null;
         HideSelectionLauncher();
+    }
+
+    private async Task HydratePendingSelectionAsync()
+    {
+        for (var attempt = 0; attempt < LauncherSelectionRetryCount; attempt++)
+        {
+            var currentRequest = pendingSelection;
+            if (currentRequest is null || !string.IsNullOrWhiteSpace(currentRequest.Text))
+            {
+                return;
+            }
+
+            var selection = await selectionCaptureService.TryCaptureSelectionSnapshotAsync(CancellationToken.None);
+            var text = selection?.Text?.Trim();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                if (pendingSelection is SelectionActivationRequest pendingRequest && string.IsNullOrWhiteSpace(pendingRequest.Text))
+                {
+                    pendingSelection = pendingRequest with { Text = text };
+                }
+
+                return;
+            }
+
+            if (attempt + 1 < LauncherSelectionRetryCount)
+            {
+                await Task.Delay(LauncherSelectionRetryDelay);
+            }
+        }
+    }
+
+    private async Task<SelectionActivationRequest> ResolvePendingSelectionAsync()
+    {
+        var request = pendingSelection ?? new SelectionActivationRequest(null, 0, 0);
+        if (!string.IsNullOrWhiteSpace(request.Text))
+        {
+            return request;
+        }
+
+        for (var attempt = 0; attempt < 4; attempt++)
+        {
+            var selection = await selectionCaptureService.TryCaptureSelectionSnapshotAsync(CancellationToken.None);
+            var text = selection?.Text?.Trim();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                return request with { Text = text };
+            }
+
+            if (attempt < 3)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(80));
+            }
+        }
+
+        return request;
     }
 }

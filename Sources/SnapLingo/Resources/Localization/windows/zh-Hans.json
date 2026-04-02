@@ -50,7 +50,6 @@
   "language_english": "English",
   "language_chinese": "中文",
   "prompt_default_name": "默认",
-  "prompt_custom_name_base": "自定义提示词",
   "mode_translate": "翻译",
   "mode_polish": "润色",
   "clipboard_prompt": "Windows 当前还未支持直接取词，请按 Ctrl+C 继续。",
@@ -124,5 +123,17 @@
   "panel_error_banner": "这次处理没有完成，可以重试，或重新选中文本。",
   "panel_source_language_auto": "自动识别",
   "panel_target_language_english": "英文",
-  "panel_current_model": "当前模型"
+  "panel_current_model": "当前模型",
+  "auto_selection_title": "èªå¨åè¯",
+  "auto_selection_hint": "è°æ´ SnapLingo ç­å¾éä¸­ææ¬ç¨³å®çæ¶é´ï¼ä»¥åå¼¹åº launcher ä¹åéè¦çæå°éä¸­åå®¹ã",
+  "label_auto_selection_debounce": "éåºé²æ",
+  "label_auto_selection_min_words": "æå°åè¯æ°",
+  "auto_selection_debounce_choice": "{0} æ¯«ç§",
+  "auto_selection_min_words_choice": "{0} ä¸ªåè¯",
+  "auto_selection_summary": "å½åè§åï¼ç­å¾ {0} æ¯«ç§ï¼å¿½ç¥å°äº {1} ä¸ªåè¯çéä¸­åå®¹ã",
+  "prompt_custom_name_base": "èªå®ä¹æç¤ºè¯",
+  "mode_continue": "ç»­å",
+  "state_continue_title": "ç»­åç»æ",
+  "state_continue_status": "æ­£å¨èªç¶ç»­åææ¬ã",
+  "panel_placeholder_loading_continue": "æ­£å¨ç»­åææ¬..."
 }
