@@ -8,6 +8,7 @@ public enum WorkflowPhase
     LoadingTranslation,
     Partial,
     LoadingPolish,
+    LoadingContinue,
     Ready,
     Error,
 }

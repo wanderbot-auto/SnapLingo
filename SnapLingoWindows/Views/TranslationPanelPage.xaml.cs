@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using SnapLingoWindows.ViewModels;
 using Windows.Foundation;
 
@@ -41,7 +42,8 @@ public sealed partial class TranslationPanelPage : Page
     private void OnWorkflowPanelChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(WorkflowPanelViewModel.IsTranslateModeSelected) or
-            nameof(WorkflowPanelViewModel.IsPolishModeSelected))
+            nameof(WorkflowPanelViewModel.IsPolishModeSelected) or
+            nameof(WorkflowPanelViewModel.IsContinueModeSelected))
         {
             ApplyModeVisualState();
         }
@@ -79,41 +81,46 @@ public sealed partial class TranslationPanelPage : Page
 
         ApplyModeState(
             TranslateModeButton,
-            TranslateModeImage,
+            TranslateModeTextBlock,
             ViewModel.WorkflowPanel.IsTranslateModeSelected,
             selectedBackground,
             unselectedBackground,
             selectedBorder,
-            unselectedBorder,
-            selectedImageKey: "TranslateModeActiveIcon",
-            unselectedImageKey: "TranslateModeInactiveIcon");
+            unselectedBorder);
 
         ApplyModeState(
             PolishModeButton,
-            PolishModeImage,
+            PolishModeTextBlock,
             ViewModel.WorkflowPanel.IsPolishModeSelected,
             selectedBackground,
             unselectedBackground,
             selectedBorder,
-            unselectedBorder,
-            selectedImageKey: "PolishModeActiveIcon",
-            unselectedImageKey: "PolishModeInactiveIcon");
+            unselectedBorder);
+
+        ApplyModeState(
+            ContinueModeButton,
+            ContinueModeTextBlock,
+            ViewModel.WorkflowPanel.IsContinueModeSelected,
+            selectedBackground,
+            unselectedBackground,
+            selectedBorder,
+            unselectedBorder);
     }
 
     private void ApplyModeState(
         Button button,
-        Image image,
+        TextBlock label,
         bool isSelected,
         Brush selectedBackground,
         Brush unselectedBackground,
         Brush selectedBorder,
-        Brush unselectedBorder,
-        string selectedImageKey,
-        string unselectedImageKey)
+        Brush unselectedBorder)
     {
         button.Background = isSelected ? selectedBackground : unselectedBackground;
         button.BorderBrush = isSelected ? selectedBorder : unselectedBorder;
-        image.Source = LookupImageSource(isSelected ? selectedImageKey : unselectedImageKey);
+        label.Foreground = isSelected
+            ? LookupBrush("PanelSecondaryTextBrush")
+            : LookupBrush("PanelMutedTextBrush");
     }
 
     private void QueueHeightUpdate()
@@ -126,11 +133,6 @@ public sealed partial class TranslationPanelPage : Page
         return (SolidColorBrush)Resources[key];
     }
 
-    private ImageSource LookupImageSource(string key)
-    {
-        return (ImageSource)Resources[key];
-    }
-
     private async void OnTranslateModeClicked(object sender, RoutedEventArgs e)
     {
         await ViewModel.SelectModeAsync(TranslationMode.Translate);
@@ -139,6 +141,11 @@ public sealed partial class TranslationPanelPage : Page
     private async void OnPolishModeClicked(object sender, RoutedEventArgs e)
     {
         await ViewModel.SelectModeAsync(TranslationMode.Polish);
+    }
+
+    private async void OnContinueModeClicked(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.SelectModeAsync(TranslationMode.Continue);
     }
 
     private void OnCloseClicked(object sender, RoutedEventArgs e)

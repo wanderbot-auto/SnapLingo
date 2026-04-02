@@ -12,6 +12,8 @@ internal abstract class ProviderClientBase : IProviderClient
         TimeSpan.FromMilliseconds(350),
         TimeSpan.FromMilliseconds(900),
     ];
+    private const string ContinuePrompt =
+        "Continue the user's text in the same language, tone, and perspective. Extend it naturally with 2 to 4 concise sentences and return only the continued text.";
 
     private readonly ProviderPreset preset;
     private readonly PromptProfile promptProfile;
@@ -30,10 +32,12 @@ internal abstract class ProviderClientBase : IProviderClient
 
     public abstract Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken);
     public abstract Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken);
+    public abstract Task<ProviderOutput> ContinueAsync(string text, CancellationToken cancellationToken);
 
     protected ProviderPreset Preset => preset;
     protected PromptProfile PromptProfile => promptProfile;
     protected LocalizationService Localizer => localizer;
+    protected string ContinueInstructions => ContinuePrompt;
 
     protected string LoadApiKey()
     {
@@ -119,6 +123,12 @@ internal sealed class OpenAIResponsesProvider : ProviderClientBase
         return ProviderValidation.Validate(output, text, TranslationMode.Polish, Localizer);
     }
 
+    public override async Task<ProviderOutput> ContinueAsync(string text, CancellationToken cancellationToken)
+    {
+        var output = await RequestAsync(ContinueInstructions, text, cancellationToken);
+        return ProviderValidation.Validate(output, text, TranslationMode.Continue, Localizer);
+    }
+
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
     {
         HttpRequestMessage CreateRequest()
@@ -179,6 +189,12 @@ internal sealed class OpenAIChatProvider : ProviderClientBase
     {
         var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Polish, Localizer);
+    }
+
+    public override async Task<ProviderOutput> ContinueAsync(string text, CancellationToken cancellationToken)
+    {
+        var output = await RequestAsync(ContinueInstructions, text, cancellationToken);
+        return ProviderValidation.Validate(output, text, TranslationMode.Continue, Localizer);
     }
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
@@ -286,6 +302,12 @@ internal sealed class AnthropicMessagesProvider : ProviderClientBase
         return ProviderValidation.Validate(output, text, TranslationMode.Polish, Localizer);
     }
 
+    public override async Task<ProviderOutput> ContinueAsync(string text, CancellationToken cancellationToken)
+    {
+        var output = await RequestAsync(ContinueInstructions, text, cancellationToken);
+        return ProviderValidation.Validate(output, text, TranslationMode.Continue, Localizer);
+    }
+
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)
     {
         HttpRequestMessage CreateRequest()
@@ -348,6 +370,12 @@ internal sealed class GeminiGenerateContentProvider : ProviderClientBase
     {
         var output = await RequestAsync(PromptProfile.PolishPrompt, text, cancellationToken);
         return ProviderValidation.Validate(output, text, TranslationMode.Polish, Localizer);
+    }
+
+    public override async Task<ProviderOutput> ContinueAsync(string text, CancellationToken cancellationToken)
+    {
+        var output = await RequestAsync(ContinueInstructions, text, cancellationToken);
+        return ProviderValidation.Validate(output, text, TranslationMode.Continue, Localizer);
     }
 
     private async Task<ProviderOutput> RequestAsync(string instructions, string text, CancellationToken cancellationToken)

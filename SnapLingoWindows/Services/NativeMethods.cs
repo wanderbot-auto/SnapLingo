@@ -27,6 +27,7 @@ public static partial class NativeMethods
     public const uint WS_THICKFRAME = 0x00040000;
 
     public const uint WS_EX_CLIENTEDGE = 0x00000200;
+    public const uint WS_EX_LAYERED = 0x00080000;
     public const uint WS_EX_STATICEDGE = 0x00020000;
     public const uint WS_EX_TOOLWINDOW = 0x00000080;
 
@@ -36,11 +37,14 @@ public static partial class NativeMethods
     public const uint SWP_NOACTIVATE = 0x0010;
     public const uint SWP_FRAMECHANGED = 0x0020;
     public const uint SWP_SHOWWINDOW = 0x0040;
+    public const uint LWA_COLORKEY = 0x00000001;
+    public const int RGN_OR = 2;
 
     public static readonly nint HWND_TOPMOST = new(-1);
 
     public const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
     public const int DWMWA_BORDER_COLOR = 34;
+    public const uint DWM_WINDOW_CORNER_PREFERENCE_DONOTROUND = 1;
     public const uint DWM_WINDOW_CORNER_PREFERENCE_ROUND = 2;
     public const uint DWM_COLOR_NONE = 0xFFFFFFFE;
 
@@ -69,6 +73,9 @@ public static partial class NativeMethods
 
     [LibraryImport("user32.dll")]
     public static partial short GetAsyncKeyState(int virtualKey);
+
+    [LibraryImport("user32.dll")]
+    public static partial uint GetDoubleClickTime();
 
     [LibraryImport("user32.dll")]
     public static partial nint GetForegroundWindow();
@@ -100,6 +107,30 @@ public static partial class NativeMethods
         int y,
         int cx,
         int cy,
+        uint flags);
+
+    [LibraryImport("gdi32.dll", SetLastError = true)]
+    public static partial nint CreateRectRgn(int left, int top, int right, int bottom);
+
+    [LibraryImport("gdi32.dll", SetLastError = true)]
+    public static partial nint CreateRoundRectRgn(int left, int top, int right, int bottom, int widthEllipse, int heightEllipse);
+
+    [LibraryImport("gdi32.dll", SetLastError = true)]
+    public static partial int CombineRgn(nint destinationRegion, nint sourceRegion1, nint sourceRegion2, int combineMode);
+
+    [LibraryImport("gdi32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool DeleteObject(nint objectHandle);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    public static partial int SetWindowRgn(nint hWnd, nint regionHandle, [MarshalAs(UnmanagedType.Bool)] bool redraw);
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool SetLayeredWindowAttributes(
+        nint hWnd,
+        uint colorKey,
+        byte alpha,
         uint flags);
 
     [LibraryImport("dwmapi.dll", SetLastError = true)]

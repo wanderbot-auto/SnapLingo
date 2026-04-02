@@ -24,7 +24,7 @@ public sealed class WorkflowOrchestrator
         this.requestPanelPresentation = requestPanelPresentation;
     }
 
-    public async Task HandleHotkeyAsync()
+    public async Task HandleHotkeyAsync(TranslationMode? forcedMode = null)
     {
         CancelActiveWork();
         activeCts = new CancellationTokenSource();
@@ -37,7 +37,7 @@ public sealed class WorkflowOrchestrator
         if (!string.IsNullOrWhiteSpace(capturedText))
         {
             requestPanelPresentation();
-            await ProcessAsync(capturedText, "source_auto", cancellationToken);
+            await ProcessAsync(capturedText, "source_auto", cancellationToken, forcedMode);
             return;
         }
 
@@ -54,14 +54,17 @@ public sealed class WorkflowOrchestrator
         var clipboardText = await captureService.WaitForClipboardChangeAsync(fallback.ChangeCount, cancellationToken);
         if (!string.IsNullOrWhiteSpace(clipboardText))
         {
-            await ProcessAsync(clipboardText, "source_clipboard", cancellationToken);
+            await ProcessAsync(clipboardText, "source_clipboard", cancellationToken, forcedMode);
             return;
         }
 
         store.ShowError(localizer.Get("error_no_copied_text"));
     }
 
-    public async Task HandleCapturedSelectionAsync(string text, string sourceLabelKey = "source_auto")
+    public async Task HandleCapturedSelectionAsync(
+        string text,
+        string sourceLabelKey = "source_auto",
+        TranslationMode? forcedMode = null)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -71,7 +74,7 @@ public sealed class WorkflowOrchestrator
         CancelActiveWork();
         activeCts = new CancellationTokenSource();
         requestPanelPresentation();
-        await ProcessAsync(text.Trim(), sourceLabelKey, activeCts.Token);
+        await ProcessAsync(text.Trim(), sourceLabelKey, activeCts.Token, forcedMode);
     }
 
     public async Task RetryAsync()
@@ -105,10 +108,14 @@ public sealed class WorkflowOrchestrator
         await ProcessAsync(text, "source_clipboard", activeCts.Token);
     }
 
-    private async Task ProcessAsync(string text, string sourceLabelKey, CancellationToken cancellationToken)
+    private async Task ProcessAsync(
+        string text,
+        string sourceLabelKey,
+        CancellationToken cancellationToken,
+        TranslationMode? forcedMode = null)
     {
         currentInput = text;
-        var mode = ModeDetector.Detect(text);
+        var mode = forcedMode ?? ModeDetector.Detect(text);
         store.BeginProcessing(text, mode, sourceLabelKey);
         await RunProviderPipelineAsync(text, mode, sourceLabelKey, cancellationToken);
     }
@@ -146,6 +153,12 @@ public sealed class WorkflowOrchestrator
                     var polished = await provider.PolishAsync(text, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
                     store.ShowFinalResult(polished.Text);
+                    break;
+
+                case TranslationMode.Continue:
+                    var continued = await provider.ContinueAsync(text, cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    store.ShowFinalResult(continued.Text);
                     break;
             }
         }

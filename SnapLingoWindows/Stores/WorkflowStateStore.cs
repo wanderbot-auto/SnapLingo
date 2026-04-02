@@ -12,6 +12,7 @@ public sealed class WorkflowStateStore : BindableBase
         Translating,
         PartialTranslation,
         Polishing,
+        Continuing,
         Ready,
         Error,
     }
@@ -106,7 +107,8 @@ public sealed class WorkflowStateStore : BindableBase
     public bool IsBusy =>
         Phase == WorkflowPhase.Capturing ||
         Phase == WorkflowPhase.LoadingTranslation ||
-        Phase == WorkflowPhase.LoadingPolish;
+        Phase == WorkflowPhase.LoadingPolish ||
+        Phase == WorkflowPhase.LoadingContinue;
 
     public void ResetForNewSession()
     {
@@ -155,6 +157,16 @@ public sealed class WorkflowStateStore : BindableBase
         {
             Phase = WorkflowPhase.LoadingTranslation;
             textState = WorkflowTextState.Translating;
+            PrimaryText = null;
+            CanCopy = false;
+            ApplyLocalizedState();
+            return;
+        }
+
+        if (mode == TranslationMode.Continue)
+        {
+            Phase = WorkflowPhase.LoadingContinue;
+            textState = WorkflowTextState.Continuing;
             PrimaryText = null;
             CanCopy = false;
             ApplyLocalizedState();
@@ -243,8 +255,18 @@ public sealed class WorkflowStateStore : BindableBase
                 PrimaryTitle = localizer.Get("state_polish_title");
                 SecondaryStatus = localizer.Get("state_polish_status");
                 break;
+            case WorkflowTextState.Continuing:
+                PrimaryTitle = localizer.Get("state_continue_title");
+                SecondaryStatus = localizer.Get("state_continue_status");
+                break;
             case WorkflowTextState.Ready:
-                PrimaryTitle = localizer.Get("state_polish_title");
+                PrimaryTitle = SelectedMode switch
+                {
+                    TranslationMode.Translate => localizer.Get("state_translate_title"),
+                    TranslationMode.Polish => localizer.Get("state_polish_title"),
+                    TranslationMode.Continue => localizer.Get("state_continue_title"),
+                    _ => localizer.Get("state_ready_title"),
+                };
                 SecondaryStatus = IsCopied ? localizer.Get("state_copied_status") : null;
                 break;
             case WorkflowTextState.Error:

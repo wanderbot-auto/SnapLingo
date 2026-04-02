@@ -64,6 +64,12 @@ public sealed class WorkflowPanelViewModel : BindableBase
 
     public string TargetLanguageLabel => localizer.Get("panel_target_language_english");
 
+    public string TranslateModeLabel => localizer.Get("mode_translate");
+
+    public string PolishModeLabel => localizer.Get("mode_polish");
+
+    public string ContinueModeLabel => localizer.Get("mode_continue");
+
     public string OriginalPreviewText => !string.IsNullOrWhiteSpace(Workflow.OriginalPreview)
         ? Workflow.OriginalPreview!
         : ResolveOriginalContentHint();
@@ -116,6 +122,8 @@ public sealed class WorkflowPanelViewModel : BindableBase
 
     public bool IsPolishModeSelected => Workflow.SelectedMode == TranslationMode.Polish;
 
+    public bool IsContinueModeSelected => Workflow.SelectedMode == TranslationMode.Continue;
+
     private bool ShouldShowPlaceholder =>
         string.IsNullOrWhiteSpace(Workflow.PrimaryText) || Workflow.IsBusy;
 
@@ -123,25 +131,25 @@ public sealed class WorkflowPanelViewModel : BindableBase
         Workflow.Phase == WorkflowPhase.WaitingForClipboard ||
         (Workflow.Phase == WorkflowPhase.Error && Workflow.CanRetry);
 
-    public async Task HandleHotkeyAsync()
+    public async Task HandleHotkeyAsync(TranslationMode? forcedMode = null)
     {
-        await orchestrator.HandleHotkeyAsync();
+        await orchestrator.HandleHotkeyAsync(forcedMode);
     }
 
-    public async Task HandleCapturedSelectionAsync(string text)
+    public async Task HandleCapturedSelectionAsync(string text, TranslationMode? forcedMode = null)
     {
-        await orchestrator.HandleCapturedSelectionAsync(text);
+        await orchestrator.HandleCapturedSelectionAsync(text, forcedMode: forcedMode);
     }
 
-    public async Task HandleSelectionLauncherAsync(string? text)
+    public async Task HandleSelectionLauncherAsync(string? text, TranslationMode forcedMode)
     {
         if (!string.IsNullOrWhiteSpace(text))
         {
-            await orchestrator.HandleCapturedSelectionAsync(text);
+            await orchestrator.HandleCapturedSelectionAsync(text, forcedMode: forcedMode);
             return;
         }
 
-        await orchestrator.HandleHotkeyAsync();
+        await orchestrator.HandleHotkeyAsync(forcedMode);
     }
 
     public async Task RetryCurrentFlowAsync()
@@ -225,6 +233,7 @@ public sealed class WorkflowPanelViewModel : BindableBase
         OnPropertyChanged(nameof(CopyGlyph));
         OnPropertyChanged(nameof(IsTranslateModeSelected));
         OnPropertyChanged(nameof(IsPolishModeSelected));
+        OnPropertyChanged(nameof(IsContinueModeSelected));
     }
 
     private void RefreshLocalizedPresentation()
@@ -233,6 +242,9 @@ public sealed class WorkflowPanelViewModel : BindableBase
         OnPropertyChanged(nameof(OriginalSectionLabel));
         OnPropertyChanged(nameof(SourceLanguageLabel));
         OnPropertyChanged(nameof(TargetLanguageLabel));
+        OnPropertyChanged(nameof(TranslateModeLabel));
+        OnPropertyChanged(nameof(PolishModeLabel));
+        OnPropertyChanged(nameof(ContinueModeLabel));
         OnPropertyChanged(nameof(StatusBannerButtonText));
         RefreshPresentationState();
     }
@@ -332,6 +344,7 @@ public sealed class WorkflowPanelViewModel : BindableBase
             WorkflowPhase.Capturing => localizer.Get("panel_placeholder_capturing"),
             WorkflowPhase.LoadingTranslation => localizer.Get("panel_placeholder_loading_translation"),
             WorkflowPhase.LoadingPolish => localizer.Get("panel_placeholder_loading_polish"),
+            WorkflowPhase.LoadingContinue => localizer.Get("panel_placeholder_loading_continue"),
             WorkflowPhase.WaitingForClipboard => localizer.Get("panel_placeholder_waiting_clipboard"),
             WorkflowPhase.Partial => localizer.Get("panel_placeholder_partial"),
             WorkflowPhase.Error => Workflow.PrimaryText ?? localizer.Get("panel_placeholder_error"),

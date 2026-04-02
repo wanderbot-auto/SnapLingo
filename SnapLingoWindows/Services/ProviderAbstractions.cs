@@ -4,6 +4,7 @@ public interface IProviderClient
 {
     Task<ProviderOutput> TranslateAsync(string text, CancellationToken cancellationToken);
     Task<ProviderOutput> PolishAsync(string text, CancellationToken cancellationToken);
+    Task<ProviderOutput> ContinueAsync(string text, CancellationToken cancellationToken);
 }
 
 public class ProviderException : Exception

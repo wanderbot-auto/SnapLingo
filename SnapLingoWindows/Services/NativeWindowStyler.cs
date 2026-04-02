@@ -40,7 +40,7 @@ public static class NativeWindowStyler
         TryRemoveDwmBorder(hwnd);
     }
 
-    public static void ApplyOverlayToolStyle(nint hwnd)
+    public static void ApplyOverlayToolStyle(nint hwnd, uint? transparencyColorKey = null)
     {
         UpdateStyle(
             hwnd,
@@ -57,7 +57,8 @@ public static class NativeWindowStyler
             style => (style
                 & ~NativeMethods.WS_EX_CLIENTEDGE
                 & ~NativeMethods.WS_EX_STATICEDGE)
-                | NativeMethods.WS_EX_TOOLWINDOW);
+                | NativeMethods.WS_EX_TOOLWINDOW
+                | (transparencyColorKey.HasValue ? NativeMethods.WS_EX_LAYERED : 0));
 
         if (!NativeMethods.SetWindowPos(
                 hwnd,
@@ -76,7 +77,18 @@ public static class NativeWindowStyler
                 $"Failed to refresh overlay chrome. Win32 error: {Marshal.GetLastWin32Error()}");
         }
 
-        TryApplyRoundedCorners(hwnd);
+        if (transparencyColorKey.HasValue
+            && !NativeMethods.SetLayeredWindowAttributes(
+                hwnd,
+                transparencyColorKey.Value,
+                byte.MaxValue,
+                NativeMethods.LWA_COLORKEY))
+        {
+            throw new InvalidOperationException(
+                $"Failed to apply overlay transparency. Win32 error: {Marshal.GetLastWin32Error()}");
+        }
+
+        TryDisableRoundedCorners(hwnd);
         TryRemoveDwmBorder(hwnd);
     }
 
@@ -124,6 +136,16 @@ public static class NativeWindowStyler
     private static void TryApplyRoundedCorners(nint hwnd)
     {
         var preference = NativeMethods.DWM_WINDOW_CORNER_PREFERENCE_ROUND;
+        _ = NativeMethods.DwmSetWindowAttribute(
+            hwnd,
+            NativeMethods.DWMWA_WINDOW_CORNER_PREFERENCE,
+            in preference,
+            sizeof(uint));
+    }
+
+    private static void TryDisableRoundedCorners(nint hwnd)
+    {
+        var preference = NativeMethods.DWM_WINDOW_CORNER_PREFERENCE_DONOTROUND;
         _ = NativeMethods.DwmSetWindowAttribute(
             hwnd,
             NativeMethods.DWMWA_WINDOW_CORNER_PREFERENCE,
