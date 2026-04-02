@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\SnapLingoWindows\Infrastructure\BindableBase.cs" Link="Source\Infrastructure\BindableBase.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\AppLanguage.cs" Link="Source\Models\AppLanguage.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\ProviderKind.cs" Link="Source\Models\ProviderKind.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\ProviderOutput.cs" Link="Source\Models\ProviderOutput.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\ProviderPreset.cs" Link="Source\Models\ProviderPreset.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\SelectionActivationRequest.cs" Link="Source\Models\SelectionActivationRequest.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\SelectionCaptureOutcome.cs" Link="Source\Models\SelectionCaptureOutcome.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\SelectionSnapshot.cs" Link="Source\Models\SelectionSnapshot.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\TranslationMode.cs" Link="Source\Models\TranslationMode.cs" />
+    <Compile Include="..\SnapLingoWindows\Models\WorkflowPhase.cs" Link="Source\Models\WorkflowPhase.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\EmbeddedJsonResourceLoader.cs" Link="Source\Services\EmbeddedJsonResourceLoader.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\IProviderClientFactory.cs" Link="Source\Services\IProviderClientFactory.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\ISelectionCaptureService.cs" Link="Source\Services\ISelectionCaptureService.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\LocalizationCatalog.cs" Link="Source\Services\LocalizationCatalog.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\LocalizationService.cs" Link="Source\Services\LocalizationService.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\ModeDetector.cs" Link="Source\Services\ModeDetector.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\ProviderAbstractions.cs" Link="Source\Services\ProviderAbstractions.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\ProviderCatalog.cs" Link="Source\Services\ProviderCatalog.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\SelectionActivationGate.cs" Link="Source\Services\SelectionActivationGate.cs" />
+    <Compile Include="..\SnapLingoWindows\Services\WorkflowOrchestrator.cs" Link="Source\Services\WorkflowOrchestrator.cs" />
+    <Compile Include="..\SnapLingoWindows\Stores\WorkflowStateStore.cs" Link="Source\Stores\WorkflowStateStore.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\Sources\SnapLingo\Resources\Providers\providers.json" Link="Resources\Providers\providers.json" LogicalName="SnapLingoWindows.Tests.Resources.Providers.providers.json" />
+    <EmbeddedResource Include="..\Sources\SnapLingo\Resources\Localization\windows\en.json" Link="Resources\Localization\windows\en.json" LogicalName="SnapLingoWindows.Tests.Resources.Localization.windows.en.json" />
+    <EmbeddedResource Include="..\Sources\SnapLingo\Resources\Localization\windows\zh-Hans.json" Link="Resources\Localization\windows\zh-Hans.json" LogicalName="SnapLingoWindows.Tests.Resources.Localization.windows.zh-Hans.json" />
+  </ItemGroup>
+</Project>

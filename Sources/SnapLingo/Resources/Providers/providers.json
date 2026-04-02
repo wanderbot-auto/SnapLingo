@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "providers": [
+    {
+      "id": "openAI",
+      "style": "openAIResponses",
+      "baseURL": "https://api.openai.com/v1",
+      "defaultModel": "gpt-4.1-mini",
+      "presetModels": [
+        "gpt-4.1-mini"
+      ]
+    },
+    {
+      "id": "anthropic",
+      "style": "anthropicMessages",
+      "baseURL": "https://api.anthropic.com/v1",
+      "defaultModel": "claude-sonnet-4-20250514",
+      "presetModels": [
+        "claude-sonnet-4-20250514"
+      ]
+    },
+    {
+      "id": "gemini",
+      "style": "geminiGenerateContent",
+      "baseURL": "https://generativelanguage.googleapis.com/v1beta/models",
+      "defaultModel": "gemini-2.5-flash",
+      "presetModels": [
+        "gemini-2.5-flash"
+      ]
+    },
+    {
+      "id": "zhipuGLM",
+      "style": "openAIChatCompletions",
+      "baseURL": "https://api.z.ai/api/paas/v4",
+      "defaultModel": "glm-4.5-air",
+      "presetModels": [
+        "glm-4.5-air"
+      ]
+    },
+    {
+      "id": "kimi",
+      "style": "openAIChatCompletions",
+      "baseURL": "https://api.moonshot.cn/v1",
+      "defaultModel": "kimi-k2-turbo-preview",
+      "presetModels": [
+        "kimi-k2-turbo-preview"
+      ]
+    },
+    {
+      "id": "minimax",
+      "style": "openAIChatCompletions",
+      "baseURL": "https://api.minimaxi.com/v1",
+      "defaultModel": "MiniMax-M2.5-highspeed",
+      "presetModels": [
+        "MiniMax-M2.5-highspeed",
+        "MiniMax-M2.7"
+      ]
+    },
+    {
+      "id": "aliyunBailian",
+      "style": "openAIChatCompletions",
+      "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "defaultModel": "qwen3.5-flash",
+      "presetModels": [
+        "qwen3.5-flash"
+      ]
+    },
+    {
+      "id": "volcengineArk",
+      "style": "openAIChatCompletions",
+      "baseURL": "https://ark.cn-beijing.volces.com/api/v3",
+      "defaultModel": "doubao-seed-1-6-250615",
+      "presetModels": [
+        "doubao-seed-1-6-250615"
+      ]
+    }
+  ]
+}

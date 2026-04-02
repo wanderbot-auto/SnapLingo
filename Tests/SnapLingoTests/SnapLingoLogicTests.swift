@@ -71,6 +71,19 @@ final class SnapLingoLogicTests: XCTestCase {
         XCTAssertEqual(HotkeyManager.ShortcutPreset.commandOptionK.displayName, "Command + Option + K")
         XCTAssertEqual(HotkeyManager.ShortcutPreset.allCases.count, 5)
     }
+
+    func testSharedProviderManifestKeepsDefaultsInSync() {
+        let catalog = ProviderCatalog.shared
+
+        XCTAssertEqual(catalog.preset(for: .openAI).model, "gpt-4.1-mini")
+        XCTAssertEqual(catalog.preset(for: .minimax).model, "MiniMax-M2.5-highspeed")
+        XCTAssertEqual(catalog.presetModels(for: .minimax), ["MiniMax-M2.5-highspeed", "MiniMax-M2.7"])
+    }
+
+    func testMacLocalizedStringsLoadBundledHotkeyLabels() {
+        XCTAssertEqual(MacStrings.shared.string("hotkey.commandShiftOptionK.compactLabel"), "⌘⌥⇧K")
+        XCTAssertEqual(MacStrings.shared.string("panel.translate.title"), "Quick Translation")
+    }
 }
 
 private struct TestCredentialStore: CredentialStore {

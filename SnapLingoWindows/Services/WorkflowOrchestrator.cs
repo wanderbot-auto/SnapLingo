@@ -4,7 +4,7 @@ public sealed class WorkflowOrchestrator
 {
     private readonly WorkflowStateStore store;
     private readonly ISelectionCaptureService captureService;
-    private readonly ProviderRegistry providerRegistry;
+    private readonly IProviderClientFactory providerClientFactory;
     private readonly LocalizationService localizer;
     private readonly Action requestPanelPresentation;
     private CancellationTokenSource? activeCts;
@@ -13,13 +13,13 @@ public sealed class WorkflowOrchestrator
     public WorkflowOrchestrator(
         WorkflowStateStore store,
         ISelectionCaptureService captureService,
-        ProviderRegistry providerRegistry,
+        IProviderClientFactory providerClientFactory,
         LocalizationService localizer,
         Action requestPanelPresentation)
     {
         this.store = store;
         this.captureService = captureService;
-        this.providerRegistry = providerRegistry;
+        this.providerClientFactory = providerClientFactory;
         this.localizer = localizer;
         this.requestPanelPresentation = requestPanelPresentation;
     }
@@ -31,7 +31,7 @@ public sealed class WorkflowOrchestrator
         var cancellationToken = activeCts.Token;
 
         store.ResetForNewSession();
-        var capturedText = await captureService.TryCaptureSelectionTextAsync(cancellationToken, allowSimulatedCopyFallback: true);
+        var capturedText = await captureService.TryCaptureSelectionTextAsync(cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
 
         if (!string.IsNullOrWhiteSpace(capturedText))
@@ -116,7 +116,7 @@ public sealed class WorkflowOrchestrator
     private async Task RunProviderPipelineAsync(string text, TranslationMode selectedMode, string sourceLabelKey, CancellationToken cancellationToken)
     {
         store.BeginProcessing(text, selectedMode, sourceLabelKey);
-        var provider = providerRegistry.CurrentClient();
+        var provider = providerClientFactory.CurrentClient();
 
         try
         {

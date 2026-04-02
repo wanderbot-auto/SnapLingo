@@ -1,6 +1,6 @@
 import Foundation
 
-enum ProviderKind: String, CaseIterable, Identifiable {
+enum ProviderKind: String, CaseIterable, Identifiable, Decodable {
     case openAI
     case anthropic
     case gemini
@@ -52,7 +52,7 @@ enum ProviderKind: String, CaseIterable, Identifiable {
     }
 }
 
-enum ProviderProtocolStyle {
+enum ProviderProtocolStyle: String, Decodable {
     case openAIResponses
     case openAIChatCompletions
     case anthropicMessages
@@ -67,6 +67,7 @@ struct ProviderPreset {
 }
 
 final class ProviderRegistry {
+    private let providerCatalog: ProviderCatalog
     private let credentialStore: CredentialStore
     private let session: URLSession
     private let defaults: UserDefaults
@@ -78,10 +79,12 @@ final class ProviderRegistry {
     }
 
     init(
+        providerCatalog: ProviderCatalog = .shared,
         credentialStore: CredentialStore,
         session: URLSession = .shared,
         defaults: UserDefaults = .standard
     ) {
+        self.providerCatalog = providerCatalog
         self.credentialStore = credentialStore
         self.session = session
         self.defaults = defaults
@@ -125,24 +128,7 @@ final class ProviderRegistry {
     }
 
     func providerPreset(for provider: ProviderKind) -> ProviderPreset {
-        switch provider {
-        case .openAI:
-            ProviderPreset(kind: .openAI, style: .openAIResponses, baseURL: "https://api.openai.com/v1", model: "gpt-4.1-mini")
-        case .anthropic:
-            ProviderPreset(kind: .anthropic, style: .anthropicMessages, baseURL: "https://api.anthropic.com/v1", model: "claude-sonnet-4-20250514")
-        case .gemini:
-            ProviderPreset(kind: .gemini, style: .geminiGenerateContent, baseURL: "https://generativelanguage.googleapis.com/v1beta/models", model: "gemini-2.5-flash")
-        case .zhipuGLM:
-            ProviderPreset(kind: .zhipuGLM, style: .openAIChatCompletions, baseURL: "https://api.z.ai/api/paas/v4", model: "glm-4.5-air")
-        case .kimi:
-            ProviderPreset(kind: .kimi, style: .openAIChatCompletions, baseURL: "https://api.moonshot.cn/v1", model: "kimi-k2-turbo-preview")
-        case .minimax:
-            ProviderPreset(kind: .minimax, style: .openAIChatCompletions, baseURL: "https://api.minimaxi.com/v1", model: "MiniMax-M2.5-highspeed")
-        case .aliyunBailian:
-            ProviderPreset(kind: .aliyunBailian, style: .openAIChatCompletions, baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1", model: "qwen3.5-flash")
-        case .volcengineArk:
-            ProviderPreset(kind: .volcengineArk, style: .openAIChatCompletions, baseURL: "https://ark.cn-beijing.volces.com/api/v3", model: "doubao-seed-1-6-250615")
-        }
+        providerCatalog.preset(for: provider)
     }
 
     func loadKey(for provider: ProviderKind) -> String {

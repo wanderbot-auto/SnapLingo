@@ -78,6 +78,12 @@ public sealed class MainWindow : Window
         {
             Title = viewModel.Localizer.Get("window_settings_title");
             ApplyHotkeyPreset(viewModel.SelectedShortcutPreset);
+            return;
+        }
+
+        if (e.PropertyName == nameof(MainViewModel.SelectedShortcutPreset))
+        {
+            ApplyHotkeyPreset(viewModel.SelectedShortcutPreset);
         }
     }
 }

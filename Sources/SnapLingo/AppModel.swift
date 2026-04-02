@@ -36,6 +36,14 @@ final class AppModel: ObservableObject {
         selectedShortcutPreset.compactLabel
     }
 
+    var activeProviderName: String {
+        providerRegistry.selectedProvider.displayName
+    }
+
+    var activeModelName: String {
+        providerRegistry.providerPreset(for: providerRegistry.selectedProvider).model
+    }
+
     func updateShortcutPreset(_ preset: HotkeyManager.ShortcutPreset) {
         selectedShortcutPreset = preset
         defaults.set(preset.rawValue, forKey: shortcutDefaultsKey)
@@ -50,9 +58,9 @@ final class AppModel: ObservableObject {
         }
 
         if hotkeyManager == nil {
-            hotkeyStatusMessage = "Could not register \(preset.displayName). Try a different shortcut."
+            hotkeyStatusMessage = MacStrings.shared.format("app.hotkey.register.failed", preset.displayName)
         } else {
-            hotkeyStatusMessage = "Hotkey set to \(preset.displayName)."
+            hotkeyStatusMessage = MacStrings.shared.format("app.hotkey.register.success", preset.displayName)
         }
     }
 
@@ -88,6 +96,11 @@ final class AppModel: ObservableObject {
     func openAccessibilitySettings() {
         guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") else { return }
         NSWorkspace.shared.open(url)
+    }
+
+    func dismissPanel() {
+        panelController.hide()
+        store.resetForIdle()
     }
 }
 

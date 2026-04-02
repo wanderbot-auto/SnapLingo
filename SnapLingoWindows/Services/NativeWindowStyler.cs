@@ -40,6 +40,46 @@ public static class NativeWindowStyler
         TryRemoveDwmBorder(hwnd);
     }
 
+    public static void ApplyOverlayToolStyle(nint hwnd)
+    {
+        UpdateStyle(
+            hwnd,
+            NativeMethods.GWL_STYLE,
+            style => style
+                & ~NativeMethods.WS_CAPTION
+                & ~NativeMethods.WS_THICKFRAME
+                & ~NativeMethods.WS_MAXIMIZEBOX
+                & ~NativeMethods.WS_SYSMENU);
+
+        UpdateStyle(
+            hwnd,
+            NativeMethods.GWL_EXSTYLE,
+            style => (style
+                & ~NativeMethods.WS_EX_CLIENTEDGE
+                & ~NativeMethods.WS_EX_STATICEDGE)
+                | NativeMethods.WS_EX_TOOLWINDOW);
+
+        if (!NativeMethods.SetWindowPos(
+                hwnd,
+                0,
+                0,
+                0,
+                0,
+                0,
+                NativeMethods.SWP_NOMOVE
+                | NativeMethods.SWP_NOSIZE
+                | NativeMethods.SWP_NOZORDER
+                | NativeMethods.SWP_NOACTIVATE
+                | NativeMethods.SWP_FRAMECHANGED))
+        {
+            throw new InvalidOperationException(
+                $"Failed to refresh overlay chrome. Win32 error: {Marshal.GetLastWin32Error()}");
+        }
+
+        TryApplyRoundedCorners(hwnd);
+        TryRemoveDwmBorder(hwnd);
+    }
+
     private static void UpdateStyle(nint hwnd, int index, Func<uint, uint> transform)
     {
         Marshal.SetLastPInvokeError(0);

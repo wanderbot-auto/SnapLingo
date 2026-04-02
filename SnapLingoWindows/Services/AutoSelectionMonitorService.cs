@@ -1,31 +1,31 @@
 using Microsoft.UI.Dispatching;
+using SnapLingoWindows.Models;
 
 namespace SnapLingoWindows.Services;
 
 public sealed class AutoSelectionMonitorService : IDisposable
 {
-    private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(450);
-    private static readonly TimeSpan DuplicateSuppressWindow = TimeSpan.FromSeconds(6);
+    private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(120);
     private const int DragThreshold = 6;
 
     private readonly DispatcherQueueTimer timer;
     private readonly ISelectionCaptureService captureService;
-    private readonly Func<string, Task> onSelectionDetected;
+    private readonly Func<SelectionActivationRequest, Task> onSelectionDetected;
+    private readonly SelectionActivationGate activationGate;
     private bool isCheckingSelection;
     private bool wasLeftMouseDown;
     private NativeMethods.POINT dragStartPoint;
     private bool hasDragStartPoint;
     private bool dragSelectionLikely;
-    private string? lastTriggeredText;
-    private DateTimeOffset lastTriggeredAt = DateTimeOffset.MinValue;
 
     public AutoSelectionMonitorService(
         DispatcherQueue dispatcherQueue,
         ISelectionCaptureService captureService,
-        Func<string, Task> onSelectionDetected)
+        Func<SelectionActivationRequest, Task> onSelectionDetected)
     {
         this.captureService = captureService;
         this.onSelectionDetected = onSelectionDetected;
+        activationGate = new SelectionActivationGate();
         timer = dispatcherQueue.CreateTimer();
         timer.Interval = PollInterval;
         timer.IsRepeating = true;
@@ -65,23 +65,15 @@ public sealed class AutoSelectionMonitorService : IDisposable
 
         try
         {
-            var text = await captureService.TryCaptureSelectionTextAsync(
-                CancellationToken.None,
-                allowSimulatedCopyFallback: true);
-            if (string.IsNullOrWhiteSpace(text))
+            var selection = await captureService.TryCaptureSelectionSnapshotAsync(CancellationToken.None);
+            var anchorPoint = ResolveAnchorPoint(selection);
+            var request = activationGate.TryCreateRequest(selection, anchorPoint.X, anchorPoint.Y, DateTimeOffset.UtcNow);
+            if (request is null)
             {
                 return;
             }
 
-            text = text.Trim();
-            if (ShouldSuppress(text))
-            {
-                return;
-            }
-
-            lastTriggeredText = text;
-            lastTriggeredAt = DateTimeOffset.UtcNow;
-            await onSelectionDetected(text);
+            _ = NotifySelectionDetectedAsync(request);
         }
         catch
         {
@@ -126,10 +118,34 @@ public sealed class AutoSelectionMonitorService : IDisposable
         }
     }
 
-    private bool ShouldSuppress(string text)
+    private NativeMethods.POINT ResolveAnchorPoint(SelectionSnapshot? selection)
     {
-        return !string.IsNullOrWhiteSpace(lastTriggeredText) &&
-               string.Equals(text, lastTriggeredText, StringComparison.Ordinal) &&
-               DateTimeOffset.UtcNow - lastTriggeredAt < DuplicateSuppressWindow;
+        if (selection?.AnchorX is int anchorX && selection.AnchorY is int anchorY)
+        {
+            return new NativeMethods.POINT
+            {
+                X = anchorX,
+                Y = anchorY,
+            };
+        }
+
+        if (NativeMethods.GetCursorPos(out var point))
+        {
+            return point;
+        }
+
+        return dragStartPoint;
+    }
+
+    private async Task NotifySelectionDetectedAsync(SelectionActivationRequest request)
+    {
+        try
+        {
+            await onSelectionDetected(request);
+        }
+        catch
+        {
+            // Provider or presentation failures should not break background selection monitoring.
+        }
     }
 }

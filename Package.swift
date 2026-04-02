@@ -12,6 +12,9 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "SnapLingo",
+            resources: [
+                .process("Resources"),
+            ],
             linkerSettings: [
                 .linkedFramework("AppKit"),
                 .linkedFramework("ApplicationServices"),

@@ -3,18 +3,24 @@ using System.Text.Json.Nodes;
 
 namespace SnapLingoWindows.Services;
 
-public sealed class ProviderRegistry
+public sealed class ProviderRegistry : IProviderClientFactory
 {
     private readonly SecureSecretStore secretStore;
     private readonly LocalizationService localizer;
     private readonly HttpClient httpClient;
+    private readonly ProviderCatalog providerCatalog;
     private readonly Dictionary<ProviderKind, string> selectedModels = new();
     private PromptProfile selectedPrompt = PromptProfile.CreateDefault();
 
-    public ProviderRegistry(SecureSecretStore secretStore, LocalizationService localizer, HttpClient? httpClient = null)
+    public ProviderRegistry(
+        SecureSecretStore secretStore,
+        LocalizationService localizer,
+        ProviderCatalog? providerCatalog = null,
+        HttpClient? httpClient = null)
     {
         this.secretStore = secretStore;
         this.localizer = localizer;
+        this.providerCatalog = providerCatalog ?? ProviderCatalog.Shared;
         this.httpClient = httpClient ?? new HttpClient();
     }
 
@@ -77,24 +83,9 @@ public sealed class ProviderRegistry
         return new ProviderModelCatalog(models, defaultModelId);
     }
 
-    public ProviderPreset GetPreset(ProviderKind provider) => provider switch
-    {
-        ProviderKind.OpenAI => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIResponses, "https://api.openai.com/v1", "gpt-4.1-mini"),
-        ProviderKind.Anthropic => new ProviderPreset(provider, ProviderProtocolStyle.AnthropicMessages, "https://api.anthropic.com/v1", "claude-sonnet-4-20250514"),
-        ProviderKind.Gemini => new ProviderPreset(provider, ProviderProtocolStyle.GeminiGenerateContent, "https://generativelanguage.googleapis.com/v1beta/models", "gemini-2.5-flash"),
-        ProviderKind.ZhipuGLM => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.z.ai/api/paas/v4", "glm-5"),
-        ProviderKind.Kimi => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.moonshot.cn/v1", "kimi-k2.5"),
-        ProviderKind.MiniMax => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://api.minimaxi.com/v1", "MiniMax-M2.7"),
-        ProviderKind.AlibabaBailian => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://dashscope.aliyuncs.com/compatible-mode/v1", "qwen3.5-plus"),
-        ProviderKind.VolcengineArk => new ProviderPreset(provider, ProviderProtocolStyle.OpenAIChatCompletions, "https://ark.cn-beijing.volces.com/api/v3", "doubao-seed-1-6-251015"),
-        _ => throw new InvalidOperationException($"Unsupported provider: {provider}"),
-    };
+    public ProviderPreset GetPreset(ProviderKind provider) => providerCatalog.GetPreset(provider);
 
-    public IReadOnlyList<string> GetPresetModels(ProviderKind provider) => provider switch
-    {
-        ProviderKind.MiniMax => ["MiniMax-M2.7", "MiniMax-M2.5"],
-        _ => [GetPreset(provider).Model],
-    };
+    public IReadOnlyList<string> GetPresetModels(ProviderKind provider) => providerCatalog.GetPresetModels(provider);
 
     public string LoadKey(ProviderKind provider) => secretStore.LoadSecret(provider);
 

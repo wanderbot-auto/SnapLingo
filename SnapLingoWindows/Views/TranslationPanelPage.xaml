@@ -42,6 +42,7 @@
         <SvgImageSource x:Key="TranslateModeActiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-translate-active.svg" />
         <SvgImageSource x:Key="PolishModeInactiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-polish-inactive.svg" />
         <SvgImageSource x:Key="PolishModeActiveIcon" UriSource="ms-appx:///Assets/FigmaPanel/panel-mode-polish.svg" />
+        <BitmapImage x:Key="PanelBrandLogo" UriSource="ms-appx:///Assets/GeneratedLogo/logo-24.png" />
 
         <Style x:Key="PlainGlyphButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource PanelTransparentBrush}" />
@@ -113,10 +114,11 @@
 
                             <Image
                                 Grid.Column="0"
-                                Width="12"
-                                Height="12"
+                                Width="15"
+                                Height="15"
                                 VerticalAlignment="Center"
-                                Source="{StaticResource PanelDragIcon}" />
+                                Source="{StaticResource PanelBrandLogo}"
+                                Stretch="Uniform" />
 
                             <Grid
                                 Grid.Column="1"
@@ -136,7 +138,7 @@
                                     FontWeight="SemiBold"
                                     CharacterSpacing="18"
                                     Foreground="{StaticResource PanelMutedTextBrush}"
-                                    Text="Auto-Detect" />
+                                    Text="{x:Bind ViewModel.WorkflowPanel.SourceLanguageLabel, Mode=OneWay}" />
 
                                 <Image
                                     Grid.Column="1"
@@ -163,7 +165,7 @@
                                         FontWeight="SemiBold"
                                         CharacterSpacing="18"
                                         Foreground="{StaticResource PanelAccentBrush}"
-                                        Text="English" />
+                                        Text="{x:Bind ViewModel.WorkflowPanel.TargetLanguageLabel, Mode=OneWay}" />
                                 </Border>
                             </Grid>
 
@@ -199,7 +201,7 @@
                                 FontWeight="SemiBold"
                                 CharacterSpacing="18"
                                 Foreground="{StaticResource PanelMutedTextBrush}"
-                                Text="Original" />
+                                Text="{x:Bind ViewModel.WorkflowPanel.OriginalSectionLabel, Mode=OneWay}" />
 
                             <TextBlock
                                 x:Name="OriginalPreviewTextBlock"
@@ -208,8 +210,9 @@
                                 LineHeight="18"
                                 LineStackingStrategy="BlockLineHeight"
                                 MaxLines="3"
+                                Text="{x:Bind ViewModel.WorkflowPanel.OriginalPreviewText, Mode=OneWay}"
                                 TextWrapping="WrapWholeWords"
-                                Text="Select text anywhere in Windows and SnapLingo will open automatically." />
+                                />
                         </StackPanel>
                     </Border>
 
@@ -284,8 +287,9 @@
                                     FontSize="11"
                                     FontWeight="Medium"
                                     Foreground="{StaticResource PanelMutedTextBrush}"
+                                    Text="{x:Bind ViewModel.WorkflowPanel.CurrentModelDisplayName, Mode=OneWay}"
                                     TextTrimming="CharacterEllipsis"
-                                    Text="Model" />
+                                    />
                             </Border>
 
                             <StackPanel
@@ -296,6 +300,8 @@
                                 <Button
                                     x:Name="RetryButton"
                                     Click="OnRetryClicked"
+                                    IsEnabled="{x:Bind ViewModel.WorkflowPanel.CanRetry, Mode=OneWay}"
+                                    Opacity="{x:Bind ViewModel.WorkflowPanel.RetryButtonOpacity, Mode=OneWay}"
                                     Style="{StaticResource IconButtonStyle}"
                                     ToolTipService.ToolTip="Retry">
                                     <Viewbox Width="14" Height="14">
@@ -310,6 +316,8 @@
                                 <Button
                                     x:Name="CopyButton"
                                     Click="OnCopyClicked"
+                                    IsEnabled="{x:Bind ViewModel.WorkflowPanel.CanCopy, Mode=OneWay}"
+                                    Opacity="{x:Bind ViewModel.WorkflowPanel.CopyButtonOpacity, Mode=OneWay}"
                                     Style="{StaticResource IconButtonStyle}"
                                     ToolTipService.ToolTip="Copy">
                                     <Viewbox Width="14" Height="14">
@@ -317,7 +325,7 @@
                                             x:Name="CopyGlyphIcon"
                                             Foreground="{StaticResource PanelSecondaryTextBrush}"
                                             FontFamily="Segoe Fluent Icons"
-                                            Glyph="&#xE8C8;" />
+                                            Glyph="{x:Bind ViewModel.WorkflowPanel.CopyGlyph, Mode=OneWay}" />
                                     </Viewbox>
                                 </Button>
                             </StackPanel>
@@ -355,7 +363,7 @@
                                     FontWeight="SemiBold"
                                     CharacterSpacing="18"
                                     Foreground="{StaticResource PanelMutedTextBrush}"
-                                    Text="Result" />
+                                    Text="{x:Bind ViewModel.WorkflowPanel.ProcessedTitleText, Mode=OneWay}" />
 
                                 <StackPanel
                                     x:Name="PlaceholderPanel"
@@ -363,20 +371,21 @@
                                     Margin="0,10,0,0"
                                     Orientation="Horizontal"
                                     Spacing="8"
-                                    VerticalAlignment="Top">
+                                    VerticalAlignment="Top"
+                                    Visibility="{x:Bind ViewModel.WorkflowPanel.PlaceholderVisibility, Mode=OneWay}">
                                     <ProgressRing
                                         x:Name="BusyProgressRing"
                                         Width="16"
                                         Height="16"
-                                        IsActive="False"
-                                        Visibility="Collapsed" />
+                                        IsActive="{x:Bind ViewModel.WorkflowPanel.IsBusy, Mode=OneWay}"
+                                        Visibility="{x:Bind ViewModel.WorkflowPanel.BusyProgressVisibility, Mode=OneWay}" />
                                     <TextBlock
                                         x:Name="PlaceholderTextBlock"
                                         VerticalAlignment="Center"
                                         FontSize="12.5"
                                         FontWeight="Medium"
                                         Foreground="{StaticResource PanelMutedTextBrush}"
-                                        Text="Ready for the next selection." />
+                                        Text="{x:Bind ViewModel.WorkflowPanel.PlaceholderText, Mode=OneWay}" />
                                 </StackPanel>
 
                                 <TextBlock
@@ -388,7 +397,8 @@
                                     LineHeight="22"
                                     LineStackingStrategy="BlockLineHeight"
                                     TextWrapping="WrapWholeWords"
-                                    Visibility="Collapsed" />
+                                    Text="{x:Bind ViewModel.WorkflowPanel.AnimatedPrimaryText, Mode=OneWay}"
+                                    Visibility="{x:Bind ViewModel.WorkflowPanel.PrimaryTextVisibility, Mode=OneWay}" />
 
                                 <TextBlock
                                     x:Name="SecondaryStatusTextBlock"
@@ -397,8 +407,9 @@
                                     FontSize="11"
                                     FontWeight="Medium"
                                     Foreground="{StaticResource PanelMutedTextBrush}"
+                                    Text="{x:Bind ViewModel.WorkflowPanel.SecondaryStatusText, Mode=OneWay}"
                                     TextWrapping="WrapWholeWords"
-                                    Visibility="Collapsed" />
+                                    Visibility="{x:Bind ViewModel.WorkflowPanel.SecondaryStatusVisibility, Mode=OneWay}" />
 
                                 <Border
                                     x:Name="StatusBannerBorder"
@@ -409,7 +420,7 @@
                                     BorderBrush="{StaticResource PanelHairlineBrush}"
                                     BorderThickness="0.8"
                                     CornerRadius="8"
-                                    Visibility="Collapsed">
+                                    Visibility="{x:Bind ViewModel.WorkflowPanel.StatusBannerVisibility, Mode=OneWay}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -422,6 +433,7 @@
                                             FontSize="11"
                                             FontWeight="Medium"
                                             Foreground="{StaticResource PanelMutedTextBrush}"
+                                            Text="{x:Bind ViewModel.WorkflowPanel.StatusBannerText, Mode=OneWay}"
                                             TextWrapping="WrapWholeWords" />
 
                                         <Button
@@ -440,7 +452,7 @@
                                                 FontSize="11"
                                                 FontWeight="SemiBold"
                                                 Foreground="{StaticResource PanelSecondaryTextBrush}"
-                                                Text="Retry" />
+                                                Text="{x:Bind ViewModel.WorkflowPanel.StatusBannerButtonText, Mode=OneWay}" />
                                         </Button>
                                     </Grid>
                                 </Border>

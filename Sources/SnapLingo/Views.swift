@@ -169,128 +169,484 @@ struct MenuBarAppView: View {
 
 struct ResultPanelView: View {
     @ObservedObject var model: AppModel
+    @State private var showsOriginalText = false
 
     private var store: PanelStateStore { model.store }
+    private let panelCornerRadius: CGFloat = 18
 
     var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color(red: 0.980, green: 0.980, blue: 0.978),
+                    Color(red: 0.954, green: 0.956, blue: 0.962),
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            Circle()
+                .fill(.white.opacity(0.92))
+                .frame(width: 320, height: 320)
+                .blur(radius: 18)
+                .offset(x: 105, y: 54)
+
+            Circle()
+                .fill(Color(red: 0.929, green: 0.945, blue: 1.0).opacity(0.58))
+                .frame(width: 252, height: 252)
+                .blur(radius: 32)
+                .offset(x: -138, y: -120)
+
+            panelShell
+                .padding(26)
+        }
+        .frame(width: 438, height: 328)
+    }
+
+    private var panelShell: some View {
+        VStack(spacing: 0) {
+            headerBar
+            previewSurface
+            divider
+            modeBar
+            divider
+            contentSection
+            divider
+            footerBar
+        }
+        .background(
+            RoundedRectangle(cornerRadius: panelCornerRadius, style: .continuous)
+                .fill(.white.opacity(0.84))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: panelCornerRadius, style: .continuous)
+                .stroke(.white.opacity(0.82), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: panelCornerRadius, style: .continuous))
+        .shadow(color: .black.opacity(0.08), radius: 24, y: 16)
+        .shadow(color: .white.opacity(0.7), radius: 8, y: -1)
+    }
+
+    private var headerBar: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "square.grid.3x3.fill")
+                .font(.system(size: 8, weight: .bold))
+                .foregroundStyle(SnapTheme.tertiaryInk.opacity(0.58))
+
+            Text("Auto-Detect")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(SnapTheme.subtleInk)
+
+            Image(systemName: "arrow.right")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(SnapTheme.tertiaryInk.opacity(0.75))
+
+            Text(resultLanguageLabel)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(resultAccentColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(resultAccentColor.opacity(0.13))
+                )
+
+            Spacer()
+
+            iconButton(symbol: "pin", isEnabled: false) {}
+
+            iconButton(symbol: "xmark") {
+                model.dismissPanel()
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+    }
+
+    private var previewSurface: some View {
         ZStack(alignment: .topLeading) {
-            SnapBackdrop()
+            RoundedRectangle(cornerRadius: 0, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.960, green: 0.964, blue: 0.971),
+                            Color(red: 0.944, green: 0.947, blue: 0.955),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
 
-            VStack(alignment: .leading, spacing: 14) {
-                Picker("Mode", selection: Binding(
-                    get: { store.selectedMode },
-                    set: { model.selectMode($0) }
-                )) {
-                    ForEach(TranslationMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
+            RoundedRectangle(cornerRadius: 0, style: .continuous)
+                .fill(.white.opacity(0.18))
+                .padding(.horizontal, 1)
+                .blur(radius: 12)
 
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(store.primaryTitle)
-                            .font(.system(size: 20, weight: .semibold, design: .rounded))
-                            .foregroundStyle(SnapTheme.ink)
-
-                        Spacer()
-
-                        Text(store.modeSourceLabel)
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(SnapTheme.tertiaryInk)
-                            .padding(.horizontal, 9)
-                            .padding(.vertical, 6)
-                            .background(
-                                Capsule(style: .continuous)
-                                    .fill(SnapTheme.cream)
-                            )
-                    }
-
-                    if let text = store.primaryText {
-                        Text(text)
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(SnapTheme.ink)
-                            .lineSpacing(3)
-                            .textSelection(.enabled)
-                    } else {
-                        ProgressView()
-                            .controlSize(.small)
-                    }
-
-                    if let status = store.secondaryStatus {
-                        Text(status)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(SnapTheme.subtleInk)
-                    }
-                }
-                .snapSurface()
-
-                if let originalPreview = store.originalPreview {
-                    DisclosureGroup("Original text") {
-                        Text(originalPreview)
-                            .font(.system(size: 12.5, weight: .medium))
-                            .foregroundStyle(SnapTheme.subtleInk)
-                            .lineLimit(3)
-                            .textSelection(.enabled)
-                            .padding(.top, 6)
-                    }
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(SnapTheme.subtleInk)
-                }
-
-                HStack(spacing: 10) {
-                    Button(store.isCopied ? "Copied" : "Copy") {
-                        model.copyPrimaryResult()
-                    }
-                    .snapPrimaryButton()
-                    .disabled(!store.canCopy)
-                    .keyboardShortcut(.defaultAction)
-
-                    Button("Retry") {
-                        model.retryCurrentFlow()
-                    }
-                    .snapSecondaryButton()
-                    .disabled(!store.canRetry)
-                    .keyboardShortcut("r")
-                }
-
-                if case .permissionRequired = store.phase {
-                    permissionPrompt
-                }
-
-                if case .waitingForClipboard = store.phase {
-                    clipboardPrompt
+            VStack(alignment: .leading, spacing: 8) {
+                if showsOriginalText || shouldShowContextHint {
+                    Text(previewText)
+                        .font(.system(size: 12.5, weight: .medium))
+                        .foregroundStyle(SnapTheme.tertiaryInk.opacity(0.92))
+                        .lineSpacing(3)
+                        .lineLimit(4)
+                        .multilineTextAlignment(.leading)
+                        .textSelection(.enabled)
                 }
             }
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
         }
-        .frame(width: 420)
+        .frame(height: 92)
+        .clipped()
     }
 
-    private var permissionPrompt: some View {
+    private var modeBar: some View {
+        HStack(spacing: 10) {
+            HStack(spacing: 6) {
+                ForEach(TranslationMode.allCases) { mode in
+                    Button {
+                        model.selectMode(mode)
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: mode.symbolName)
+                                .font(.system(size: 11, weight: .semibold))
+                            Text(mode.chipTitle)
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundStyle(store.selectedMode == mode ? resultAccentColor : SnapTheme.subtleInk)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 9)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(store.selectedMode == mode ? .white : .clear)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(
+                                    store.selectedMode == mode
+                                        ? SnapTheme.hairlineStrong
+                                        : Color.clear,
+                                    lineWidth: 1
+                                )
+                        )
+                        .shadow(
+                            color: store.selectedMode == mode ? .black.opacity(0.06) : .clear,
+                            radius: 9,
+                            y: 5
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(4)
+            .background(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(Color(red: 0.974, green: 0.975, blue: 0.979))
+            )
+
+            Spacer()
+
+            HStack(spacing: 14) {
+                Image(systemName: statusSymbolName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(statusSymbolColor)
+
+                Button {
+                    showsOriginalText.toggle()
+                } label: {
+                    Image(systemName: "text.alignleft")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(showsOriginalText ? SnapTheme.ink : SnapTheme.tertiaryInk)
+                }
+                .buttonStyle(.plain)
+                .disabled(store.originalPreview == nil && !shouldShowContextHint)
+
+                Image(systemName: store.selectedMode == .translate ? "sparkles" : "wand.and.stars")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(resultAccentColor.opacity(0.88))
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+    }
+
+    private var contentSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("SnapLingo needs Accessibility access to read selected text from other apps.")
-                .font(.system(size: 12))
-                .foregroundStyle(SnapTheme.subtleInk)
-
-            Button("Open Accessibility Settings") {
-                model.openAccessibilitySettings()
+            if let text = store.primaryText, !text.isEmpty {
+                Text(text)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(SnapTheme.ink)
+                    .lineSpacing(4)
+                    .textSelection(.enabled)
+            } else {
+                HStack(spacing: 10) {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text(primaryPlaceholder)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(SnapTheme.subtleInk)
+                }
             }
-            .snapSecondaryButton()
+
+            if let status = store.secondaryStatus {
+                Text(status)
+                    .font(.system(size: 11.5, weight: .medium))
+                    .foregroundStyle(SnapTheme.tertiaryInk)
+            }
+
+            if case .permissionRequired = store.phase {
+                inlineBanner(
+                    title: "Accessibility access is required before SnapLingo can read selected text.",
+                    actionTitle: "Open Settings",
+                    action: model.openAccessibilitySettings
+                )
+            }
+
+            if case .waitingForClipboard = store.phase {
+                inlineBanner(
+                    title: "Copy the current selection and SnapLingo will continue automatically.",
+                    actionTitle: "Retry",
+                    action: model.retryCurrentFlow
+                )
+            }
         }
-        .snapSurface()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 
-    private var clipboardPrompt: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Press Copy in the current app to continue.")
-                .font(.system(size: 12))
-                .foregroundStyle(SnapTheme.subtleInk)
-            Text("SnapLingo will continue automatically as soon as the clipboard changes.")
-                .font(.system(size: 11))
-                .foregroundStyle(SnapTheme.tertiaryInk)
+    private var footerBar: some View {
+        HStack(spacing: 12) {
+            HStack(spacing: 7) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 18, height: 18)
+                    .background(
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .fill(resultAccentColor)
+                    )
+
+                Text(model.activeModelName)
+                    .font(.system(size: 12.5, weight: .medium))
+                    .foregroundStyle(SnapTheme.subtleInk)
+                    .lineLimit(1)
+
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(SnapTheme.tertiaryInk)
+            }
+            .help("\(model.activeProviderName) · \(model.activeModelName)")
+
+            Spacer(minLength: 10)
+
+            HStack(spacing: 14) {
+                Image(systemName: "speaker.wave.2")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(SnapTheme.tertiaryInk.opacity(0.55))
+
+                Button {
+                    model.retryCurrentFlow()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(store.canRetry ? SnapTheme.subtleInk : SnapTheme.tertiaryInk.opacity(0.45))
+                }
+                .buttonStyle(.plain)
+                .disabled(!store.canRetry)
+                .keyboardShortcut("r")
+
+                Rectangle()
+                    .fill(SnapTheme.hairlineStrong)
+                    .frame(width: 1, height: 18)
+
+                Button(store.isCopied ? "Copied" : "Copy") {
+                    model.copyPrimaryResult()
+                }
+                .buttonStyle(PanelCopyButtonStyle())
+                .disabled(!store.canCopy)
+                .keyboardShortcut(.defaultAction)
+            }
         }
-        .snapSurface()
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+    }
+
+    private var divider: some View {
+        Rectangle()
+            .fill(SnapTheme.hairlineStrong)
+            .frame(height: 1)
+    }
+
+    private var previewText: String {
+        if let originalPreview = store.originalPreview, !originalPreview.isEmpty {
+            return originalPreview
+        }
+
+        switch store.phase {
+        case .capturing:
+            return "Reading the current selection and preparing the translation pipeline."
+        case .waitingForClipboard:
+            return "This app blocks direct selection access. Copy the text once and SnapLingo will continue from the clipboard."
+        case .permissionRequired:
+            return "Grant Accessibility permission so SnapLingo can read selected text from other apps."
+        case let .error(message):
+            return message
+        case .loadingTranslation, .loadingPolish:
+            return "The original text will appear here once the current session has content to compare."
+        case .idle:
+            return "Select text in any app and press the SnapLingo hotkey to open this panel."
+        case .partial, .ready:
+            return "The original text is hidden. Use the middle toggle if you want to compare it against the result."
+        }
+    }
+
+    private var shouldShowContextHint: Bool {
+        switch store.phase {
+        case .capturing, .waitingForClipboard, .permissionRequired, .error(_), .idle:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private var primaryPlaceholder: String {
+        switch store.phase {
+        case .capturing:
+            return "Capturing your selection..."
+        case .loadingTranslation:
+            return "Generating a natural English translation..."
+        case .loadingPolish:
+            return "Refining the English copy for send-ready tone..."
+        case .waitingForClipboard:
+            return "Waiting for clipboard content..."
+        case .permissionRequired:
+            return "SnapLingo cannot proceed until Accessibility is enabled."
+        case .idle:
+            return "Ready for the next selection."
+        case let .error(message):
+            return message
+        case .partial:
+            return "Preparing the final pass..."
+        case .ready:
+            return "Result ready."
+        }
+    }
+
+    private var resultLanguageLabel: String {
+        "English"
+    }
+
+    private var resultAccentColor: Color {
+        store.selectedMode == .translate ? SnapTheme.translationAccent : SnapTheme.polishAccent
+    }
+
+    private var statusSymbolName: String {
+        switch store.phase {
+        case .ready:
+            return "checkmark"
+        case .partial:
+            return "ellipsis"
+        case .error(_):
+            return "exclamationmark"
+        default:
+            return "checkmark"
+        }
+    }
+
+    private var statusSymbolColor: Color {
+        switch store.phase {
+        case .error(_):
+            return SnapTheme.accent
+        case .ready:
+            return resultAccentColor
+        default:
+            return SnapTheme.tertiaryInk
+        }
+    }
+
+    private func iconButton(symbol: String, isEnabled: Bool = true, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(isEnabled ? SnapTheme.tertiaryInk : SnapTheme.tertiaryInk.opacity(0.45))
+                .frame(width: 18, height: 18)
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled)
+    }
+
+    private func inlineBanner(title: String, actionTitle: String, action: @escaping () -> Void) -> some View {
+        HStack(spacing: 10) {
+            Text(title)
+                .font(.system(size: 11.5, weight: .medium))
+                .foregroundStyle(SnapTheme.subtleInk)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 6)
+
+            Button(actionTitle, action: action)
+                .buttonStyle(PanelMiniActionButtonStyle())
+        }
+    }
+}
+
+private struct PanelCopyButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 12.5, weight: .semibold))
+            .foregroundStyle(SnapTheme.ink)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 11, style: .continuous)
+                    .fill(configuration.isPressed ? Color.white.opacity(0.84) : .white.opacity(0.96))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 11, style: .continuous)
+                    .stroke(SnapTheme.hairlineStrong, lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(configuration.isPressed ? 0.03 : 0.05), radius: 8, y: 4)
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
+private struct PanelMiniActionButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 11.5, weight: .semibold))
+            .foregroundStyle(SnapTheme.subtleInk)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(configuration.isPressed ? Color.white.opacity(0.72) : Color.white.opacity(0.92))
+            )
+            .overlay(
+                Capsule(style: .continuous)
+                    .stroke(SnapTheme.hairlineStrong, lineWidth: 1)
+            )
+    }
+}
+
+private extension TranslationMode {
+    var chipTitle: String {
+        switch self {
+        case .translate:
+            return "Translate"
+        case .polish:
+            return "Polish"
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .translate:
+            return "globe"
+        case .polish:
+            return "sparkles"
+        }
     }
 }
 
@@ -474,6 +830,9 @@ private enum SnapTheme {
     static let cream = Color(red: 0.984, green: 0.949, blue: 0.901)
     static let sky = Color(red: 0.482, green: 0.694, blue: 0.910)
     static let hairline = Color.black.opacity(0.06)
+    static let hairlineStrong = Color.black.opacity(0.08)
+    static let translationAccent = Color(red: 0.144, green: 0.443, blue: 0.965)
+    static let polishAccent = Color(red: 0.455, green: 0.353, blue: 0.941)
 }
 
 private extension View {

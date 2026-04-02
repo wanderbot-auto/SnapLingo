@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using SnapLingoWindows.ViewModels;
 using Windows.Foundation;
 
 namespace SnapLingoWindows.Views;
@@ -8,28 +9,22 @@ namespace SnapLingoWindows.Views;
 public sealed partial class TranslationPanelPage : Page
 {
     private readonly Action<double> requestPanelHeightUpdate;
-    private CancellationTokenSource? streamingCts;
-    private string streamingTargetText = string.Empty;
-    private string displayedPrimaryText = string.Empty;
-    private WorkflowPhase displayedPhase = WorkflowPhase.Idle;
 
     public TranslationPanelPage(MainViewModel viewModel, Action<double> requestPanelHeightUpdate)
     {
         ViewModel = viewModel;
         this.requestPanelHeightUpdate = requestPanelHeightUpdate;
         InitializeComponent();
-        ViewModel.Workflow.PropertyChanged += OnWorkflowChanged;
-        ViewModel.PropertyChanged += OnViewModelChanged;
+        ViewModel.WorkflowPanel.PropertyChanged += OnWorkflowPanelChanged;
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         SizeChanged += OnPageSizeChanged;
-        Render();
+        ApplyModeVisualState();
     }
 
     public MainViewModel ViewModel { get; }
-    public FrameworkElement TitleBarElement => HeaderDragRegion;
 
-    private bool IsChinese => ViewModel.SelectedLanguage == AppLanguage.Chinese;
+    public FrameworkElement TitleBarElement => HeaderDragRegion;
 
     public double MeasurePreferredHeight()
     {
@@ -43,14 +38,23 @@ public sealed partial class TranslationPanelPage : Page
         QueueHeightUpdate();
     }
 
-    private void OnWorkflowChanged(object? sender, PropertyChangedEventArgs e)
+    private void OnWorkflowPanelChanged(object? sender, PropertyChangedEventArgs e)
     {
-        Render();
-    }
+        if (e.PropertyName is nameof(WorkflowPanelViewModel.IsTranslateModeSelected) or
+            nameof(WorkflowPanelViewModel.IsPolishModeSelected))
+        {
+            ApplyModeVisualState();
+        }
 
-    private void OnViewModelChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        Render();
+        if (e.PropertyName is nameof(WorkflowPanelViewModel.AnimatedPrimaryText) or
+            nameof(WorkflowPanelViewModel.OriginalPreviewText) or
+            nameof(WorkflowPanelViewModel.PlaceholderVisibility) or
+            nameof(WorkflowPanelViewModel.SecondaryStatusVisibility) or
+            nameof(WorkflowPanelViewModel.StatusBannerVisibility) or
+            nameof(WorkflowPanelViewModel.ProcessedTitleText))
+        {
+            QueueHeightUpdate();
+        }
     }
 
     private void OnPageSizeChanged(object sender, SizeChangedEventArgs e)
@@ -60,36 +64,14 @@ public sealed partial class TranslationPanelPage : Page
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
-        CancelStreaming();
-        ViewModel.Workflow.PropertyChanged -= OnWorkflowChanged;
-        ViewModel.PropertyChanged -= OnViewModelChanged;
+        ViewModel.WorkflowPanel.PropertyChanged -= OnWorkflowPanelChanged;
         Loaded -= OnLoaded;
         Unloaded -= OnUnloaded;
         SizeChanged -= OnPageSizeChanged;
     }
 
-    private void Render()
+    private void ApplyModeVisualState()
     {
-        OriginalSectionLabelTextBlock.Text = IsChinese ? "原文" : "Original";
-        StatusBannerButtonTextBlock.Text = ResolveRetryLabel();
-
-        UpdateHeader();
-        UpdateModeVisualState();
-        UpdateOriginalContent();
-        UpdateContent();
-        UpdateControls();
-        QueueHeightUpdate();
-    }
-
-    private void UpdateHeader()
-    {
-        SourceLanguageTextBlock.Text = ResolveSourceLanguageLabel();
-        TargetLanguageTextBlock.Text = ResolveTargetLanguageLabel();
-    }
-
-    private void UpdateModeVisualState()
-    {
-        var isTranslate = ViewModel.Workflow.SelectedMode == TranslationMode.Translate;
         var selectedBackground = LookupBrush("PanelSelectedModeBrush");
         var unselectedBackground = LookupBrush("PanelTransparentBrush");
         var selectedBorder = LookupBrush("PanelSelectedBorderBrush");
@@ -98,7 +80,7 @@ public sealed partial class TranslationPanelPage : Page
         ApplyModeState(
             TranslateModeButton,
             TranslateModeImage,
-            isSelected: isTranslate,
+            ViewModel.WorkflowPanel.IsTranslateModeSelected,
             selectedBackground,
             unselectedBackground,
             selectedBorder,
@@ -109,7 +91,7 @@ public sealed partial class TranslationPanelPage : Page
         ApplyModeState(
             PolishModeButton,
             PolishModeImage,
-            isSelected: !isTranslate,
+            ViewModel.WorkflowPanel.IsPolishModeSelected,
             selectedBackground,
             unselectedBackground,
             selectedBorder,
@@ -132,235 +114,6 @@ public sealed partial class TranslationPanelPage : Page
         button.Background = isSelected ? selectedBackground : unselectedBackground;
         button.BorderBrush = isSelected ? selectedBorder : unselectedBorder;
         image.Source = LookupImageSource(isSelected ? selectedImageKey : unselectedImageKey);
-    }
-
-    private void UpdateOriginalContent()
-    {
-        OriginalPreviewTextBlock.Text = !string.IsNullOrWhiteSpace(ViewModel.Workflow.OriginalPreview)
-            ? ViewModel.Workflow.OriginalPreview!
-            : ResolveOriginalContentHint();
-    }
-
-    private void UpdateContent()
-    {
-        var rawText = ViewModel.Workflow.PrimaryText ?? string.Empty;
-        var shouldUsePlaceholder = string.IsNullOrWhiteSpace(rawText) || ViewModel.Workflow.IsBusy;
-
-        ProcessedTitleTextBlock.Text = ViewModel.Workflow.PrimaryTitle;
-
-        if (shouldUsePlaceholder)
-        {
-            CancelStreaming();
-            displayedPrimaryText = string.Empty;
-        }
-        else
-        {
-            EnsureStreamingState(rawText);
-        }
-
-        PlaceholderPanel.Visibility = shouldUsePlaceholder ? Visibility.Visible : Visibility.Collapsed;
-        BusyProgressRing.IsActive = ViewModel.Workflow.IsBusy;
-        BusyProgressRing.Visibility = ViewModel.Workflow.IsBusy ? Visibility.Visible : Visibility.Collapsed;
-        PlaceholderTextBlock.Text = ResolvePlaceholderText();
-
-        PrimaryTextBlock.Visibility = shouldUsePlaceholder ? Visibility.Collapsed : Visibility.Visible;
-        PrimaryTextBlock.Text = shouldUsePlaceholder ? string.Empty : displayedPrimaryText;
-
-        var secondaryStatus = ResolveSecondaryStatusText(shouldUsePlaceholder);
-        SecondaryStatusTextBlock.Text = secondaryStatus;
-        SecondaryStatusTextBlock.Visibility = string.IsNullOrWhiteSpace(secondaryStatus)
-            ? Visibility.Collapsed
-            : Visibility.Visible;
-
-        if (ViewModel.Workflow.Phase == WorkflowPhase.WaitingForClipboard)
-        {
-            StatusBannerBorder.Visibility = Visibility.Visible;
-            StatusBannerTextBlock.Text = ResolveClipboardBannerText();
-            StatusBannerButton.Tag = "retry";
-            return;
-        }
-
-        if (ViewModel.Workflow.Phase == WorkflowPhase.Error && ViewModel.Workflow.CanRetry)
-        {
-            StatusBannerBorder.Visibility = Visibility.Visible;
-            StatusBannerTextBlock.Text = ResolveErrorBannerText();
-            StatusBannerButton.Tag = "retry";
-            return;
-        }
-
-        StatusBannerBorder.Visibility = Visibility.Collapsed;
-        StatusBannerTextBlock.Text = string.Empty;
-        StatusBannerButton.Tag = null;
-    }
-
-    private void UpdateControls()
-    {
-        RetryButton.IsEnabled = ViewModel.Workflow.CanRetry;
-        RetryButton.Opacity = ViewModel.Workflow.CanRetry ? 1 : 0.45;
-
-        CopyButton.IsEnabled = ViewModel.Workflow.CanCopy;
-        CopyButton.Opacity = ViewModel.Workflow.CanCopy ? 1 : 0.72;
-        CopyGlyphIcon.Glyph = ViewModel.Workflow.IsCopied ? "\uE73E" : "\uE8C8";
-        ActiveModelTextBlock.Text = FormatModelDisplayName(ViewModel.SelectedModelId);
-    }
-
-    private void EnsureStreamingState(string rawText)
-    {
-        if (!ShouldAnimate(rawText))
-        {
-            CancelStreaming();
-            streamingTargetText = rawText;
-            displayedPrimaryText = rawText;
-            displayedPhase = ViewModel.Workflow.Phase;
-            return;
-        }
-
-        if (rawText == streamingTargetText && displayedPhase == ViewModel.Workflow.Phase)
-        {
-            return;
-        }
-
-        StartStreaming(rawText, ViewModel.Workflow.Phase);
-    }
-
-    private bool ShouldAnimate(string text)
-    {
-        return !string.IsNullOrWhiteSpace(text) &&
-               ViewModel.Workflow.Phase is WorkflowPhase.Partial or WorkflowPhase.Ready;
-    }
-
-    private void StartStreaming(string text, WorkflowPhase phase)
-    {
-        CancelStreaming();
-        streamingCts = new CancellationTokenSource();
-        streamingTargetText = text;
-        displayedPhase = phase;
-        displayedPrimaryText = string.Empty;
-        PrimaryTextBlock.Text = string.Empty;
-        _ = StreamTextAsync(text, streamingCts.Token);
-    }
-
-    private async Task StreamTextAsync(string text, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var chunkSize = text.Length switch
-            {
-                > 640 => 14,
-                > 320 => 10,
-                > 160 => 6,
-                _ => 3,
-            };
-
-            var delay = text.Length > 240 ? 10 : 16;
-
-            for (var index = chunkSize; index < text.Length + chunkSize; index += chunkSize)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                displayedPrimaryText = text[..Math.Min(index, text.Length)];
-                PrimaryTextBlock.Text = displayedPrimaryText;
-                QueueHeightUpdate();
-                await Task.Delay(delay, cancellationToken);
-            }
-        }
-        catch (OperationCanceledException)
-        {
-        }
-    }
-
-    private void CancelStreaming()
-    {
-        streamingCts?.Cancel();
-        streamingCts?.Dispose();
-        streamingCts = null;
-    }
-
-    private string ResolveOriginalContentHint()
-    {
-        return ViewModel.Workflow.Phase switch
-        {
-            WorkflowPhase.Capturing => IsChinese
-                ? "正在读取你刚刚选中的内容。"
-                : "Reading the text you just selected.",
-            WorkflowPhase.WaitingForClipboard => IsChinese
-                ? "直接取词失败时，会回退到剪贴板继续处理。"
-                : "If direct selection capture fails, SnapLingo will continue from the clipboard fallback.",
-            WorkflowPhase.Error => IsChinese
-                ? "这次流程没有完成。重新选择内容后会再次自动弹出。"
-                : "This run did not finish. Select text again and the panel will reopen automatically.",
-            _ => IsChinese
-                ? "在 Windows 任意位置选中文本后，SnapLingo 会自动弹出这个独立面板。"
-                : "Select text anywhere in Windows and SnapLingo will open this standalone panel automatically.",
-        };
-    }
-
-    private string ResolvePlaceholderText()
-    {
-        return ViewModel.Workflow.Phase switch
-        {
-            WorkflowPhase.Capturing => IsChinese ? "正在捕获选中文本..." : "Capturing the selected text...",
-            WorkflowPhase.LoadingTranslation => IsChinese ? "正在生成快速翻译..." : "Generating a quick translation...",
-            WorkflowPhase.LoadingPolish => IsChinese ? "正在润色文本..." : "Polishing the text...",
-            WorkflowPhase.WaitingForClipboard => IsChinese ? "等待剪贴板内容..." : "Waiting for clipboard content...",
-            WorkflowPhase.Partial => IsChinese ? "正在生成最终润色结果..." : "Generating the final polished result...",
-            WorkflowPhase.Error => ViewModel.Workflow.PrimaryText ?? (IsChinese ? "这次流程没有完成。" : "The workflow did not finish."),
-            _ => IsChinese ? "等待下一次选中文本。" : "Ready for the next selection.",
-        };
-    }
-
-    private string ResolveSecondaryStatusText(bool showingPlaceholder)
-    {
-        if (showingPlaceholder || string.IsNullOrWhiteSpace(ViewModel.Workflow.SecondaryStatus))
-        {
-            return string.Empty;
-        }
-
-        if (ViewModel.Workflow.Phase == WorkflowPhase.Ready && !ViewModel.Workflow.IsCopied)
-        {
-            return string.Empty;
-        }
-
-        return ViewModel.Workflow.SecondaryStatus!;
-    }
-
-    private string ResolveClipboardBannerText()
-    {
-        return IsChinese
-            ? "当前应用不支持直接读取选区时，请按 Ctrl+C，SnapLingo 会继续处理。"
-            : "If direct capture is not available in the current app, press Ctrl+C and SnapLingo will continue automatically.";
-    }
-
-    private string ResolveErrorBannerText()
-    {
-        return IsChinese
-            ? "这次处理没有完成，可以重试，或重新选择文本。"
-            : "The workflow did not finish. Retry it, or select the text again.";
-    }
-
-    private string ResolveRetryLabel() => IsChinese ? "重试" : "Retry";
-
-    private string ResolveSourceLanguageLabel() => IsChinese ? "自动识别" : "Auto-Detect";
-
-    private string ResolveTargetLanguageLabel() => IsChinese ? "英文" : "English";
-
-    private string FormatModelDisplayName(string? modelId)
-    {
-        if (string.IsNullOrWhiteSpace(modelId))
-        {
-            return IsChinese ? "当前模型" : "Current model";
-        }
-
-        if (modelId.StartsWith("gpt-", StringComparison.OrdinalIgnoreCase))
-        {
-            return $"GPT-{modelId[4..]}";
-        }
-
-        if (modelId.StartsWith("claude-", StringComparison.OrdinalIgnoreCase))
-        {
-            return $"Claude {modelId[7..]}";
-        }
-
-        return modelId;
     }
 
     private void QueueHeightUpdate()
@@ -405,9 +158,6 @@ public sealed partial class TranslationPanelPage : Page
 
     private async void OnStatusBannerButtonClicked(object sender, RoutedEventArgs e)
     {
-        if (StatusBannerButton.Tag as string == "retry")
-        {
-            await ViewModel.RetryCurrentFlowAsync();
-        }
+        await ViewModel.RetryCurrentFlowAsync();
     }
 }

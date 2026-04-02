@@ -22,6 +22,7 @@
         <UseRidGraph>true</UseRidGraph>
         <Platforms>x86;x64;ARM64</Platforms>
         <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>Assets\GeneratedLogo\snaplingo-logo.ico</ApplicationIcon>
         <PublishProfile>win-$(Platform).pubxml</PublishProfile>
         <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) >= 8">win-x86;win-x64;win-arm64</RuntimeIdentifiers>
         <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)')) &lt; 8">win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
@@ -36,6 +37,13 @@
         <Content Include="Assets\StoreLogo.png" />
         <Content Include="Assets\Wide310x150Logo.scale-200.png" />
         <Content Include="Assets\FigmaIcons\*.svg" />
+        <Content Include="Assets\FigmaPanel\*.svg" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="..\Sources\SnapLingo\Resources\Providers\providers.json" Link="Resources\Providers\providers.json" LogicalName="SnapLingoWindows.Resources.Providers.providers.json" />
+        <EmbeddedResource Include="..\Sources\SnapLingo\Resources\Localization\windows\en.json" Link="Resources\Localization\windows\en.json" LogicalName="SnapLingoWindows.Resources.Localization.windows.en.json" />
+        <EmbeddedResource Include="..\Sources\SnapLingo\Resources\Localization\windows\zh-Hans.json" Link="Resources\Localization\windows\zh-Hans.json" LogicalName="SnapLingoWindows.Resources.Localization.windows.zh-Hans.json" />
     </ItemGroup>
 
     <ItemGroup>

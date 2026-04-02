@@ -12,7 +12,7 @@ final class FloatingPanelController {
 
     init<Content: View>(rootView: Content) {
         panel = Panel(
-            contentRect: NSRect(x: 0, y: 0, width: 420, height: 300),
+            contentRect: NSRect(x: 0, y: 0, width: 438, height: 328),
             styleMask: [.nonactivatingPanel, .titled, .fullSizeContentView],
             backing: .buffered,
             defer: false

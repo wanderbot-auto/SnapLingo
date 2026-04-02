@@ -19,30 +19,30 @@ final class HotkeyManager {
         var displayName: String {
             switch self {
             case .commandOptionSpace:
-                return "Command + Option + Space"
+                return MacStrings.shared.string("hotkey.commandOptionSpace.displayName")
             case .commandShiftSpace:
-                return "Command + Shift + Space"
+                return MacStrings.shared.string("hotkey.commandShiftSpace.displayName")
             case .commandShiftOptionSpace:
-                return "Command + Shift + Option + Space"
+                return MacStrings.shared.string("hotkey.commandShiftOptionSpace.displayName")
             case .commandOptionK:
-                return "Command + Option + K"
+                return MacStrings.shared.string("hotkey.commandOptionK.displayName")
             case .commandShiftOptionK:
-                return "Command + Shift + Option + K"
+                return MacStrings.shared.string("hotkey.commandShiftOptionK.displayName")
             }
         }
 
         var compactLabel: String {
             switch self {
             case .commandOptionSpace:
-                return "⌘⌥Space"
+                return MacStrings.shared.string("hotkey.commandOptionSpace.compactLabel")
             case .commandShiftSpace:
-                return "⌘⇧Space"
+                return MacStrings.shared.string("hotkey.commandShiftSpace.compactLabel")
             case .commandShiftOptionSpace:
-                return "⌘⌥⇧Space"
+                return MacStrings.shared.string("hotkey.commandShiftOptionSpace.compactLabel")
             case .commandOptionK:
-                return "⌘⌥K"
+                return MacStrings.shared.string("hotkey.commandOptionK.compactLabel")
             case .commandShiftOptionK:
-                return "⌘⌥⇧K"
+                return MacStrings.shared.string("hotkey.commandShiftOptionK.compactLabel")
             }
         }
 

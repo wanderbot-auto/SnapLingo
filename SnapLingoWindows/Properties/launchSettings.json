@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "SnapLingoWindows (Package)": {
+    "SnapLingo (Package)": {
       "commandName": "MsixPackage"
     },
-    "SnapLingoWindows (Unpackaged)": {
+    "SnapLingo (Unpackaged)": {
       "commandName": "Project"
     }
   }

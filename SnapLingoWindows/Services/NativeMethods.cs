@@ -14,12 +14,10 @@ public static partial class NativeMethods
     public const uint MOD_SHIFT = 0x0004;
     public const uint MOD_NOREPEAT = 0x4000;
     public const int VK_LBUTTON = 0x01;
-    public const byte VK_CONTROL = 0x11;
-    public const byte VK_C = 0x43;
-    public const uint KEYEVENTF_KEYUP = 0x0002;
 
     public const int SW_HIDE = 0;
     public const int SW_SHOWNORMAL = 1;
+    public const int SW_SHOWNOACTIVATE = 4;
 
     public const uint WS_BORDER = 0x00800000;
     public const uint WS_DLGFRAME = 0x00400000;
@@ -30,12 +28,16 @@ public static partial class NativeMethods
 
     public const uint WS_EX_CLIENTEDGE = 0x00000200;
     public const uint WS_EX_STATICEDGE = 0x00020000;
+    public const uint WS_EX_TOOLWINDOW = 0x00000080;
 
     public const uint SWP_NOSIZE = 0x0001;
     public const uint SWP_NOMOVE = 0x0002;
     public const uint SWP_NOZORDER = 0x0004;
     public const uint SWP_NOACTIVATE = 0x0010;
     public const uint SWP_FRAMECHANGED = 0x0020;
+    public const uint SWP_SHOWWINDOW = 0x0040;
+
+    public static readonly nint HWND_TOPMOST = new(-1);
 
     public const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
     public const int DWMWA_BORDER_COLOR = 34;
@@ -73,9 +75,6 @@ public static partial class NativeMethods
 
     [LibraryImport("user32.dll", SetLastError = true)]
     public static partial uint GetWindowThreadProcessId(nint hWnd, out uint processId);
-
-    [LibraryImport("user32.dll", SetLastError = true)]
-    public static partial void keybd_event(byte virtualKey, byte scanCode, uint flags, nuint extraInfo);
 
     [LibraryImport("user32.dll", EntryPoint = "CallWindowProcW")]
     public static partial nint CallWindowProc(nint previousWindowProc, nint hWnd, uint message, nuint wParam, nint lParam);

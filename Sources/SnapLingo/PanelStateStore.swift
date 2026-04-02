@@ -17,7 +17,7 @@ final class PanelStateStore: ObservableObject {
     @Published var phase: Phase = .idle
     @Published var selectedMode: TranslationMode = .translate
     @Published var modeSourceLabel: String = "Auto"
-    @Published var primaryTitle: String = "Ready"
+    @Published var primaryTitle: String = MacStrings.shared.string("panel.ready.title")
     @Published var primaryText: String?
     @Published var originalPreview: String?
     @Published var secondaryStatus: String?
@@ -28,10 +28,10 @@ final class PanelStateStore: ObservableObject {
 
     func resetForNewSession() {
         phase = .capturing
-        primaryTitle = "Capturing Selection"
+        primaryTitle = MacStrings.shared.string("panel.capturing.title")
         primaryText = nil
         originalPreview = nil
-        secondaryStatus = "Reading the selected text…"
+        secondaryStatus = MacStrings.shared.string("panel.capturing.status")
         canCopy = false
         canRetry = false
         isCopied = false
@@ -40,7 +40,7 @@ final class PanelStateStore: ObservableObject {
 
     func resetForIdle() {
         phase = .idle
-        primaryTitle = "Ready"
+        primaryTitle = MacStrings.shared.string("panel.ready.title")
         primaryText = nil
         originalPreview = nil
         secondaryStatus = nil
@@ -51,18 +51,18 @@ final class PanelStateStore: ObservableObject {
 
     func presentPermissionOnboarding() {
         phase = .permissionRequired
-        primaryTitle = "Allow Accessibility Access"
-        primaryText = "SnapLingo needs Accessibility permission to read selected text in other apps."
-        secondaryStatus = "Once you enable it, return here and press the hotkey again."
+        primaryTitle = MacStrings.shared.string("panel.permission.title")
+        primaryText = MacStrings.shared.string("panel.permission.primary")
+        secondaryStatus = MacStrings.shared.string("panel.permission.status")
         canCopy = false
         canRetry = false
     }
 
     func presentClipboardFallback() {
         phase = .waitingForClipboard
-        primaryTitle = "Press Copy To Continue"
-        primaryText = "This app does not expose selected text directly. Press Copy and SnapLingo will continue automatically."
-        secondaryStatus = "Clipboard content stays in memory only for this session."
+        primaryTitle = MacStrings.shared.string("panel.clipboard.title")
+        primaryText = MacStrings.shared.string("panel.clipboard.primary")
+        secondaryStatus = MacStrings.shared.string("panel.clipboard.status")
         canCopy = false
         canRetry = true
     }
@@ -70,30 +70,30 @@ final class PanelStateStore: ObservableObject {
     func beginProcessing(text: String, selectedMode: TranslationMode, modeSourceLabel: String) {
         self.selectedMode = selectedMode
         self.modeSourceLabel = modeSourceLabel
-        self.originalPreview = text.replacingOccurrences(of: "\n", with: " ")
-        self.canRetry = true
+        originalPreview = text.replacingOccurrences(of: "\n", with: " ")
+        canRetry = true
 
         switch selectedMode {
         case .translate:
             phase = .loadingTranslation
-            primaryTitle = "Quick Translation"
+            primaryTitle = MacStrings.shared.string("panel.translate.title")
             primaryText = nil
-            secondaryStatus = "Generating a send-ready translation…"
+            secondaryStatus = MacStrings.shared.string("panel.translate.status")
             canCopy = false
         case .polish:
             phase = .loadingPolish
-            primaryTitle = "Polished Version"
+            primaryTitle = MacStrings.shared.string("panel.polish.title")
             primaryText = nil
-            secondaryStatus = "Polishing your English…"
+            secondaryStatus = MacStrings.shared.string("panel.polish.status")
             canCopy = false
         }
     }
 
     func showPartialTranslation(_ text: String) {
         phase = .partial
-        primaryTitle = "Quick Translation"
+        primaryTitle = MacStrings.shared.string("panel.translate.title")
         primaryText = text
-        secondaryStatus = "Optimizing…"
+        secondaryStatus = MacStrings.shared.string("panel.partial.status")
         canCopy = true
     }
 
@@ -107,16 +107,16 @@ final class PanelStateStore: ObservableObject {
 
     func showError(_ message: String) {
         phase = .error(message: message)
-        primaryTitle = "Could Not Finish"
+        primaryTitle = MacStrings.shared.string("panel.error.title")
         primaryText = message
-        secondaryStatus = "Try again or switch modes."
+        secondaryStatus = MacStrings.shared.string("panel.error.status")
         canCopy = false
         canRetry = true
     }
 
     func showCopiedFeedback() {
         isCopied = true
-        secondaryStatus = "Copied"
+        secondaryStatus = MacStrings.shared.string("panel.copied.status")
     }
 
     func setSettingsMessage(_ message: String) {
