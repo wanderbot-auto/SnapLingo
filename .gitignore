@@ -1,6 +1,14 @@
 .build/
+.build-check/
 .cache/
 .codex-home/
+.dotnet/
 .dotnet-cli/
+.nuget/
 SnapLingoWindows/bin/
 SnapLingoWindows/obj/
+SnapLingoWindows.Tests/bin/
+SnapLingoWindows.Tests/obj/
+build-winui.log
+xaml-pass.log
+1.png
