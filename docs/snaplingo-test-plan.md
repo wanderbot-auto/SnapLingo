@@ -1,12 +1,13 @@
 # SnapLingo Test Plan
 
-Updated: 2026-04-01
+Updated: 2026-04-02
 
 ## Test Strategy
 
-- Automated coverage currently lives in `Tests/SnapLingoTests` and focuses on Swift logic, mode detection, panel state transitions, provider preset mapping, and validation behavior.
-- Windows changes currently require manual smoke testing through `.\run-windows-client.ps1` because there is no parallel WinUI test suite in the repo yet.
-- Cross-platform validation should focus on workflow parity, not identical implementation details.
+- Automated coverage now lives in both `Tests/SnapLingoTests` and `SnapLingoWindows.Tests`.
+- Swift/XCTest still covers the macOS-side shared logic, while `SnapLingoWindows.Tests` covers Windows workflow and manifest regressions through a lightweight executable test harness.
+- Windows shell behavior still requires manual smoke testing through `.\run-windows-client.ps1`; there is not yet a full WinUI UI-automation suite.
+- Cross-platform validation should focus on workflow parity, not identical implementation details, because the Windows shell now includes extra configuration and launcher surfaces.
 
 ## Automated Coverage
 
@@ -26,6 +27,20 @@ Current automated checks cover:
 - curated provider preset protocol selection
 - curated domestic provider base URLs and models
 - hotkey preset stability
+- shared provider manifest defaults for Windows
+- Windows localization key parity between English and Simplified Chinese
+- Windows retry flow after clipboard fallback
+- Windows in-flight cancellation when a new selection arrives
+- Windows duplicate-selection suppression for auto-selection activation
+
+Run the Windows regression project with:
+
+```powershell
+$env:DOTNET_CLI_HOME = Join-Path $PWD ".dotnet-cli"
+$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
+$env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+dotnet run --project .\SnapLingoWindows.Tests\SnapLingoWindows.Tests.csproj
+```
 
 ## Manual Host Matrix
 
@@ -41,6 +56,7 @@ Current automated checks cover:
 - `Edge` or `Chrome` for browser text areas
 - `VS Code` for Electron/editor behavior
 - one additional Win32 or Office-style app when available to verify UI Automation fallback behavior
+- verify the lightweight selection launcher appears near drag-selected text when direct capture succeeds
 
 ## Critical Workflow Checks
 
@@ -48,6 +64,7 @@ Current automated checks cover:
 - English selection -> polish -> copy
 - direct capture success path
 - direct capture failure -> explicit clipboard fallback -> copy
+- drag selection on Windows -> launcher appears -> translation panel opens -> copy
 - in-flight request -> second hotkey press -> old request canceled -> new request active
 - retry from an error or stale result state
 - manual mode switch after capture
@@ -61,6 +78,7 @@ Current automated checks cover:
 - final state with polished output
 - provider fail-closed error state
 - copy success feedback and auto-dismiss behavior
+- Windows launcher dismissed state and duplicate-selection suppression window
 
 ## Provider Coverage
 
@@ -79,11 +97,16 @@ At minimum, smoke test one provider from each protocol family:
 - very long original text still keeps the result as the primary visual anchor
 - invalid, missing, or corrupted stored secrets fail safely
 - provider request canceled while a previous response is still in flight
+- Windows language switch updates labels without restart
+- Windows prompt profile create/save/delete flow persists safely
 
 ## Release Smoke Checklist
 
 - launch the macOS client with `swift run`
+- run the Windows regression project with `dotnet run --project .\SnapLingoWindows.Tests\SnapLingoWindows.Tests.csproj`
 - launch the Windows client with `.\run-windows-client.ps1`
 - save and reload API keys for at least one provider on each platform
 - verify copy action from both `Translate` and `Polish`
 - verify at least one clipboard fallback flow on each platform
+- on Windows, verify prompt profile persistence and interface language switching
+- on Windows, verify the selection launcher and standalone panel can reopen repeatedly without becoming stuck

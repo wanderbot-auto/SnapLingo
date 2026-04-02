@@ -12,8 +12,11 @@ SnapLingo is a desktop translation utility for fast selection-to-copy workflows.
 - `Translate` and `Polish` modes with automatic default mode detection
 - Progressive reveal for Chinese input: quick translation first, polished result second
 - Copy-first workflow with retry support
+- Windows standalone translation panel plus a lightweight selection launcher for drag-selected text
+- Windows settings shell for provider, model, hotkey, prompt profile, and language selection
 - Multi-provider adapter support for `OpenAI`, `Anthropic`, `Google Gemini`, `Zhipu GLM`, `Kimi`, `MiniMax`, `Alibaba Bailian`, and `Volcengine Ark`
 - Secure per-provider API key storage on each platform
+- Shared provider defaults and localized strings bundled in repo resources
 
 ## Current Non-Goals
 
@@ -21,7 +24,8 @@ SnapLingo is a desktop translation utility for fast selection-to-copy workflows.
 - Undo
 - Context-aware modes
 - History and memory
-- Tone tweak controls
+- Cloud sync for settings or secrets
+- Rich tone-control workspaces or prompt marketplaces
 - Mobile, web, or Linux clients
 
 ## Repository Layout
@@ -29,6 +33,7 @@ SnapLingo is a desktop translation utility for fast selection-to-copy workflows.
 - `Sources/SnapLingo`: macOS app source
 - `Tests/SnapLingoTests`: Swift/XCTest coverage for shared macOS logic and provider presets
 - `SnapLingoWindows`: WinUI 3 Windows client
+- `SnapLingoWindows.Tests`: lightweight Windows regression test harness for workflow, localization, and provider manifest behavior
 - `docs`: product notes, QA plans, and UI exploration artifacts
 
 ## macOS Build
@@ -99,11 +104,31 @@ Useful options:
 - `.\run-windows-client.ps1 -Watch`
 - `.\run-windows-client.ps1 -Watch -NoBuild`
 
+The current Windows shell includes:
+
+- a settings window for provider, model, hotkey, prompt profile, and interface language
+- a standalone translation panel for the active workflow
+- a lightweight launcher that can appear near detected text selection before opening the panel
+
+## Windows Regression Test
+
+Run the lightweight Windows regression project from the repo root:
+
+```powershell
+$env:DOTNET_CLI_HOME = Join-Path $PWD ".dotnet-cli"
+$env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
+$env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+dotnet run --project .\SnapLingoWindows.Tests\SnapLingoWindows.Tests.csproj
+```
+
+This covers localization key parity, shared provider manifest defaults, workflow retry and cancellation behavior, and duplicate-selection suppression.
+
 ## Provider Notes
 
 - `OpenAI` uses the Responses API.
 - `Anthropic` uses the native Messages API.
 - `Gemini` uses the native `generateContent` API.
 - `Zhipu GLM`, `Kimi`, `MiniMax`, `Alibaba Bailian`, and `Volcengine Ark` use curated OpenAI-compatible chat presets.
+- Provider defaults are loaded from shared bundled manifests so macOS and Windows stay aligned on base URLs and preset models.
 - API keys are stored in platform-native secure storage:
   macOS uses Keychain via `CredentialStore`, and Windows uses DPAPI-encrypted files via `SecureSecretStore`.

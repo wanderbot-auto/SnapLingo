@@ -1,7 +1,7 @@
 # SnapLingo Product Brief
 
-Updated: 2026-04-01
-Status: Active desktop implementation
+Updated: 2026-04-02
+Status: Active desktop implementation with Windows shell expansion
 
 ## Overview
 
@@ -34,6 +34,8 @@ The product is not a full translation workspace. It is a utility that stays out 
 - Non-CJK text defaults to `Polish`
 - Translation mode can show a quick translation before a polished result
 - Retry and copy are first-class actions
+- Windows now includes a standalone translation panel, a small selection launcher near detected text selections, and a settings shell for provider, model, hotkey, prompt, and language controls
+- Shared provider defaults and Windows localization strings are now bundled as repo resources so both desktop clients can stay aligned on presets and copy
 
 ## Supported Providers
 
@@ -57,13 +59,16 @@ Provider integration is adapter-based. `OpenAI` uses the Responses API, `Anthrop
 - App model: menu bar utility
 - Selection path: Accessibility APIs, then clipboard fallback
 - Secret storage: Keychain via `CredentialStore`
+- Provider defaults and localized strings now load from bundled JSON resources
 - Build/test flow: `swift build`, `swift test`, `swift run`
 
 ### Windows
 
-- App model: WinUI 3 desktop application
+- App model: WinUI 3 settings shell with a standalone translation panel
 - Selection path: UI Automation text/selection patterns, then clipboard fallback
+- Auto-selection monitoring can surface a lightweight launcher near the recent selection before opening the translation panel
 - Secret storage: DPAPI-encrypted files via `SecureSecretStore`
+- Settings can switch provider, model, hotkey, prompt profile, and interface language
 - Run flow: `.\run-windows-client.ps1`
 
 ## Current Non-Goals
@@ -72,7 +77,8 @@ Provider integration is adapter-based. `OpenAI` uses the Responses API, `Anthrop
 - Undo
 - Context-aware translation modes
 - History and memory
-- Tone controls or prompt-tuning UI for end users
+- Cloud sync for settings, secrets, or prompt profiles
+- Rich tone controls, prompt marketplaces, or multi-step writing workspaces
 - OCR, screenshot translation, or document translation
 - Mobile, web, or Linux clients
 
@@ -85,6 +91,6 @@ Provider integration is adapter-based. `OpenAI` uses the Responses API, `Anthrop
 
 ## Current Gaps
 
-- Automated test coverage is currently centered on the Swift/XCTest suite.
-- Windows validation is still mostly manual smoke testing through the launcher script.
-- Feature parity should be treated as a product goal, not an assumption; both clients share the same workflow concept, but implementation details remain platform-specific.
+- Automated coverage now spans both `Tests/SnapLingoTests` and the lightweight Windows regression project in `SnapLingoWindows.Tests`, but WinUI shell behavior is still not UI-automated.
+- Windows validation still needs manual smoke coverage for hotkeys, overlay windows, selection capture, and host-app integration even when logic tests pass.
+- Feature parity should still be treated as a product goal, not an assumption; Windows currently ships extra settings capabilities such as prompt profiles and interface language switching.
