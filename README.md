@@ -28,6 +28,13 @@ SnapLingo is a desktop translation utility for fast selection-to-copy workflows.
 - Rich tone-control workspaces or prompt marketplaces
 - Mobile, web, or Linux clients
 
+## Clipboard Fallback Policy
+
+- Clipboard fallback must stay explicit and user-initiated.
+- Do not add an automatic simulated `Ctrl+C` fallback on Windows.
+- Automatic `Ctrl+C` has severe bugs in real host apps, including unintended copy side effects and unreliable selection behavior.
+- If direct capture fails, SnapLingo should show a clear fallback prompt or let the user choose an existing clipboard action instead of synthesizing copy input on the user's behalf.
+
 ## Repository Layout
 
 - `Sources/SnapLingo`: macOS app source

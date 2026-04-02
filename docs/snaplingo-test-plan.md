@@ -8,6 +8,7 @@ Updated: 2026-04-02
 - Swift/XCTest still covers the macOS-side shared logic, while `SnapLingoWindows.Tests` covers Windows workflow and manifest regressions through a lightweight executable test harness.
 - Windows shell behavior still requires manual smoke testing through `.\run-windows-client.ps1`; there is not yet a full WinUI UI-automation suite.
 - Cross-platform validation should focus on workflow parity, not identical implementation details, because the Windows shell now includes extra configuration and launcher surfaces.
+- Automatic simulated `Ctrl+C` fallback is out of scope and should not be introduced into the Windows workflow because it has severe host-app bugs.
 
 ## Automated Coverage
 
@@ -93,6 +94,7 @@ At minimum, smoke test one provider from each protocol family:
 
 - mixed-language text defaults to `Translate`
 - empty clipboard after fallback prompt
+- verify no workflow path synthesizes automatic `Ctrl+C` input when direct capture fails
 - unsupported or conflicting hotkey registration
 - very long original text still keeps the result as the primary visual anchor
 - invalid, missing, or corrupted stored secrets fail safely

@@ -89,6 +89,13 @@ Provider integration is adapter-based. `OpenAI` uses the Responses API, `Anthrop
 - Provider failures should surface as explicit error states.
 - API keys must stay in secure platform storage and must not be written to plain-text config files.
 
+## Clipboard Fallback Constraint
+
+- Clipboard fallback must remain explicit and user-controlled.
+- Do not implement an automatic simulated `Ctrl+C` fallback on Windows.
+- This approach has severe bugs in real desktop apps, including copying the wrong content, interfering with host-app behavior, and creating hard-to-debug workflow regressions.
+- If direct capture fails, SnapLingo should prompt for an explicit fallback or use text that is already present in the clipboard.
+
 ## Current Gaps
 
 - Automated coverage now spans both `Tests/SnapLingoTests` and the lightweight Windows regression project in `SnapLingoWindows.Tests`, but WinUI shell behavior is still not UI-automated.
